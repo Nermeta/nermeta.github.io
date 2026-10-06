@@ -3,3 +3,9 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+
+# AI context index — generated at build time, not committed
+context.json
+
+# Node
+node_modules/
