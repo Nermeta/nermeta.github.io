@@ -1,0 +1,47 @@
+---
+layout: default
+---
+<main class="page-content" id="main-content">
+  <header class="collection-header">
+    <h1 class="collection-title">{{ page.title }}</h1>
+    {% assign col_name = page.collection_name %}
+    {% assign col_docs = site[col_name] %}
+    <p class="collection-count">{{ col_docs.size }} entries</p>
+  </header>
+
+  {% if col_docs.size > 0 %}
+    <ul class="post-list" aria-label="{{ page.title }} entries">
+      {% assign sorted = col_docs | sort: 'date' | reverse %}
+      {% for doc in sorted %}
+        {% unless doc.public == false %}
+        <li class="post-card">
+          <h2 class="post-card-title">
+            <a href="{{ doc.url | relative_url }}">{{ doc.title }}</a>
+          </h2>
+          {% if doc.excerpt %}
+            <p class="post-card-excerpt">{{ doc.excerpt | strip_html | truncate: 160 }}</p>
+          {% endif %}
+          <div class="post-card-footer">
+            {% if doc.date %}
+              <time class="post-meta" datetime="{{ doc.date | date_to_xmlschema }}">
+                {{ doc.date | date: "%b %d, %Y" }}
+              </time>
+            {% endif %}
+            {% for tag in doc.tags %}
+              <span class="post-tag">{{ tag }}</span>
+            {% endfor %}
+            {% if doc.difficulty %}
+              <span class="post-tag">{{ doc.difficulty }}</span>
+            {% endif %}
+            {% if doc.rating %}
+              <span class="post-tag">★ {{ doc.rating }}</span>
+            {% endif %}
+          </div>
+        </li>
+        {% endunless %}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p style="color:var(--fg-muted)">Nothing here yet — check back soon.</p>
+  {% endif %}
+</main>

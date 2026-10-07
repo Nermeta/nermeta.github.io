@@ -1,0 +1,45 @@
+<!-- Homepage full chat panel -->
+<section class="home-chat-section" aria-label="AI navigation">
+  <div class="chat-panel" role="region" aria-label="Chat with Cheshire">
+    <div class="chat-panel-header">
+      <div class="chat-status-dot" aria-hidden="true"></div>
+      <span class="chat-panel-title">Cheshire <span class="chat-panel-sub">· navigation guide</span></span>
+    </div>
+
+    <div class="chat-messages" id="homeChatMessages" role="log" aria-live="polite" aria-label="Chat messages">
+      <div class="msg-ai">
+        <div class="msg-ai-avatar" aria-hidden="true">🐱</div>
+        <div class="msg-bubble">
+          We're all a little lost here &mdash; that's rather the point.<br>
+          Tell me what you're looking for, and I'll show you where it <strong>almost</strong> is.
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-chips" id="homeChatChips" role="group" aria-label="Suggested questions">
+      <button class="chip">What's in the Chronicles?</button>
+      <button class="chip">Show recent Field Notes</button>
+      <button class="chip">Any Emblems earned?</button>
+      <button class="chip">Discoveries on Active Directory</button>
+      <button class="chip">Latest Library reviews</button>
+    </div>
+
+    <form class="chat-input-row" id="homeChatForm">
+      <textarea
+        class="chat-input"
+        id="homeChatInput"
+        rows="1"
+        placeholder="Ask anything about this site…"
+        aria-label="Chat input"
+      ></textarea>
+      <button class="chat-send" type="submit" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </div>
+</section>
+
+<script src="{{ '/assets/js/chat.js' | relative_url }}" defer></script>

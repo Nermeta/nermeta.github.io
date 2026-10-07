@@ -1,0 +1,13 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <p class="footer-copy">
+      &copy; {{ 'now' | date: "%Y" }} {{ site.title }} &mdash; built with curiosity
+    </p>
+    <p class="footer-links">
+      {% if site.github_username %}
+        <a href="https://github.com/{{ site.github_username }}" rel="noopener" target="_blank">GitHub</a>
+      {% endif %}
+      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    </p>
+  </div>
+</footer>

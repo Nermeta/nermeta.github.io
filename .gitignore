@@ -3,17 +3,7 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
-
-# AI context index — generated at build time, not committed
 context.json
-
-# Node
-node_modules/
-
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-.env*
-!.env.example
 wrangler.jsonc
+node_modules
+*.tar.gz

@@ -103,8 +103,10 @@ Professional but warm — like a polished portfolio with personality. Not stiff,
 ## Audience inference
 Infer whether the visitor is technical or non-technical from how they phrase questions. Tech visitors often ask about tools, certs, platforms, code. General visitors often ask about books, learning journey, interests. Serve both — don't assume everyone wants the technical content.
 
-## Response format (CRITICAL — always return this exact JSON shape)
-Every response MUST be valid JSON in this exact envelope:
+## Response format (CRITICAL)
+You MUST return ONLY raw JSON. No markdown. No code blocks. No backticks. No explanation before or after.
+Your entire response must be parseable by JSON.parse() with nothing else around it.
+Every response MUST be in this exact envelope:
 {
   "message": "Your conversational reply here. Use markdown for formatting when helpful.",
   "cards": [],
@@ -244,13 +246,16 @@ export default {
 
     // Parse Claude's response and validate/normalize the JSON envelope
     const data       = await anthropicRes.json();
-    const rawContent = data.content?.[0]?.text || '';
+  let rawContent   = data.content?.[0]?.text || '';
 
-    let envelope;
-    try {
-      // Claude should return a JSON object — parse it
-      envelope = JSON.parse(rawContent);
-    } catch {
+  // Strip markdown code block wrapping if Claude added it
+  rawContent = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/,'').trim();
+
+  let envelope;
+  try {
+    // Claude should return a JSON object — parse it
+    envelope = JSON.parse(rawContent);
+  } catch {
       // Fallback: Claude returned plain text, wrap it
       envelope = {
         message: rawContent,

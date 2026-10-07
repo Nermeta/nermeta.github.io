@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include head.html %}
+</head>
+<body>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+
+{% include nav.html %}
+
+<div class="page-wrapper">
+  {{ content }}
+
+  {% include footer.html %}
+</div>
+
+{% include floating-chat.html %}
+
+<div class="accent-rail" aria-hidden="true"></div>
+
+</body>
+</html>

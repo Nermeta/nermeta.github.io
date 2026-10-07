@@ -1,133 +1,94 @@
-# ============================================================
-# Wynter's Wonderland — Jekyll Configuration
-# ============================================================
-
-title: Wynter's Wonderland
+title: "Wynter's Wonderland"
 email: wynter@davaga.net
-description: >
-  A second-brain style portfolio — navigate through learning logs, certifications,
-  book reviews, deep dives, tutorials, and cybersecurity writeups. Ask the AI anything.
+description: >-
+  Adventures in learning — cybersecurity, technology, and the things
+  that catch my curiosity. Where nothing is quite what it seems, but everything is interesting.
 baseurl: ""
 url: "https://nermeta.github.io"
 github_username: Nermeta
 
-# ------------------------------------------------------------
-# Build settings
-# ------------------------------------------------------------
-theme: jekyll-theme-slate
+# ── Theme ──────────────────────────────────────────────────────
+# Custom theme — Slate is replaced entirely.
+# cheshire_portrait: /assets/images/cheshire-face.png   # uncomment when commissioned art arrives
+
+# ── Build ──────────────────────────────────────────────────────
 plugins:
   - jekyll-feed
 
-# ------------------------------------------------------------
-# Collections
-# Each collection gets its own folder and generates output pages.
-# ------------------------------------------------------------
+exclude:
+  - scripts/
+  - cloudflare-worker/
+  - "*.tar.gz"
+  - context.json
+  - wrangler.jsonc
+  - node_modules/
+  - vendor/
+
+# ── Collections ────────────────────────────────────────────────
 collections:
+  pages:
+    output: true
+    permalink: /:name/
   learning-logs:
     output: true
     permalink: /learning-logs/:name/
-
   certifications:
     output: true
     permalink: /certifications/:name/
-
   book-reviews:
     output: true
     permalink: /book-reviews/:name/
-
   deep-dives:
     output: true
     permalink: /deep-dives/:name/
-
   tutorials:
     output: true
     permalink: /tutorials/:name/
-
   writeups:
     output: true
     permalink: /writeups/:name/
 
-# ------------------------------------------------------------
-# Collection defaults
-# Applies base frontmatter defaults so you don't repeat yourself.
-# Override per-file as needed.
-# ------------------------------------------------------------
+# ── Frontmatter defaults ───────────────────────────────────────
 defaults:
-  # --- All collections share these base defaults ---
-  - scope:
-      path: ""
-    values:
-      public: true
-
   - scope:
       path: ""
       type: "learning-logs"
     values:
       layout: post
-      type: learning-log
-      audience: [general]
       public: true
-
   - scope:
       path: ""
       type: "certifications"
     values:
       layout: post
-      type: certification
-      audience: [tech]
       public: true
-
   - scope:
       path: ""
       type: "book-reviews"
     values:
       layout: post
-      type: book-review
-      audience: [general]
       public: true
-
   - scope:
       path: ""
       type: "deep-dives"
     values:
       layout: post
-      type: deep-dive
-      audience: [tech]
       public: true
-
   - scope:
       path: ""
       type: "tutorials"
     values:
       layout: post
-      type: tutorial
-      audience: [tech]
       public: true
-
   - scope:
       path: ""
       type: "writeups"
     values:
       layout: post
-      type: writeup
-      audience: [tech]
       public: true
-
   - scope:
       path: ""
       type: "posts"
     values:
       layout: post
-
-# ------------------------------------------------------------
-# Exclude from build
-# ------------------------------------------------------------
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - node_modules/
-  - vendor/
-  - scripts/
-  - "*.sh"
-  - "*.rb"
-  - context.json
+      public: true

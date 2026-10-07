@@ -1,0 +1,21 @@
+<header class="site-header" role="banner">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="nav-logo" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} home">
+      <span class="nav-logo-mark">W·W</span>
+    </a>
+
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="nav-menu" role="list">
+      <li><a href="{{ '/learning-logs/' | relative_url }}" {% if page.collection == 'learning-logs' %}aria-current="page"{% endif %}>Chronicles</a></li>
+      <li><a href="{{ '/book-reviews/' | relative_url }}" {% if page.collection == 'book-reviews' %}aria-current="page"{% endif %}>Library</a></li>
+      <li><a href="{{ '/deep-dives/' | relative_url }}" {% if page.collection == 'deep-dives' %}aria-current="page"{% endif %}>Discoveries</a></li>
+      <li><a href="{{ '/tutorials/' | relative_url }}" {% if page.collection == 'tutorials' %}aria-current="page"{% endif %}>Explorations</a></li>
+      <li><a href="{{ '/certifications/' | relative_url }}" {% if page.collection == 'certifications' %}aria-current="page"{% endif %}>Emblems</a></li>
+      <li><a href="{{ '/writeups/' | relative_url }}" {% if page.collection == 'writeups' %}aria-current="page"{% endif %}>Field Notes</a></li>
+      <li><a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a></li>
+    </ul>
+  </nav>
+</header>
