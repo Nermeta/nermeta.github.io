@@ -1,6 +1,5 @@
 ---
-layout: collection
+layout: emblems
 title: Emblems
 permalink: /certifications/
-collection_name: certifications
 ---

@@ -33,7 +33,8 @@ collections:
     output: true
     permalink: /learning-logs/:name/
   certifications:
-    output: true
+    output: false
+    sort_by: date
     permalink: /certifications/:name/
   book-reviews:
     output: true

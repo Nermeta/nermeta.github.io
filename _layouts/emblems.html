@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
+
+  <style>
+:root {
+  color-scheme: dark;
+
+  --wood-dark:   #1a0f05;
+  --wood-mid:    #2e1a08;
+  --wood-light:  #4a2c0f;
+  --brass:       #b8914a;
+  --brass-dim:   #8a6a30;
+  --brass-hi:    #d4af6a;
+
+  --aqua:        #00e5cc;
+  --aqua-dim:    #00b8a4;
+  --aqua-border: rgba(0,229,204,0.18);
+  --fuchsia:     #e040fb;
+  --fuchsia-dim: #b030c8;
+  --fuchsia-border: rgba(224,64,251,0.22);
+
+  --font-display: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
+  --font-body:    'Raleway', system-ui, sans-serif;
+  --font-mono:    'Share Tech Mono', monospace;
+
+  --fg:          #ede5ff;
+  --fg-muted:    #6a5e88;
+  --ease: 0.28s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%);
+  color: var(--fg);
+  font-family: var(--font-body);
+  margin: 0;
+  padding-inline: 1rem;
+  padding-block: 3rem 5rem;
+}
+
+.emblems-page { max-width: 900px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.emblems-header { text-align: center; margin-bottom: 1rem; }
+.emblems-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  color: var(--brass-hi);
+  text-shadow: 0 0 30px rgba(184,145,74,0.4), 0 2px 4px rgba(0,0,0,0.8);
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.04em;
+}
+.emblems-header p {
+  color: var(--fg-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.brass-rule {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+.brass-rule::before, .brass-rule::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brass-dim), var(--brass), var(--brass-dim), transparent);
+}
+.brass-diamond {
+  width: 7px; height: 7px; background: var(--brass);
+  transform: rotate(45deg); box-shadow: 0 0 6px rgba(184,145,74,0.5);
+}
+
+/* ── FILTERS ── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  justify-content: center; margin-bottom: 2.25rem;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.filter-label {
+  font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--brass-dim); padding: 0 0.2rem;
+}
+.filter-btn {
+  background: transparent;
+  border: 1px solid rgba(184,145,74,0.25);
+  color: var(--fg-muted);
+  font-family: var(--font-body);
+  font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.3rem 0.85rem; border-radius: 999px; cursor: pointer;
+  transition: all var(--ease);
+}
+.filter-btn:hover { border-color: var(--brass); color: var(--brass-hi); background: rgba(184,145,74,0.06); }
+.filter-btn.active {
+  background: rgba(0,229,204,0.08); border-color: var(--aqua-dim); color: var(--aqua);
+  box-shadow: 0 0 12px rgba(0,229,204,0.18);
+}
+.filter-btn[data-filter="status"].active {
+  background: rgba(224,64,251,0.08); border-color: var(--fuchsia-dim); color: var(--fuchsia);
+  box-shadow: 0 0 12px rgba(224,64,251,0.18);
+}
+.filter-divider { width: 1px; height: 20px; background: rgba(184,145,74,0.2); margin: 0 0.35rem; align-self: center; }
+
+/* ════════════════════════════════════════════
+   SHARED TEXTURE DATA URIs
+   feTurbulence noise baked as inline SVG — no external requests
+════════════════════════════════════════════ */
+:root {
+  /* Coarse wood grain noise — warm, horizontal bias */
+  --tex-wood: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='wood'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.018 0.006' numOctaves='5' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.15'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23wood)' opacity='0.38'/%3E%3C/svg%3E");
+  /* Fine velvet/fabric noise — tight diagonal weave */
+  --tex-velvet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='velvet'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75 0.65' numOctaves='4' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='soft-light'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23velvet)' opacity='0.22'/%3E%3C/svg%3E");
+  /* Aged brass/bronze — gentle low-frequency mottling, like the reference photo.
+     Soft blotchy variation, NOT heavy striations. Opacity kept low so the base
+     colour reads clearly and the texture is a subtle depth hint only. */
+  --tex-bronze: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='100'%3E%3Cfilter id='bronze'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.028 0.022' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.3'/%3E%3CfeBlend in='SourceGraphic' mode='soft-light'/%3E%3C/filter%3E%3Crect width='240' height='100' filter='url(%23bronze)' opacity='0.18'/%3E%3C/svg%3E");
+  /* Deep wood grain — second layer, different seed for the shelf surround */
+  --tex-wood2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='120'%3E%3Cfilter id='wood2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.012 0.004' numOctaves='6' seed='22' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.2'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='280' height='120' filter='url(%23wood2)' opacity='0.45'/%3E%3C/svg%3E");
+}
+
+/* ════════════════════════════════════════════
+   OUTER WOODEN CABINET
+════════════════════════════════════════════ */
+.case-outer {
+  position: relative;
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.012) 18px, rgba(255,255,255,0.012) 20px),
+    linear-gradient(180deg, #3d2208 0%, #2a1606 40%, #1e0f04 70%, #2a1606 100%);
+  border-radius: 10px;
+  /* side walls visible as thick padding */
+  padding: 0 20px;
+  box-shadow:
+    0 50px 120px rgba(0,0,0,0.9),
+    0 20px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(212,175,106,0.4),
+    inset 0 -1px 0 rgba(0,0,0,0.8),
+    inset 2px 0 0 rgba(212,175,106,0.1),
+    inset -2px 0 0 rgba(0,0,0,0.5);
+}
+
+/* ── TOP CAP ── */
+.case-top-cap {
+  height: 36px;
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  border-bottom: 2px solid rgba(212,175,106,0.5);
+  position: relative;
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.01) 18px, rgba(255,255,255,0.01) 20px),
+    linear-gradient(180deg, #4a2c0f 0%, #3a2008 50%, #2e1a08 100%);
+}
+.case-top-cap::before {
+  content: '';
+  position: absolute;
+  bottom: -5px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.4), transparent);
+}
+.plate-ornament {
+  font-family: var(--font-display);
+  font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--brass-dim);
+}
+.plate-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(184,145,74,0.3), transparent); }
+
+
+/* ── BOTTOM CAP ── */
+.case-bottom-cap {
+  height: 28px;
+  border-top: 2px solid rgba(212,175,106,0.4);
+  position: relative;
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.01) 18px, rgba(255,255,255,0.01) 20px),
+    linear-gradient(180deg, #2e1a08 0%, #3a2008 60%, #4a2c0f 100%);
+}
+.case-bottom-cap::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
+}
+
+/* ── GLASS INTERIOR WRAPPER ── */
+.case-glass {
+  position: relative;
+  /* velvet back wall */
+  background:
+    var(--tex-velvet),
+    repeating-linear-gradient(45deg, transparent 0px, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px),
+    repeating-linear-gradient(-45deg, transparent 0px, transparent 3px, rgba(255,255,255,0.004) 3px, rgba(255,255,255,0.004) 4px),
+    linear-gradient(180deg, #0a0818 0%, #07060f 50%, #0a0818 100%);
+  /* side wall shadows — creates the illusion of depth into the cabinet */
+  box-shadow:
+    inset 18px 0 30px rgba(0,0,0,0.7),
+    inset -18px 0 30px rgba(0,0,0,0.7),
+    inset 0 0 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* Overhead glow from case lighting strip */
+.case-glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background:
+    radial-gradient(ellipse 60% 100% at 30% -5%, rgba(224,64,251,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 100% at 70% -5%, rgba(0,229,204,0.14) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Glass pane overlay — a single diagonal sheen across the whole case,
+   like light catching the front glass panel. No hard edges. */
+.glass-pane {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 200;
+  background: linear-gradient(
+    118deg,
+    transparent 0%,
+    transparent 28%,
+    rgba(210,225,255,0.028) 32%,
+    rgba(210,225,255,0.018) 35%,
+    rgba(255,255,255,0.008) 38%,
+    transparent 42%,
+    transparent 68%,
+    rgba(255,255,255,0.009) 71%,
+    rgba(255,255,255,0.005) 73%,
+    transparent 76%
+  );
+}
+
+/* ════════════════════════════════════════════
+   SHADOWBOX GRID — each cert is one unit on the velvet wall
+════════════════════════════════════════════ */
+.shadowbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 28px 24px 24px;
+}
+
+/* One shadowbox = one cert: a framed recess in the velvet wall */
+.shadowbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140px;
+  /* the frame itself — dark wood surround, two grain layers for depth */
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 22px, rgba(255,255,255,0.012) 22px, rgba(255,255,255,0.012) 24px),
+    linear-gradient(160deg, #2e1a08 0%, #1e0f04 50%, #2a1606 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(212,175,106,0.3);
+  box-shadow:
+    /* outer frame depth */
+    0 8px 28px rgba(0,0,0,0.7),
+    0 2px 8px rgba(0,0,0,0.5),
+    /* inner lip highlight at top */
+    inset 0 1px 0 rgba(212,175,106,0.35),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    inset 1px 0 0 rgba(212,175,106,0.12),
+    inset -1px 0 0 rgba(0,0,0,0.4);
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* hover: warm ambient glow behind the shadowbox */
+.shadowbox:hover {
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.7),
+    0 0 40px rgba(184,145,74,0.12),
+    0 0 80px rgba(184,145,74,0.06),
+    inset 0 1px 0 rgba(212,175,106,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    inset 1px 0 0 rgba(0,0,0,0.2),
+    inset -1px 0 0 rgba(0,0,0,0.4);
+}
+.shadowbox[hidden] { display: none !important; }
+
+/* velvet display recess — the interior behind the badge */
+.shadowbox-recess {
+  width: 100%;
+  background:
+    var(--tex-velvet),
+    repeating-linear-gradient(45deg, transparent 0px, transparent 3px, rgba(255,255,255,0.006) 3px, rgba(255,255,255,0.006) 4px),
+    repeating-linear-gradient(-45deg, transparent 0px, transparent 3px, rgba(255,255,255,0.004) 3px, rgba(255,255,255,0.004) 4px),
+    linear-gradient(180deg, #080614 0%, #060510 60%, #0a0818 100%);
+  border-radius: 2px;
+  margin: 6px 6px 0;
+  width: calc(100% - 12px);
+  /* inset shadow: recess looks carved into the frame */
+  box-shadow:
+    inset 0 4px 12px rgba(0,0,0,0.8),
+    inset 3px 0 8px rgba(0,0,0,0.5),
+    inset -3px 0 8px rgba(0,0,0,0.5),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0 12px;
+  position: relative;
+}
+
+/* bracket pins at top corners of recess */
+.shadowbox-recess::before,
+.shadowbox-recess::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 10px; height: 7px;
+  background: linear-gradient(180deg, var(--brass-hi) 0%, var(--brass-dim) 100%);
+  border-radius: 0 0 2px 2px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.6);
+}
+.shadowbox-recess::before { left: 10px; }
+.shadowbox-recess::after  { right: 10px; }
+
+/* spotlight inside the recess */
+.badge-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+  background:
+    radial-gradient(
+      ellipse 70% 90% at 50% 10%,
+      rgba(0,229,204,0.25) 0%,
+      rgba(224,64,251,0.15) 40%,
+      rgba(0,229,204,0.05) 65%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+  border-radius: 2px;
+}
+.shadowbox:hover .badge-spotlight { opacity: 1; }
+
+/* nameplate shelf — the wood fascia strip below the recess */
+.nameplate-shelf {
+  width: calc(100% - 12px);
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 22px, rgba(255,255,255,0.015) 22px, rgba(255,255,255,0.015) 24px),
+    linear-gradient(180deg, #3a2008 0%, #2c1806 30%, #221205 60%, #1a0d03 100%);
+  border-top: 1px solid rgba(212,175,106,0.55);
+  border-bottom: 1px solid rgba(0,0,0,0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(212,175,106,0.2),
+    0 4px 10px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 6px 6px;
+  border-radius: 0 0 3px 3px;
+}
+
+/* shadow drop below the shelf */
+.nameplate-shelf-shadow {
+  width: calc(100% - 12px);
+  height: 6px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3), transparent);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ════════════════════════════════════════════
+   BADGE ALCOVE
+════════════════════════════════════════════ */
+.alcove {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.alcove[hidden] { display: none !important; }
+
+/* Badge resting zone — subtle oval shadow beneath badge on shelf */
+.badge-stand {
+  position: relative;
+  width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  padding-bottom: 6px;
+}
+
+/* ── BADGE SHAPES ── */
+.badge {
+  position: relative; z-index: 2;
+  transition: filter 0.4s ease, transform 0.4s ease;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,0.8)) drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+.shadowbox:hover .badge {
+  filter:
+    drop-shadow(0 0 10px rgba(0,229,204,0.6))
+    drop-shadow(0 0 28px rgba(224,64,251,0.35))
+    drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+  transform: translateY(-5px) scale(1.06);
+}
+
+.badge-round  { width: 76px; height: 76px; border-radius: 50%; overflow: hidden; }
+.badge-shield { width: 68px; height: 78px; clip-path: polygon(50% 0%,100% 15%,100% 68%,50% 100%,0% 68%,0% 15%); overflow: hidden; }
+.badge-hex    { width: 78px; height: 78px; clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); overflow: hidden; }
+.badge svg    { width: 100%; height: 100%; display: block; }
+.badge img    { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── NAMEPLATE — physically bolted into the shelf fascia ──
+   Lives inside .nameplate-shelf. Looks like a brass plate set into
+   a routed pocket in the wood, all four corners fastened.       */
+
+.nameplate {
+  /* aged brass plate — warm golden-brown mid-tone, like the reference photo */
+  background: var(--tex-bronze),
+    linear-gradient(160deg,
+      #7a5c1e 0%,
+      #6b4f18 20%,
+      #5a3f10 50%,
+      #664a14 75%,
+      #7a5c1e 100%
+    );
+  /* thin dark rim to separate plate from wood */
+  border: 1px solid rgba(40,28,5,0.8);
+  border-top-color: rgba(160,120,45,0.5);
+  border-bottom-color: rgba(20,14,3,0.95);
+  border-radius: 2px;
+  padding: 0.28rem 0.45rem 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  /* cast recess — plate sunk into wood pocket */
+  box-shadow:
+    inset 2px 0  5px rgba(0,0,0,0.6),
+    inset -2px 0 5px rgba(0,0,0,0.6),
+    inset 0  3px 6px rgba(0,0,0,0.7),
+    inset 0 -1px 3px rgba(0,0,0,0.45),
+    /* warm bronze catch-light on top lip */
+    0 -1px 0 rgba(160,120,40,0.35);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+
+.nameplate-title {
+  display: block;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.58rem; font-weight: 600;
+  /* off-white ivory — raised/engraved text stands out from golden plate */
+  color: #f0e0b0;
+  letter-spacing: 0.04em; line-height: 1.25;
+  margin-bottom: 0.1rem;
+  /* cast/engraved text — deep shadow + faint highlight = recessed letters */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.98), 0 -1px 0 rgba(200,160,60,0.2), 1px 0 0 rgba(0,0,0,0.5);
+}
+.nameplate-date {
+  display: block;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  /* darker warm brown — recessed date reads as secondary info */
+  color: #c8a050;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.9);
+}
+.nameplate-status { display: none; }
+
+/* empty state */
+.empty-state {
+  display: none; text-align: center;
+  padding: 3rem 1rem;
+  color: var(--fg-muted); font-style: italic; font-size: 0.82rem;
+  width: 100%;
+}
+
+/* ════════════════════════════════════════════
+   CHAT PREVIEW
+════════════════════════════════════════════ */
+.chat-demo { margin-top: 3.5rem; }
+.chat-demo-label {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;
+}
+.chat-demo-label::before, .chat-demo-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,145,74,0.2), transparent);
+}
+.chat-demo-label span {
+  font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.2em;
+  color: var(--brass-dim); white-space: nowrap;
+}
+.chat-window {
+  background: linear-gradient(180deg, #0e0b1e 0%, #0a0815 100%);
+  border: 1px solid rgba(120,70,200,0.2); border-radius: 10px;
+  padding: 1.25rem 1.25rem 1rem; max-width: 460px; margin: 0 auto;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.chat-bubble { font-size: 0.8rem; color: #b8a8d0; line-height: 1.65; margin-bottom: 0.75rem; }
+.chat-cert-card {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.55rem 0.85rem; margin-top: 0.4rem;
+  background: rgba(10,8,20,0.7); border: 1px solid rgba(120,70,200,0.18);
+  border-radius: 8px; text-decoration: none;
+  transition: all 0.25s ease; cursor: pointer;
+}
+.chat-cert-card:hover { border-color: var(--aqua-border); background: rgba(0,229,204,0.04); transform: translateX(3px); }
+.chat-badge-sm {
+  flex-shrink: 0; width: 40px; height: 40px; overflow: hidden;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); transition: filter 0.25s ease;
+}
+.chat-badge-sm.round  { border-radius: 50%; }
+.chat-badge-sm.shield { clip-path: polygon(50% 0%,100% 15%,100% 68%,50% 100%,0% 68%,0% 15%); }
+.chat-badge-sm.hex    { clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); }
+.chat-cert-card:hover .chat-badge-sm { filter: drop-shadow(0 0 8px rgba(0,229,204,0.45)); }
+.chat-badge-sm svg { width: 100%; height: 100%; display: block; }
+.chat-cert-info { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.chat-cert-name { font-size: 0.76rem; font-weight: 600; color: #c8b8e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-cert-issuer { font-size: 0.64rem; color: var(--fg-muted); }
+.chat-cert-date { font-family: var(--font-mono); font-size: 0.57rem; color: var(--aqua-dim); }
+.chat-cert-arrow { margin-left: auto; flex-shrink: 0; color: var(--fg-muted); font-size: 0.75rem; transition: all 0.2s ease; }
+.chat-cert-card:hover .chat-cert-arrow { color: var(--aqua); transform: translateX(3px); }
+
+@media (max-width: 640px) {
+  .shadowbox { width: 110px; }
+  .badge-round, .badge-hex { width: 60px; height: 60px; }
+  .badge-shield { width: 54px; height: 62px; }
+}
+/* ── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(5,4,15,0.85);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-backdrop.open {
+  opacity: 1; pointer-events: auto;
+}
+.modal {
+  background:
+    linear-gradient(160deg, #1a1028 0%, #100c1e 60%, #0d0a18 100%);
+  border: 1px solid rgba(184,145,74,0.3);
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.8),
+    0 8px 40px rgba(0,0,0,0.7),
+    0 0 60px rgba(0,229,204,0.06),
+    inset 0 1px 0 rgba(184,145,74,0.15);
+  max-width: 420px; width: 100%;
+  padding: 1.75rem;
+  position: relative;
+  transform: translateY(12px);
+  transition: transform 0.25s ease;
+}
+.modal-backdrop.open .modal {
+  transform: translateY(0);
+}
+.modal-close {
+  position: absolute; top: 0.85rem; right: 0.9rem;
+  background: none; border: none; cursor: pointer;
+  color: var(--fg-muted); font-size: 1.1rem; line-height: 1;
+  padding: 0.2rem 0.4rem; border-radius: 3px;
+  transition: color var(--ease);
+}
+.modal-close:hover { color: var(--brass-hi); }
+.modal-badge-row {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+.modal-badge-img {
+  width: 72px; height: 72px; object-fit: cover; flex-shrink: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(0,229,204,0.2), 0 2px 8px rgba(0,0,0,0.6);
+}
+.modal-badge-img.shape-shield {
+  border-radius: 0;
+  clip-path: polygon(50% 0%,100% 15%,100% 68%,50% 100%,0% 68%,0% 15%);
+}
+.modal-badge-img.shape-hex {
+  border-radius: 0;
+  clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);
+}
+.modal-title {
+  font-family: var(--font-body); font-size: 0.95rem; font-weight: 600;
+  color: var(--brass-hi); margin: 0 0 0.25rem; line-height: 1.3;
+}
+.modal-meta {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--fg-muted); letter-spacing: 0.08em;
+}
+.modal-meta span + span::before { content: ' · '; }
+.modal-divider {
+  height: 1px; margin: 1rem 0;
+  background: linear-gradient(90deg, transparent, rgba(184,145,74,0.25), transparent);
+}
+.modal-description {
+  font-size: 0.78rem; color: var(--fg); line-height: 1.6;
+  margin: 0 0 0.9rem;
+}
+.modal-skills {
+  display: flex; flex-wrap: wrap; gap: 0.35rem;
+  margin-bottom: 1.1rem;
+}
+.modal-skill-tag {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  background: rgba(0,229,204,0.07); border: 1px solid rgba(0,229,204,0.2);
+  color: var(--aqua-dim);
+}
+.modal-verify-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: rgba(184,145,74,0.1); border: 1px solid rgba(184,145,74,0.35);
+  color: var(--brass-hi); border-radius: 4px;
+  font-family: var(--font-body); font-size: 0.7rem;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.5rem 1rem; text-decoration: none;
+  transition: all var(--ease);
+}
+.modal-verify-btn:hover {
+  background: rgba(184,145,74,0.18); border-color: var(--brass);
+  box-shadow: 0 0 16px rgba(184,145,74,0.2);
+}
+.modal-verify-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<main class="emblems-page">
+
+  <header class="emblems-header">
+    <h1>Emblems</h1>
+    <p>Certifications &amp; Credentials</p>
+  </header>
+
+  <div class="brass-rule">
+    <div class="brass-diamond"></div>
+    <div class="brass-diamond"></div>
+    <div class="brass-diamond"></div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Status</span>
+      <button class="filter-btn active" data-filter="status" data-value="all">All</button>
+      <button class="filter-btn" data-filter="status" data-value="earned">Earned</button>
+      <button class="filter-btn" data-filter="status" data-value="in-progress">In Progress</button>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Domain</span>
+      <button class="filter-btn active" data-filter="topic" data-value="all">All</button>
+      {% assign topics = site.certifications | map: "topic" | uniq | sort %}
+      {% for topic in topics %}
+      <button class="filter-btn" data-filter="topic" data-value="{{ topic }}">{{ topic | capitalize }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ═══════════ THE CASE ═══════════ -->
+  <div class="case-outer">
+    <!-- top name plate -->
+    <div class="case-top-cap">
+      <div class="plate-line"></div>
+      <span class="plate-ornament">✦ &nbsp; Wynter's Wonderland &nbsp; ✦</span>
+      <div class="plate-line"></div>
+    </div>
+
+    <!-- glass interior with shadowbox grid -->
+    <div class="case-glass" id="caseGlass">
+      <div class="glass-pane"></div>
+
+      <div class="shadowbox-grid" id="caseGrid">
+
+        {% assign certs = site.certifications | sort: "date" | reverse %}
+        {% for cert in certs %}
+        <div class="shadowbox" data-topic="{{ cert.topic }}" data-status="{{ cert.status }}" data-id="{{ cert.slug }}" data-title="{{ cert.title }}" data-date="{{ cert.date | date: '%b %Y' }}" data-issuer="{{ cert.issuer }}" data-description="{{ cert.description }}" data-skills="{{ cert.skills | join: '|' }}" data-cert-url="{{ cert.cert_url }}" data-status-label="{% if cert.status == 'earned' %}{{ cert.date | date: '%b %Y' }}{% else %}In Progress{% endif %}" role="button" tabindex="0" aria-label="View details for {{ cert.title }}">
+          <div class="shadowbox-recess">
+            <div class="badge-spotlight"></div>
+            <div class="badge-stand">
+              <div class="badge badge-{{ cert.shape }}">
+                <img src="{{ cert.badge_image }}" alt="{{ cert.title }} badge">
+              </div>
+            </div>
+          </div>
+          <div class="nameplate-shelf">
+            <div class="nameplate">
+              <span class="nameplate-title">{{ cert.title }}</span>
+              <span class="nameplate-date">{% if cert.status == 'earned' %}{{ cert.date | date: "%b %Y" }}{% else %}In Progress{% endif %}</span>
+            </div>
+          </div>
+          <div class="nameplate-shelf-shadow"></div>
+        </div>
+        {% endfor %}
+
+        <p class="empty-state" id="emptyState">No emblems match those filters.</p>
+      </div><!-- /.shadowbox-grid -->
+
+    </div><!-- /.case-glass -->
+
+    <div class="case-bottom-cap"></div>
+  </div><!-- /.case-outer -->
+
+</main>
+
+<!-- Detail modal -->
+<div class="modal-backdrop" id="certModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-badge-row">
+      <img class="modal-badge-img" id="modalBadgeImg" src="" alt="">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-meta">
+          <span id="modalIssuer"></span>
+          <span id="modalDate"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-divider"></div>
+    <p class="modal-description" id="modalDescription"></p>
+    <div class="modal-skills" id="modalSkills"></div>
+    <a class="modal-verify-btn" id="modalVerifyBtn" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V7M8 1h3m0 0v3m0-3L5 7"/>
+      </svg>
+      View Certificate
+    </a>
+  </div>
+</div>
+
+{{ content }}
+
+<script>
+(function () {
+  const allBoxes = Array.from(document.querySelectorAll('.shadowbox'));
+  const empty    = document.getElementById('emptyState');
+  const modal    = document.getElementById('certModal');
+  const modalClose = document.getElementById('modalClose');
+  let activeStatus = 'all', activeTopic = 'all';
+
+  /* ── FILTERS ── */
+  function applyFilters() {
+    let visible = 0;
+    allBoxes.forEach(el => {
+      const sm = activeStatus === 'all' || el.dataset.status === activeStatus;
+      const tm = activeTopic  === 'all' || el.dataset.topic  === activeTopic;
+      const show = sm && tm;
+      el.hidden = !show;
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.filter;
+      document.querySelectorAll(`.filter-btn[data-filter="${g}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (g === 'status') activeStatus = btn.dataset.value;
+      if (g === 'topic')  activeTopic  = btn.dataset.value;
+      applyFilters();
+    });
+  });
+
+  window.emblemFilter = ({ status, topic }) => {
+    if (status) {
+      document.querySelectorAll('.filter-btn[data-filter="status"]').forEach(b => b.classList.remove('active'));
+      const b = document.querySelector(`.filter-btn[data-filter="status"][data-value="${status}"]`);
+      if (b) { b.classList.add('active'); activeStatus = status; }
+    }
+    if (topic) {
+      document.querySelectorAll('.filter-btn[data-filter="topic"]').forEach(b => b.classList.remove('active'));
+      const b = document.querySelector(`.filter-btn[data-filter="topic"][data-value="${topic}"]`);
+      if (b) { b.classList.add('active'); activeTopic = topic; }
+    }
+    applyFilters();
+  };
+
+  /* ── MODAL ── */
+  function openModal(box) {
+    const d = box.dataset;
+    // badge image — grab src from the img inside this shadowbox
+    const imgEl = box.querySelector('.badge img');
+    const shape = (box.querySelector('.badge').className.match(/badge-(\w+)/) || [])[1] || 'round';
+    document.getElementById('modalBadgeImg').src = imgEl ? imgEl.src : '';
+    document.getElementById('modalBadgeImg').alt = d.title + ' badge';
+    document.getElementById('modalBadgeImg').className = 'modal-badge-img shape-' + shape;
+    document.getElementById('modalTitle').textContent = d.title || '';
+    document.getElementById('modalIssuer').textContent = d.issuer || '';
+    document.getElementById('modalDate').textContent = d.statusLabel || '';
+    document.getElementById('modalDescription').textContent = d.description || '';
+    // skills
+    const skillsEl = document.getElementById('modalSkills');
+    skillsEl.innerHTML = '';
+    if (d.skills) {
+      d.skills.split('|').filter(Boolean).forEach(s => {
+        const tag = document.createElement('span');
+        tag.className = 'modal-skill-tag';
+        tag.textContent = s.trim();
+        skillsEl.appendChild(tag);
+      });
+    }
+    // verify button
+    const verifyBtn = document.getElementById('modalVerifyBtn');
+    if (d.certUrl && d.certUrl !== 'nil' && d.certUrl !== '') {
+      verifyBtn.href = d.certUrl;
+      verifyBtn.style.display = 'inline-flex';
+    } else {
+      verifyBtn.style.display = 'none';
+    }
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  allBoxes.forEach(box => {
+    box.addEventListener('click', () => openModal(box));
+    box.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(box); } });
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+</script>
+
+</body>
+</html>
