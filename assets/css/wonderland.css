@@ -706,13 +706,13 @@ tr:last-child td { border-bottom: none; }
 }
 
 .chat-trigger-icon {
-  color: var(--fg-secondary);
+  color: var(--fg-secondary, rgba(180,165,210,0.7));
   transition: color var(--ease);
   flex-shrink: 0;
 }
 
 .floating-chat-trigger:hover .chat-trigger-icon {
-  color: var(--aqua);
+  color: var(--aqua, #00e5cc);
 }
 
 .floating-chat-trigger:hover {
