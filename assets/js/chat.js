@@ -2,7 +2,7 @@
    Wynter's Wonderland — Chat + UI JavaScript
    ═══════════════════════════════════════════════════════════════ */
 
-const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev';
+const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev/chat';
 
 /* ── STAR FIELD ─────────────────────────────────────────────── */
 (function initStars() {
