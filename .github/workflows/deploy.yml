@@ -28,7 +28,13 @@ jobs:
           bundler-cache: true
 
       - name: Build Jekyll
-        run: bundle exec jekyll build
+        - uses: actions/setup-node@v4
+            with:
+              node-version: '20'
+          - run: |
+              bundle exec jekyll build
+              node scripts/build-context.js
+              cp context.json _site/context.json
         env:
           JEKYLL_ENV: production
 

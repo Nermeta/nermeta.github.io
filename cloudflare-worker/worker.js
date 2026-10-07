@@ -195,25 +195,29 @@ export default {
     // Build system prompt (fetches context.json)
     const systemPrompt = await buildSystemPrompt(env);
 
-    // Call Anthropic API
-    const anthropicPayload = {
-      model:      'claude-sonnet-4-6',
+       // Call Cloudflare Workers AI
+    const cfPayload = {
+      model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages,
+      ],
       max_tokens: 1024,
-      system:     systemPrompt,
-      messages:   messages,
     };
 
-    let anthropicRes;
+    let cfRes;
     try {
-      anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type':      'application/json',
-          'x-api-key':         env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify(anthropicPayload),
-      });
+      cfRes = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/ai/v1/chat/completions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${env.CF_API_TOKEN}`,
+          },
+          body: JSON.stringify(cfPayload),
+        }
+      );
     } catch (err) {
       return new Response(
         JSON.stringify({
@@ -228,9 +232,9 @@ export default {
       );
     }
 
-    if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
-      console.error('Anthropic error:', anthropicRes.status, errText);
+    if (!cfRes.ok) {
+      const errText = await cfRes.text();
+      console.error('CF AI error:', cfRes.status, errText);
       return new Response(
         JSON.stringify({
           message: "Something went wrong on my end. Please try again.",
@@ -244,23 +248,23 @@ export default {
       );
     }
 
-    // Parse Claude's response and validate/normalize the JSON envelope
-    const data       = await anthropicRes.json();
-  let rawContent   = data.content?.[0]?.text || '';
+    // Parse response — Cloudflare AI uses OpenAI-compatible format
+  
+    const data = await cfRes.json();
+    let rawContent = data.choices?.[0]?.message?.content || '';
 
-  // Strip markdown code block wrapping if Claude added it
-  rawContent = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/,'').trim();
-
-  let envelope;
-  try {
-    // Claude should return a JSON object — parse it
-    envelope = JSON.parse(rawContent);
-  } catch {
-      // Fallback: Claude returned plain text, wrap it
+    // Parse the JSON envelope the model should have returned
+    let envelope;
+    try {
+      // Strip markdown code fences if the model wrapped its response
+      const cleaned = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+      envelope = JSON.parse(cleaned);
+    } catch {
+      // Model didn't return valid JSON — wrap plain text in the envelope shape
       envelope = {
-        message: rawContent,
-        cards:   [],
-        action:  { type: null, params: {} },
+        message: rawContent || "I couldn't form a response. Please try again.",
+        cards: [],
+        action: { type: null, params: {} },
       };
     }
 
