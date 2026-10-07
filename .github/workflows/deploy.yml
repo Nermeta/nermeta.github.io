@@ -27,14 +27,16 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
 
-      - name: Build Jekyll
-        - uses: actions/setup-node@v4
-            with:
-              node-version: '20'
-          - run: |
-              bundle exec jekyll build
-              node scripts/build-context.js
-              cp context.json _site/context.json
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Jekyll and generate context
+        run: |
+          bundle exec jekyll build
+          node scripts/build-context.js
+          cp context.json _site/context.json
         env:
           JEKYLL_ENV: production
 
