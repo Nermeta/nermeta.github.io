@@ -1,0 +1,166 @@
+{
+  "generated_at": "2026-10-07T18:21:44.767Z",
+  "entries": [
+    {
+      "type": "post",
+      "title": "Welcome to Jekyll!",
+      "url": "/posts/welcome-to-jekyll/",
+      "date": "2026-07-20 18:41:41 -0600",
+      "topic": null,
+      "tags": [],
+      "audience": [],
+      "summary": "You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `je…"
+    },
+    {
+      "type": "certification",
+      "title": "Google Cybersecurity Certificate",
+      "url": "/certifications/10-06-2026-example-cert/",
+      "date": "2026-03-15",
+      "topic": "cybersecurity",
+      "tags": [
+        "google",
+        "cybersecurity",
+        "coursera",
+        "network-security",
+        "python",
+        "siem",
+        "linux"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Completed Google's professional cybersecurity certificate — 8 courses covering network security, Linux, Python scripting, and SIEM tools.",
+      "issuer": "Google / Coursera",
+      "cert_date": "2026-03-15",
+      "credential_url": "https://coursera.org/verify/professional-cert/PLACEHOLDER",
+      "expiry": null
+    },
+    {
+      "type": "writeup",
+      "title": "HTB: Escape — AD Certificate Services Abuse",
+      "url": "/writeups/10-06-2026-example-writeup/",
+      "date": "2026-03-10",
+      "topic": "cybersecurity",
+      "tags": [
+        "AD-CS",
+        "ESC1",
+        "kerberos",
+        "privilege-escalation",
+        "windows",
+        "silver-ticket"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Walkthrough of HTB Escape — exploiting a misconfigured AD Certificate Services template to escalate from low-privileged user to Domain Admin via ESC1.",
+      "platform": "HackTheBox",
+      "category": "active-directory",
+      "difficulty": "medium",
+      "tools": [
+        "nmap",
+        "bloodhound",
+        "certipy",
+        "evil-winrm",
+        "impacket"
+      ],
+      "outcome": "completed"
+    },
+    {
+      "type": "tutorial",
+      "title": "Automating Active Directory Reports with PowerShell",
+      "url": "/tutorials/10-06-2026-example-tutorial/",
+      "date": "2026-03-01",
+      "topic": "sysadmin",
+      "tags": [
+        "powershell",
+        "active-directory",
+        "automation",
+        "scripting"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "A step-by-step guide to writing a PowerShell script that pulls Active Directory user data and exports a formatted CSV report — no third-party tools required.",
+      "difficulty": "intermediate",
+      "tech_stack": [
+        "powershell",
+        "windows-server",
+        "active-directory"
+      ],
+      "estimated_read": 12
+    },
+    {
+      "type": "deep-dive",
+      "title": "How Active Directory Actually Works",
+      "url": "/deep-dives/10-06-2026-example-deep-dive/",
+      "date": "2026-02-20",
+      "topic": "cybersecurity",
+      "tags": [
+        "active-directory",
+        "windows",
+        "identity",
+        "sysadmin",
+        "ldap",
+        "kerberos"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "A thorough breakdown of Active Directory's core concepts — forests, domains, trusts, authentication flow, and where it commonly gets exploited.",
+      "difficulty": "intermediate",
+      "tech_stack": [
+        "windows-server",
+        "powershell",
+        "ldap",
+        "kerberos"
+      ],
+      "estimated_read": 18
+    },
+    {
+      "type": "book-review",
+      "title": "Atomic Habits — James Clear",
+      "url": "/book-reviews/10-06-26-example/",
+      "date": "2026-01-28",
+      "topic": "productivity",
+      "tags": [
+        "habits",
+        "systems",
+        "behavior-change",
+        "productivity"
+      ],
+      "audience": [
+        "general",
+        "tech"
+      ],
+      "summary": "A practical framework for building good habits and breaking bad ones through small, compounding changes. One of the most actionable books I've read.",
+      "author": "James Clear",
+      "isbn": "9780735211292",
+      "genre": [
+        "nonfiction",
+        "productivity",
+        "self-development"
+      ],
+      "rating": 5,
+      "finished_date": "2026-01-28"
+    },
+    {
+      "type": "learning-log",
+      "title": "CompTIA Security+ Study Log",
+      "url": "/learning-logs/10-06-2026-example-learning-log/",
+      "date": "2026-01-10",
+      "topic": "cybersecurity",
+      "tags": [
+        "comptia",
+        "security-plus",
+        "certifications",
+        "network-security"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "An ongoing log of my Security+ study sessions — what I'm covering, where I'm getting stuck, and what's clicking.",
+      "subject": "CompTIA Security+",
+      "status": "in-progress"
+    }
+  ]
+}
