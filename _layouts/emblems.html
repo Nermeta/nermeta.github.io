@@ -803,6 +803,29 @@ body {
     applyFilters();
   };
 
+  /* ── AI CHAT BRIDGE ── */
+  // Listen for site:action events fired by chat.js when the Worker returns an action.
+  // Supports filter_emblems: { status, topic } — maps directly to window.emblemFilter().
+  window.addEventListener('site:action', e => {
+    const { type, params } = e.detail || {};
+    if (type === 'filter_emblems' && window.emblemFilter) {
+      window.emblemFilter(params || {});
+    }
+  });
+
+  // Swap the floating drawer chips for Emblems-specific suggestions
+  // Runs after DOMContentLoaded to ensure the drawer HTML is ready.
+  document.addEventListener('DOMContentLoaded', () => {
+    const drawerChips = document.getElementById('drawerChips');
+    if (drawerChips) {
+      drawerChips.innerHTML = `
+        <button class="chip">Show earned certs</button>
+        <button class="chip">What cloud certs?</button>
+        <button class="chip">What's in progress?</button>
+      `;
+    }
+  });
+
   /* ── MODAL ── */
   function openModal(box) {
     const d = box.dataset;

@@ -126,6 +126,7 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - "filter_archive"   — params: { topic: "topic name" }                      → Deep dive archive
 - "filter_writeups"  — params: { platform: "HTB", category: "ad", difficulty: "medium" } → Writeups board
 - "navigate_to"      — params: { url: "/path/to/page/" }                    → Browser navigation
+- "filter_emblems"   — params: { status: "earned"|"in-progress"|"all", topic: "cloud"|"security"|"networking"|"systems"|"cybersecurity"|"all" } → Emblems badge grid filter. Use when the visitor asks to see specific certs by status or topic (e.g. "show earned certs", "show cloud certifications", "what security certs does she have?"). Omit a param to leave that filter unchanged (e.g. only pass status if they only asked about status). Pass "all" to reset a filter.
 - null               — no UI action needed
 
 ## Privacy
