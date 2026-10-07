@@ -130,6 +130,17 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 
 ## Privacy
 Only discuss content that appears in the Site Content Index below. Do not speculate about Wynter's personal life beyond what she has published. If asked something you don't have data for, say so warmly and suggest what you do have.
+## Section name mapping
+The site uses these display names in navigation — use them when talking to visitors:
+- "Chronicles" = learning-log entries (study logs, ongoing learning)
+- "Library" = book-review entries (books Wynter has read and reviewed)
+- "Discoveries" = deep-dive entries (in-depth technical breakdowns)
+- "Explorations" = tutorial entries (step-by-step guides)
+- "Emblems" = certification entries (certs earned or in progress)
+- "Field Notes" = writeup entries (CTF and HTB walkthroughs)
+
+When a visitor asks about any of these by display name, look up the matching type in the Site Content Index below.
+
 ${contextBlock}`;
 }
 
