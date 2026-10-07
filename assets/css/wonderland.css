@@ -705,6 +705,16 @@ tr:last-child td { border-bottom: none; }
   height: 44px;
 }
 
+.chat-trigger-icon {
+  color: var(--fg-secondary);
+  transition: color var(--ease);
+  flex-shrink: 0;
+}
+
+.floating-chat-trigger:hover .chat-trigger-icon {
+  color: var(--aqua);
+}
+
 .floating-chat-trigger:hover {
   box-shadow:
     0 0 28px rgba(0,229,204,0.28),

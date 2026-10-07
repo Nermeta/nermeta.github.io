@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/wonderland.css' | relative_url }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
 
   <style>
@@ -41,7 +42,7 @@ body {
   font-family: var(--font-body);
   margin: 0;
   padding-inline: 1rem;
-  padding-block: 3rem 5rem;
+  padding-block: calc(64px + 2.5rem) 5rem; /* 64px = nav height */
 }
 
 .emblems-page { max-width: 900px; margin: 0 auto; }
@@ -642,6 +643,10 @@ body {
 </head>
 <body>
 
+<canvas id="stars" aria-hidden="true"></canvas>
+
+{% include nav.html %}
+
 <main class="emblems-page">
 
   <header class="emblems-header">
@@ -845,6 +850,8 @@ body {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
+
+<script src="{{ '/assets/js/chat.js' | relative_url }}" defer></script>
 
 </body>
 </html>
