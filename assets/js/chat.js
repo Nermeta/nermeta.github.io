@@ -51,61 +51,6 @@ const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev';
   draw();
 })();
 
-/* ── MINI CAT CANVAS (floating button) ──────────────────────── */
-(function drawMiniCat() {
-  const canvas = document.getElementById('miniCatCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = 88, H = 88, cx = 44, cy = 42;
-
-  // Eyes
-  function eyeGlow(ex, ey) {
-    const g = ctx.createRadialGradient(ex, ey, 1, ex, ey, 10);
-    g.addColorStop(0, 'rgba(0,229,204,0.45)');
-    g.addColorStop(1, 'transparent');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(ex, ey, 10, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function eye(ex, ey) {
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 5, 4, 0, 0, Math.PI * 2);
-    const ig = ctx.createRadialGradient(ex, ey, 0.5, ex, ey, 5);
-    ig.addColorStop(0, '#00ffe8');
-    ig.addColorStop(1, '#006055');
-    ctx.fillStyle = ig;
-    ctx.fill();
-    // slit pupil
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 1.3, 3.2, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#020210';
-    ctx.fill();
-    // shine
-    ctx.beginPath();
-    ctx.ellipse(ex - 1.4, ey - 1.1, 0.9, 0.65, -0.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.65)';
-    ctx.fill();
-  }
-
-  eyeGlow(cx - 12, cy - 2);
-  eyeGlow(cx + 12, cy - 2);
-  eye(cx - 12, cy - 2);
-  eye(cx + 12, cy - 2);
-
-  // Grin
-  ctx.beginPath();
-  ctx.moveTo(cx - 17, cy + 11);
-  ctx.bezierCurveTo(cx - 8, cy + 21, cx + 8, cy + 21, cx + 17, cy + 11);
-  ctx.bezierCurveTo(cx + 8, cy + 16, cx - 8, cy + 16, cx - 17, cy + 11);
-  ctx.closePath();
-  const mg = ctx.createLinearGradient(cx - 17, 0, cx + 17, 0);
-  mg.addColorStop(0, 'rgba(224,64,251,0.92)');
-  mg.addColorStop(1, 'rgba(0,229,204,0.92)');
-  ctx.fillStyle = mg;
-  ctx.fill();
-})();
 
 /* ── NAVIGATION TOGGLE ──────────────────────────────────────── */
 (function initNav() {
