@@ -4,9 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/wonderland.css' | relative_url }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
 
   <style>
+/* Override wonderland.css body styles so emblems keeps its own look */
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%) !important;
+  padding-inline: 1rem !important;
+  padding-block: calc(64px + 2.5rem) 5rem !important;
+}
+
 :root {
   color-scheme: dark;
 
