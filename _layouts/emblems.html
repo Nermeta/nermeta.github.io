@@ -803,6 +803,20 @@ body {
     applyFilters();
   };
 
+  /* ── URL FILTER PARAMS ── */
+  // Applied when navigating from the drawer chat with filter params
+  // e.g. /certifications/?status=earned or /certifications/?topic=cloud
+  (function applyUrlFilters() {
+    const p = new URLSearchParams(window.location.search);
+    const status = p.get('status');
+    const topic  = p.get('topic');
+    if (status || topic) {
+      window.emblemFilter({ status: status || undefined, topic: topic || undefined });
+      // Clean up URL without reload
+      history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+
   /* ── AI CHAT BRIDGE ── */
   // Listen for site:action events fired by chat.js when the Worker returns an action.
   // Supports filter_emblems: { status, topic } — maps directly to window.emblemFilter().

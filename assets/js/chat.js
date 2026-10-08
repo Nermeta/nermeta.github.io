@@ -126,7 +126,7 @@ function appendTyping(container) {
 /**
  * appendAiResponse — adds the AI message + optional result cards
  */
-function appendAiResponse(container, data) {
+function appendAiResponse(container, data, source) {
   const div = document.createElement('div');
   div.className = 'msg-ai';
 
@@ -160,15 +160,9 @@ function appendAiResponse(container, data) {
   // Fire site action event if present
   if (data.action && data.action.type) {
     const { type, params = {} } = data.action;
-
-    if (type === 'navigate_to' && params.url) {
-      // Short delay so the user sees the reply before navigating
-      setTimeout(() => { window.location.href = params.url; }, 1200);
-    } else {
-      window.dispatchEvent(new CustomEvent('site:action', {
-        detail: { type, params }
-      }));
-    }
+    window.dispatchEvent(new CustomEvent('site:action', {
+      detail: { type, params, source }
+    }));
   }
 }
 
@@ -218,7 +212,7 @@ function formatMessage(text) {
 /**
  * wireChat — attaches send logic to a form + messages container pair
  */
-function wireChat(formId, inputId, messagesId, chipsId) {
+function wireChat(formId, inputId, messagesId, chipsId, source) {
   const form     = document.getElementById(formId);
   const input    = document.getElementById(inputId);
   const messages = document.getElementById(messagesId);
@@ -265,7 +259,7 @@ function wireChat(formId, inputId, messagesId, chipsId) {
     try {
       const data = await sendMessage(text);
       typing.remove();
-      appendAiResponse(messages, data);
+      appendAiResponse(messages, data, source);
     } catch (err) {
       typing.remove();
       appendErrorBubble(messages, err);
@@ -274,7 +268,7 @@ function wireChat(formId, inputId, messagesId, chipsId) {
 }
 
 /* ── WIRE HOMEPAGE CHAT ─────────────────────────────────────── */
-wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips');
+wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips', 'home');
 
 /* ── FLOATING DRAWER ─────────────────────────────────────────── */
 (function initDrawer() {
@@ -290,7 +284,7 @@ wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips');
     drawer.hidden = isOpen;
     if (!isOpen) {
       // Wire drawer chat on first open
-      wireChat('drawerForm', 'drawerInput', 'drawerMessages', 'drawerChips');
+      wireChat('drawerForm', 'drawerInput', 'drawerMessages', 'drawerChips', 'drawer');
       document.getElementById('drawerInput')?.focus();
     }
   });
@@ -302,3 +296,18 @@ wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips');
     });
   }
 })();
+
+/* ── SITE ACTION HANDLER ─────────────────────────────────────── */
+// Handles navigate_to from the drawer: builds URL with filter params
+// and navigates automatically. The home chat ignores navigate_to here
+// (it renders cards/links inline instead).
+window.addEventListener('site:action', e => {
+  const { type, params = {}, source } = e.detail || {};
+
+  if (type === 'navigate_to' && source === 'drawer' && params.url) {
+    const url = new URL(params.url, window.location.origin);
+    if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
+    if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
+    setTimeout(() => { window.location.href = url.toString(); }, 1200);
+  }
+});
