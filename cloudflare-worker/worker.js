@@ -81,15 +81,24 @@ async function buildSystemPrompt(env) {
         if (e.summary)  parts.push(`  Summary: ${e.summary}`);
         if (e.topic)    parts.push(`  Topic: ${e.topic}`);
         if (e.tags?.length) parts.push(`  Tags: ${e.tags.join(', ')}`);
-        if (e.audience?.length) parts.push(`  Audience: ${e.audience.join(', ')}`);
-        // Type-specific
-        if (e.subject)   parts.push(`  Subject: ${e.subject} (${e.status || 'unknown status'})`);
-        if (e.issuer)    parts.push(`  Issuer: ${e.issuer}, earned: ${e.cert_date}`);
-        if (e.author)    parts.push(`  Author: ${e.author}, rating: ${e.rating}/5`);
-        if (e.badge_image && e.badge_shape === 'book') parts.push(`  Cover: ${e.badge_image}`);
-        if (e.platform)  parts.push(`  Platform: ${e.platform}, category: ${e.category}, difficulty: ${e.difficulty}, outcome: ${e.outcome}`);
-        if (e.tools?.length) parts.push(`  Tools: ${e.tools.join(', ')}`);
-        if (e.tech_stack?.length) parts.push(`  Tech stack: ${e.tech_stack.join(', ')}`);
+        // Type-specific — only include fields relevant to type to save tokens
+        if (e.type === 'certification') {
+          if (e.subject) parts.push(`  Subject: ${e.subject} (${e.status || 'unknown'})`);
+          if (e.issuer)  parts.push(`  Issuer: ${e.issuer}, earned: ${e.cert_date}`);
+        }
+        if (e.type === 'book-review') {
+          if (e.author) parts.push(`  Author: ${e.author}, rating: ${e.rating}/5`);
+          if (e.badge_image && e.badge_shape === 'book') parts.push(`  Cover: ${e.badge_image}`);
+        }
+        if (e.type === 'writeup') {
+          if (e.platform) parts.push(`  Platform: ${e.platform}, category: ${e.category}, difficulty: ${e.difficulty}`);
+        }
+        if (e.type === 'tutorial' || e.type === 'deep-dive') {
+          if (e.tech_stack?.length) parts.push(`  Tech: ${e.tech_stack.join(', ')}`);
+        }
+        if (e.type === 'learning-log') {
+          if (e.domain)  parts.push(`  Domain: ${e.domain}, status: ${e.status}`);
+        }
         return parts.join('\n');
       });
       contextBlock = entries.length
@@ -131,7 +140,7 @@ For cert questions: populate cards with the relevant certifications from the ind
 For book questions: populate cards with type "book-review". Always include the "badge_image" field from the index entry when available — it is used to display the cover art. Do not include an "isbn" field.
 
 Action types you can trigger (set "type" to one of these, or null if no UI action needed):
-- "highlight_nodes"  — params: { subjects: ["subject name", ...] }         → Skill tree
+- "filter_tree"      — params: { status: "completed"|"in-progress"|"not-started"|"all", domain?: "domain name" } → Chronicles skill tree filter. Use ONLY when visitor is already on /learning-logs/. Optionally pass the domain name (e.g. "scripting") to switch to that canvas.
 - "filter_shelf"     — params: { genres: ["genre", ...] }                   → Bookshelf
 - "focus_cert"       — params: { title: "cert title" }                      → Display case
 - "filter_workbench" — params: { tech_stack: ["tech", ...] }                → Tutorials workbench
@@ -153,6 +162,13 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - If the visitor is on /book-reviews/ and asks a general question about the books (not a filter request): reply normally with a short message and cards, no action.
 - If the visitor is NOT on /book-reviews/ and asks about books: use "navigate_to" with url "/book-reviews/" and include genre/rating params if relevant (e.g. "fiction books" → { url: "/book-reviews/", genre: "fiction" }, "5-star books" → { url: "/book-reviews/", rating: "5" }). Populate cards with matching books.
 - "filter_emblems" is ONLY for /certifications/. Never use it for book questions.
+
+## Chronicles reply rules
+- If the visitor is on /learning-logs/ and asks to filter by status (completed, in progress, not started, all): use "filter_tree" with the matching status and the domain that has the most matching logs if you can infer it, NO message (set "message" to ""), NO cards — just trigger the action silently. The tree updates itself.
+- If the visitor is on /learning-logs/ and asks what's completed, in progress, or not started: use "filter_tree" with the matching status and domain if inferable, NO message, NO cards.
+- If the visitor is NOT on /learning-logs/ and asks about learning logs or Chronicles: use "navigate_to" with url "/learning-logs/".
+- Never use "navigate_to" with url "/learning-logs/" if the visitor is already there — use "filter_tree" instead.
+- Never return cards for Chronicles filter requests — the tree IS the interface.
 
 ## Privacy
 Only discuss content that appears in the Site Content Index below. Do not speculate about Wynter's personal life beyond what she has published. If asked something you don't have data for, say so warmly and suggest what you do have. Do not mention the context index in your reponses.
@@ -221,7 +237,7 @@ export default {
       });
     }
 
-    const { messages } = body;
+    const { messages, currentPage, currentDomain } = body;
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: 'messages array required' }), {
         status: 400,
@@ -230,7 +246,13 @@ export default {
     }
 
     // Build system prompt (fetches context.json)
-    const systemPrompt = await buildSystemPrompt(env);
+    let systemPrompt = await buildSystemPrompt(env);
+
+    // Inject current page/domain context so the model knows where the visitor is
+    if (currentPage) {
+      systemPrompt += `\n\n## Current visitor location\nThe visitor is currently on: ${currentPage}`;
+      if (currentDomain) systemPrompt += `\nCurrently viewing domain: "${currentDomain}"`;
+    }
 
        // Call Cloudflare Workers AI
     const cfPayload = {

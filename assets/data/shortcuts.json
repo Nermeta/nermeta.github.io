@@ -1,0 +1,230 @@
+[
+  {
+    "id": "chronicles-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/learning-logs/"],
+    "action": { "type": "filter_tree", "params": { "status": "all" } },
+    "chip": "Show all paths",
+    "image": null
+  },
+  {
+    "id": "chronicles-completed",
+    "patterns": ["\\bcomplete[d]?\\b", "finished", "\\bdone\\b"],
+    "pages": ["/learning-logs/"],
+    "action": { "type": "filter_tree", "params": { "status": "completed" } },
+    "chip": "What have I completed?",
+    "image": null
+  },
+  {
+    "id": "chronicles-in-progress",
+    "patterns": ["\\bin.?progress\\b", "working on", "started", "\\bcurrent\\b"],
+    "pages": ["/learning-logs/"],
+    "action": { "type": "filter_tree", "params": { "status": "in-progress" } },
+    "chip": "What's in progress?",
+    "image": null
+  },
+  {
+    "id": "chronicles-not-started",
+    "patterns": ["\\bnot.?started\\b", "\\btodo\\b", "haven.?t"],
+    "pages": ["/learning-logs/"],
+    "action": { "type": "filter_tree", "params": { "status": "not-started" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "emblems-earned",
+    "patterns": ["\\bearned\\b", "\\bcompleted\\b", "\\bhave\\b"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "status": "earned" } },
+    "chip": "Earned certs",
+    "image": null
+  },
+  {
+    "id": "emblems-in-progress",
+    "patterns": ["\\bin.?progress\\b", "working on", "studying"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "status": "in-progress" } },
+    "chip": "In progress",
+    "image": null
+  },
+  {
+    "id": "emblems-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "status": "all" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "emblems-cloud",
+    "patterns": ["\\bcloud\\b"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "topic": "cloud" } },
+    "chip": "Cloud certs",
+    "image": null
+  },
+  {
+    "id": "emblems-security",
+    "patterns": ["\\bsecurity\\b", "cyber"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "topic": "security" } },
+    "chip": "Security certs",
+    "image": null
+  },
+  {
+    "id": "emblems-networking",
+    "patterns": ["\\bnetwork"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "topic": "networking" } },
+    "chip": "Networking certs",
+    "image": null
+  },
+  {
+    "id": "emblems-systems",
+    "patterns": ["\\bsystems?\\b", "linux", "windows"],
+    "pages": ["/certifications/"],
+    "action": { "type": "filter_emblems", "params": { "topic": "systems" } },
+    "chip": "Systems certs",
+    "image": null
+  },
+  {
+    "id": "library-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "genres": ["all"] } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "library-fiction",
+    "patterns": ["\\bfiction\\b"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "genres": ["fiction"] } },
+    "chip": "Fiction",
+    "image": null
+  },
+  {
+    "id": "library-nonfiction",
+    "patterns": ["\\bnon.?fiction\\b"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "genres": ["non-fiction"] } },
+    "chip": "Non-fiction",
+    "image": null
+  },
+  {
+    "id": "library-technical",
+    "patterns": ["\\btechnical?\\b", "\\btech\\b"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "genres": ["technical"] } },
+    "chip": "Technical reads",
+    "image": null
+  },
+  {
+    "id": "library-5star",
+    "patterns": ["\\b5.?star\\b", "\\bbest\\b", "top rated", "favorite"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "rating": "5" } },
+    "chip": "5-star picks",
+    "image": null
+  },
+  {
+    "id": "library-4star",
+    "patterns": ["\\b4.?star\\b"],
+    "pages": ["/book-reviews/"],
+    "action": { "type": "filter_shelf", "params": { "rating": "4" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "nav-chronicles",
+    "patterns": ["\\bchronicles\\b", "learning.?logs?", "skill.?tree"],
+    "pages": ["*"],
+    "excludePages": ["/learning-logs/"],
+    "action": { "type": "navigate_to", "params": { "url": "/learning-logs/" } },
+    "home_message": "Here's a peek at the [Chronicles](/learning-logs/) — Wynter's skill tree tracking everything she's learning, organized by domain and status.",
+    "collection": "learning-logs",
+    "collection_filter": { "status": "in-progress" },
+    "collection_limit": 4,
+    "chip": "What's in the Chronicles?",
+    "image": null
+  },
+  {
+    "id": "nav-certifications",
+    "patterns": ["\\bcerts?\\b", "certif\\w+", "\\bemblems?\\b"],
+    "pages": ["*"],
+    "excludePages": ["/certifications/"],
+    "action": { "type": "navigate_to", "params": { "url": "/certifications/" } },
+    "home_message": "Here are Wynter's earned [Emblems](/certifications/) — certifications she's completed, each with a badge.",
+    "collection": "certifications",
+    "collection_filter": { "status": "earned" },
+    "chip": "Any Emblems earned?",
+    "image_from_section": "/certifications/"
+  },
+  {
+    "id": "nav-library",
+    "patterns": ["\\bbooks?\\b", "\\blibrary\\b", "\\bread\\b", "\\breading\\b", "\\breviews?\\b"],
+    "pages": ["*"],
+    "excludePages": ["/book-reviews/"],
+    "action": { "type": "navigate_to", "params": { "url": "/book-reviews/" } },
+    "home_message": "Here's a peek at the [Library](/book-reviews/) — Wynter's top-rated reads across fiction, non-fiction, and technical.",
+    "collection": "book-reviews",
+    "collection_filter": { "min_rating": 4 },
+    "collection_limit": 4,
+    "chip": "Latest Library reviews",
+    "image_from_section": "/book-reviews/"
+  },
+  {
+    "id": "nav-writeups",
+    "patterns": ["\\bwriteups?\\b", "\\bhtb\\b", "hack.?the.?box", "\\bctf\\b", "\\bmachines?\\b", "\\bboxes?\\b"],
+    "pages": ["*"],
+    "excludePages": ["/writeups/"],
+    "action": { "type": "navigate_to", "params": { "url": "/writeups/" } },
+    "home_message": "Here are Wynter's recent [Writeups](/writeups/) — CTF and HackTheBox walkthroughs.",
+    "collection": "writeups",
+    "collection_limit": 4,
+    "chip": "Show recent writeups",
+    "image": null
+  },
+  {
+    "id": "nav-deep-dives",
+    "patterns": ["\\bdiscoveries\\b", "deep.?dive"],
+    "pages": ["*"],
+    "excludePages": ["/deep-dives/"],
+    "action": { "type": "navigate_to", "params": { "url": "/deep-dives/" } },
+    "home_message": "Here are Wynter's [Discoveries](/deep-dives/) — deep-dive technical articles on topics like Active Directory, networking, and security.",
+    "collection": "deep-dives",
+    "collection_limit": 4,
+    "chip": "Discoveries on Active Directory",
+    "image": null
+  },
+  {
+    "id": "nav-tutorials",
+    "patterns": ["\\bexplorations?\\b", "\\btutorials?\\b", "\\bguides?\\b", "how.?to"],
+    "pages": ["*"],
+    "excludePages": ["/tutorials/"],
+    "action": { "type": "navigate_to", "params": { "url": "/tutorials/" } },
+    "home_message": "Here are Wynter's [Field Notes](/tutorials/) — practical tutorials and hands-on walkthroughs.",
+    "collection": "tutorials",
+    "collection_limit": 4,
+    "chip": "Show recent Field Notes",
+    "image": null
+  },
+  {
+    "id": "nav-about",
+    "patterns": ["\\babout\\b", "who is wynter", "who are you", "\\bbackground\\b", "\\bbio\\b"],
+    "pages": ["*"],
+    "excludePages": ["/about/"],
+    "action": { "type": "navigate_to", "params": { "url": "/about/" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "nav-home",
+    "patterns": ["\\bhome\\b", "main page", "go back", "start over"],
+    "pages": ["*"],
+    "excludePages": ["/"],
+    "action": { "type": "navigate_to", "params": { "url": "/" } },
+    "chip": null,
+    "image": null
+  }
+]

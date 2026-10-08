@@ -204,7 +204,85 @@ index.entries.sort((a, b) => {
   return db - da;
 });
 
+// ---------------------------------------------------------------------------
+// Build section_images — representative badge/cover per collection page,
+// used by shortcuts.json chips so nothing is hardcoded in static JSON.
+// Strategy: pick highest-rated (books), first earned (certs), newest (others).
+// ---------------------------------------------------------------------------
+function pickSectionImage(entries, type, strategy) {
+  const pool = entries.filter(e => e.type === type && e.badge_image);
+  if (!pool.length) return null;
+  if (strategy === 'highest-rated') {
+    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  } else if (strategy === 'earned-first') {
+    const order = ['earned', 'in-progress', 'not-started'];
+    pool.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+  }
+  const pick = pool[0];
+  return { src: pick.badge_image, shape: pick.badge_shape || 'round' };
+}
+
+// Helper: pick a representative entry by newest date for text-only sections
+function pickNewest(entries, type) {
+  const pool = entries.filter(e => e.type === type);
+  if (!pool.length) return null;
+  // Already sorted newest-first from the main sort above
+  return pool[0];
+}
+
+const sectionImages = {
+  '/book-reviews/':   pickSectionImage(index.entries, 'book-review',   'highest-rated'),
+  '/certifications/': pickSectionImage(index.entries, 'certification',  'earned-first'),
+  // Text-only sections — no badge image, but include entry metadata for future use
+  '/learning-logs/':  pickNewest(index.entries, 'learning-log')  ? { src: null, shape: null, title: pickNewest(index.entries, 'learning-log').title,  url: pickNewest(index.entries, 'learning-log').url  } : null,
+  '/writeups/':       pickNewest(index.entries, 'writeup')       ? { src: null, shape: null, title: pickNewest(index.entries, 'writeup').title,       url: pickNewest(index.entries, 'writeup').url       } : null,
+  '/deep-dives/':     pickNewest(index.entries, 'deep-dive')     ? { src: null, shape: null, title: pickNewest(index.entries, 'deep-dive').title,     url: pickNewest(index.entries, 'deep-dive').url     } : null,
+  '/tutorials/':      pickNewest(index.entries, 'tutorial')      ? { src: null, shape: null, title: pickNewest(index.entries, 'tutorial').title,      url: pickNewest(index.entries, 'tutorial').url      } : null,
+};
+
+// Write context.json (excluded from Jekyll, read by the Cloudflare worker)
 const outputPath = path.join(ROOT, 'context.json');
 fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
-
 console.log(`✓ context.json written — ${index.entries.length} public entries`);
+
+// Write assets/data/section-images.json (served by Jekyll, read by the browser)
+const sectionImagesPath = path.join(ROOT, 'assets', 'data', 'section-images.json');
+fs.writeFileSync(sectionImagesPath, JSON.stringify(sectionImages, null, 2));
+console.log(`✓ section-images.json written`);
+
+// ---------------------------------------------------------------------------
+// Write slim collection card files — served by Jekyll, read by home chat to
+// return real result cards without hitting the AI worker.
+// Only the fields the card renderer needs: type, title, url, badge_image,
+// badge_shape, status, topic, rating, date.
+// ---------------------------------------------------------------------------
+function slimCard(e) {
+  return {
+    type:        e.type,
+    title:       e.title,
+    url:         e.url,
+    date:        e.date        || null,
+    status:      e.status      || null,
+    topic:       e.topic       || null,
+    rating:      e.rating      || null,
+    badge_image: e.badge_image || null,
+    badge_shape: e.badge_shape || null,
+    genre:       e.genre       || null,
+    issuer:      e.issuer      || null,
+  };
+}
+
+const collections = {
+  'certifications': index.entries.filter(e => e.type === 'certification').map(slimCard),
+  'book-reviews':   index.entries.filter(e => e.type === 'book-review').map(slimCard),
+  'writeups':       index.entries.filter(e => e.type === 'writeup').map(slimCard),
+  'deep-dives':     index.entries.filter(e => e.type === 'deep-dive').map(slimCard),
+  'tutorials':      index.entries.filter(e => e.type === 'tutorial').map(slimCard),
+  'learning-logs':  index.entries.filter(e => e.type === 'learning-log').map(slimCard),
+};
+
+for (const [name, cards] of Object.entries(collections)) {
+  const p = path.join(ROOT, 'assets', 'data', `${name}.json`);
+  fs.writeFileSync(p, JSON.stringify(cards, null, 2));
+  console.log(`✓ ${name}.json written — ${cards.length} entries`);
+}

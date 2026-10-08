@@ -582,8 +582,29 @@ tr:last-child td { border-bottom: none; }
 
 /* Typing indicator */
 .msg-typing .msg-bubble {
-  color: var(--fg-muted);
   font-style: italic;
+}
+
+@keyframes typing-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.typing-text {
+  background: linear-gradient(
+    90deg,
+    var(--fg-secondary) 0%,
+    var(--aqua)         25%,
+    var(--fuchsia)      55%,
+    var(--aqua)         75%,
+    var(--fg-secondary) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: typing-shimmer 2.4s ease-in-out infinite;
 }
 
 /* Result cards from AI */
@@ -704,6 +725,7 @@ tr:last-child td { border-bottom: none; }
   color: var(--aqua);
   box-shadow: 0 0 10px rgba(0,229,204,0.10);
 }
+
 
 /* Input row */
 .chat-input-row {

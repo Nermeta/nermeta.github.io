@@ -27,6 +27,8 @@ function resolveBadge(card) {
   if (card.type === 'book-review' || card.type === 'book') {
     if (card.badge_image) return { src: card.badge_image, shape: 'book' };
   }
+  // Generic fallback — section nav cards have badge_image but no type
+  if (card.badge_image) return { src: card.badge_image, shape: card.badge_shape || 'round' };
   return null;
 }
 
@@ -107,7 +109,11 @@ async function sendMessage(userText) {
   const response = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: chatHistory })
+    body: JSON.stringify({
+      messages: chatHistory,
+      currentPage: window.location.pathname,
+      currentDomain: window.__skillTreeDomain || null
+    })
   });
 
   if (!response.ok) {
@@ -135,15 +141,29 @@ function appendUserBubble(container, text) {
   return div;
 }
 
+const TYPING_PHRASES = [
+  'curling through the corridors…',
+  'consulting the looking-glass…',
+  'rifling through the archives…',
+  'following the white rabbit…',
+  'tracing the path through the woods…',
+  'untangling the red thread…',
+  'peering behind the curtain…',
+  'searching the rabbit hole…',
+  'listening to the tea leaves…',
+  'shuffling through the cards…',
+];
+
 /**
- * appendTyping — adds an animated "typing" indicator
+ * appendTyping — adds an animated "typing" indicator with a rotating phrase
  */
 function appendTyping(container) {
+  const phrase = TYPING_PHRASES[Math.floor(Math.random() * TYPING_PHRASES.length)];
   const div = document.createElement('div');
   div.className = 'msg-ai msg-typing';
   div.innerHTML = `
     <div class="msg-ai-avatar" aria-hidden="true">🐱</div>
-    <div class="msg-bubble">curling through the corridors…</div>`;
+    <div class="msg-bubble"><span class="typing-text">${phrase}</span></div>`;
   container.appendChild(div);
   scrollToBottom(container);
   return div;
@@ -153,12 +173,20 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
-  // Drawer + navigate_to: fire the action silently, no reply bubble
-  if (source === 'drawer' && data.action?.type === 'navigate_to') {
-    window.dispatchEvent(new CustomEvent('site:action', {
-      detail: { type: 'navigate_to', params: data.action.params || {}, source }
-    }));
-    return;
+  // navigate_to: drawer navigates, home chat never does (shows cards inline instead)
+  if (data.action?.type === 'navigate_to') {
+    if (source === 'drawer') {
+      const dest = data.action.params?.url || '';
+      const isReal = dest && dest !== '/' && dest !== window.location.pathname;
+      if (isReal) {
+        window.dispatchEvent(new CustomEvent('site:action', {
+          detail: { type: 'navigate_to', params: data.action.params || {}, source }
+        }));
+        return;
+      }
+    }
+    // Home source, or bad/empty URL — strip the action so it doesn't fire below
+    data = { ...data, action: null };
   }
 
   // Silent filter action (e.g. filter_shelf with no message): just fire and return
@@ -256,6 +284,119 @@ function formatMessage(text) {
 }
 
 /**
+ * Shortcuts registry — loaded once from shortcuts.json + section-images.json.
+ */
+let _shortcuts = null;
+let _shortcutsPromise = null;
+
+function loadShortcuts() {
+  if (_shortcuts !== null) return Promise.resolve(_shortcuts);
+  if (_shortcutsPromise) return _shortcutsPromise;
+  _shortcutsPromise = Promise.all([
+    fetch('/assets/data/shortcuts.json').then(r => r.json()).catch(() => []),
+    fetch('/assets/data/section-images.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([shortcuts, sectionImages]) => {
+    _shortcuts = shortcuts.map(s => {
+      const sectionUrl = s.image_from_section || s.action?.params?.url;
+      const section = sectionUrl ? sectionImages[sectionUrl] : null;
+      if (!section) return s;
+      return {
+        ...s,
+        image:       section.src   || s.image       || null,
+        image_shape: section.shape || s.image_shape || 'round',
+      };
+    });
+    return _shortcuts;
+  });
+  return _shortcutsPromise;
+}
+
+loadShortcuts();
+
+/**
+ * Collection cache — slim card data from assets/data/<name>.json, fetched on demand.
+ */
+const _collectionCache = {};
+
+function loadCollection(name) {
+  if (_collectionCache[name]) return Promise.resolve(_collectionCache[name]);
+  return fetch(`/assets/data/${name}.json`)
+    .then(r => r.json())
+    .then(data => { _collectionCache[name] = data; return data; })
+    .catch(() => []);
+}
+
+/**
+ * filterCollection — applies a collection_filter object to an array of cards.
+ */
+function filterCollection(cards, filter) {
+  if (!filter) return cards;
+  return cards.filter(c => {
+    if (filter.status && c.status !== filter.status) return false;
+    if (filter.topic  && c.topic  !== filter.topic)  return false;
+    if (filter.min_rating != null && (c.rating || 0) < filter.min_rating) return false;
+    return true;
+  });
+}
+
+/**
+ * resolveShortcut — async, returns response envelope or null (fall through to worker).
+ * For nav shortcuts on home: fetches collection data and returns real result cards.
+ */
+async function resolveShortcut(text) {
+  await loadShortcuts();
+  if (!_shortcuts || !_shortcuts.length) return null;
+  const t    = text.toLowerCase().trim();
+  const page = window.location.pathname;
+
+  for (const s of _shortcuts) {
+    const pages = s.pages || ['*'];
+    const onCorrectPage = pages.includes('*') || pages.includes(page);
+    if (!onCorrectPage) continue;
+
+    const excluded = s.excludePages || [];
+    if (excluded.includes(page)) continue;
+
+    const patterns = s.patterns || [];
+    const matched  = patterns.some(p => new RegExp(p).test(t));
+    if (!matched) continue;
+
+    // Home chat never navigates — load collection cards + return home_message
+    if (page === '/' && s.action?.type === 'navigate_to') {
+      if (!s.home_message) return null;
+      let cards = [];
+      if (s.collection) {
+        const all     = await loadCollection(s.collection);
+        const filtered = filterCollection(all, s.collection_filter || null);
+        const limit   = s.collection_limit || filtered.length;
+        cards = filtered.slice(0, limit);
+      }
+      return { message: s.home_message, cards, action: null };
+    }
+
+    return { message: '', cards: [], action: s.action };
+  }
+
+  return null;
+}
+
+/**
+ * getChipsForPage — returns chip labels from shortcuts.json for a given page path.
+ */
+function getChipsForPage(page) {
+  if (!_shortcuts) return [];
+  return _shortcuts
+    .filter(s => {
+      const pages    = s.pages || ['*'];
+      const excluded = s.excludePages || [];
+      return s.chip &&
+        (pages.includes('*') || pages.includes(page)) &&
+        !excluded.includes(page);
+    })
+    .map(s => ({ label: s.chip }));
+}
+
+/**
  * wireChat — attaches send logic to a form + messages container pair
  */
 function wireChat(formId, inputId, messagesId, chipsId, source) {
@@ -272,14 +413,28 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     input.style.height = input.scrollHeight + 'px';
   });
 
-  // Chip clicks → fill input
-  if (chips) {
+  // Wire chip clicks (shared helper, called after chip HTML is set)
+  function wireChips() {
+    if (!chips) return;
     chips.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
         input.value = chip.textContent.trim();
         input.dispatchEvent(new Event('input'));
         input.focus();
       });
+    });
+  }
+
+  // Populate chips from shortcuts.json for this page, then wire them
+  if (chips) {
+    loadShortcuts().then(() => {
+      const chipData = getChipsForPage(window.location.pathname);
+      if (chipData.length) {
+        chips.innerHTML = chipData
+          .map(c => `<button class="chip">${escapeHtml(c.label)}</button>`)
+          .join('');
+      }
+      wireChips();
     });
   }
 
@@ -299,7 +454,17 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     input.value = '';
     input.style.height = 'auto';
 
+    // Client-side shortcuts — handle common queries locally, no AI call needed
     appendUserBubble(messages, text);
+    const shortcut = await resolveShortcut(text);
+    if (shortcut) {
+      const typing = appendTyping(messages);
+      setTimeout(() => {
+        typing.remove();
+        appendAiResponse(messages, shortcut, source);
+      }, 900 + Math.random() * 600);
+      return;
+    }
     const typing = appendTyping(messages);
 
     try {
@@ -350,7 +515,7 @@ wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips', '
 window.addEventListener('site:action', e => {
   const { type, params = {}, source } = e.detail || {};
 
-  if (type === 'navigate_to' && source === 'drawer' && params.url) {
+  if (type === 'navigate_to' && params.url) {
     const url = new URL(params.url, window.location.origin);
     if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
     if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
