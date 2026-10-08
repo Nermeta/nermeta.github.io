@@ -19,14 +19,15 @@ const CERT_BADGE_FALLBACKS = {
 };
 
 function resolveBadge(card) {
-  if (card.type !== 'certification') return null;
-  // Prefer data from context.json (populated by build-context.js from frontmatter)
-  if (card.badge_image) {
-    return { src: card.badge_image, shape: card.badge_shape || 'round' };
+  if (card.type === 'certification') {
+    if (card.badge_image) return { src: card.badge_image, shape: card.badge_shape || 'round' };
+    const key = (card.title || '').toLowerCase().trim();
+    return CERT_BADGE_FALLBACKS[key] || null;
   }
-  // Fall back to local map for certs the Worker hasn't seen yet
-  const key = (card.title || '').toLowerCase().trim();
-  return CERT_BADGE_FALLBACKS[key] || null;
+  if (card.type === 'book-review' || card.type === 'book') {
+    if (card.isbn) return { src: `https://covers.openlibrary.org/b/isbn/${card.isbn}-M.jpg`, shape: 'book' };
+  }
+  return null;
 }
 
 /* ── STAR FIELD ─────────────────────────────────────────────── */

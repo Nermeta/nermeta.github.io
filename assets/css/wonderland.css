@@ -634,6 +634,7 @@ tr:last-child td { border-bottom: none; }
 .badge-round  { border-radius: 50%; overflow: hidden; }
 .badge-shield { clip-path: polygon(50% 0%,100% 15%,100% 68%,50% 100%,0% 68%,0% 15%); overflow: hidden; }
 .badge-hex    { clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); overflow: hidden; }
+.badge-book   { border-radius: 2px; overflow: hidden; width: 38px !important; height: 52px !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5); }
 
 .result-card:hover .result-card-badge {
   filter: drop-shadow(0 0 8px rgba(0,229,204,0.55)) drop-shadow(0 0 20px rgba(224,64,251,0.25));
