@@ -153,13 +153,8 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
-  // Drawer + navigate_to: fire the action silently, no reply bubble
-  if (source === 'drawer' && data.action?.type === 'navigate_to') {
-    window.dispatchEvent(new CustomEvent('site:action', {
-      detail: { type: 'navigate_to', params: data.action.params || {}, source }
-    }));
-    return;
-  }
+  // Drawer + navigate_to: don't redirect — fall through and render the message/cards inline
+  // (The home chat's site:action handler below still fires for non-drawer sources)
 
   // Silent filter action (e.g. filter_shelf with no message): just fire and return
   if (!data.message?.trim() && data.action?.type) {
@@ -350,7 +345,8 @@ wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips', '
 window.addEventListener('site:action', e => {
   const { type, params = {}, source } = e.detail || {};
 
-  if (type === 'navigate_to' && source === 'drawer' && params.url) {
+  // Only navigate from the home chat, never from the floating drawer
+  if (type === 'navigate_to' && source !== 'drawer' && params.url) {
     const url = new URL(params.url, window.location.origin);
     if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
     if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
