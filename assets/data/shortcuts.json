@@ -151,7 +151,8 @@
     "excludePages": ["/certifications/"],
     "action": { "type": "navigate_to", "params": { "url": "/certifications/" } },
     "chip": "Any Emblems earned?",
-    "image": null
+    "image": "/assets/images/badges/security-plus.png",
+    "image_shape": "round"
   },
   {
     "id": "nav-library",
@@ -160,7 +161,8 @@
     "excludePages": ["/book-reviews/"],
     "action": { "type": "navigate_to", "params": { "url": "/book-reviews/" } },
     "chip": "Latest Library reviews",
-    "image": null
+    "image": "https://covers.openlibrary.org/b/isbn/9781635575637-M.jpg",
+    "image_shape": "book"
   },
   {
     "id": "nav-writeups",

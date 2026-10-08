@@ -315,8 +315,8 @@ function resolveShortcut(text) {
 }
 
 /**
- * getChipsForPage — returns chip labels from shortcuts.json for a given page path.
- * Filters to shortcuts with a non-null chip that are relevant on that page.
+ * getChipsForPage — returns chip data from shortcuts.json for a given page path.
+ * Each item: { label, image, image_shape }
  */
 function getChipsForPage(page) {
   if (!_shortcuts) return [];
@@ -328,7 +328,7 @@ function getChipsForPage(page) {
         (pages.includes('*') || pages.includes(page)) &&
         !excluded.includes(page);
     })
-    .map(s => s.chip);
+    .map(s => ({ label: s.chip, image: s.image || null, image_shape: s.image_shape || 'round' }));
 }
 
 /**
@@ -363,11 +363,14 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
   // Populate chips from shortcuts.json for this page, then wire them
   if (chips) {
     loadShortcuts().then(() => {
-      const labels = getChipsForPage(window.location.pathname);
-      if (labels.length) {
-        chips.innerHTML = labels
-          .map(l => `<button class="chip">${l}</button>`)
-          .join('');
+      const chipData = getChipsForPage(window.location.pathname);
+      if (chipData.length) {
+        chips.innerHTML = chipData.map(c => {
+          const imgHtml = c.image
+            ? `<img src="${escapeHtml(c.image)}" alt="" class="chip-img chip-img--${escapeHtml(c.image_shape)}" loading="lazy">`
+            : '';
+          return `<button class="chip">${imgHtml}${escapeHtml(c.label)}</button>`;
+        }).join('');
       }
       wireChips();
     });
