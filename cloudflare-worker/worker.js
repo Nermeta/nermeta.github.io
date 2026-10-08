@@ -81,15 +81,24 @@ async function buildSystemPrompt(env) {
         if (e.summary)  parts.push(`  Summary: ${e.summary}`);
         if (e.topic)    parts.push(`  Topic: ${e.topic}`);
         if (e.tags?.length) parts.push(`  Tags: ${e.tags.join(', ')}`);
-        if (e.audience?.length) parts.push(`  Audience: ${e.audience.join(', ')}`);
-        // Type-specific
-        if (e.subject)   parts.push(`  Subject: ${e.subject} (${e.status || 'unknown status'})`);
-        if (e.issuer)    parts.push(`  Issuer: ${e.issuer}, earned: ${e.cert_date}`);
-        if (e.author)    parts.push(`  Author: ${e.author}, rating: ${e.rating}/5`);
-        if (e.badge_image && e.badge_shape === 'book') parts.push(`  Cover: ${e.badge_image}`);
-        if (e.platform)  parts.push(`  Platform: ${e.platform}, category: ${e.category}, difficulty: ${e.difficulty}, outcome: ${e.outcome}`);
-        if (e.tools?.length) parts.push(`  Tools: ${e.tools.join(', ')}`);
-        if (e.tech_stack?.length) parts.push(`  Tech stack: ${e.tech_stack.join(', ')}`);
+        // Type-specific — only include fields relevant to type to save tokens
+        if (e.type === 'certification') {
+          if (e.subject) parts.push(`  Subject: ${e.subject} (${e.status || 'unknown'})`);
+          if (e.issuer)  parts.push(`  Issuer: ${e.issuer}, earned: ${e.cert_date}`);
+        }
+        if (e.type === 'book-review') {
+          if (e.author) parts.push(`  Author: ${e.author}, rating: ${e.rating}/5`);
+          if (e.badge_image && e.badge_shape === 'book') parts.push(`  Cover: ${e.badge_image}`);
+        }
+        if (e.type === 'writeup') {
+          if (e.platform) parts.push(`  Platform: ${e.platform}, category: ${e.category}, difficulty: ${e.difficulty}`);
+        }
+        if (e.type === 'tutorial' || e.type === 'deep-dive') {
+          if (e.tech_stack?.length) parts.push(`  Tech: ${e.tech_stack.join(', ')}`);
+        }
+        if (e.type === 'learning-log') {
+          if (e.domain)  parts.push(`  Domain: ${e.domain}, status: ${e.status}`);
+        }
         return parts.join('\n');
       });
       contextBlock = entries.length

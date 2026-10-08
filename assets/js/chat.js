@@ -265,6 +265,39 @@ function formatMessage(text) {
 }
 
 /**
+ * resolveShortcut — handles simple queries client-side to save AI tokens.
+ * Returns a fake response envelope, or null to fall through to the worker.
+ */
+function resolveShortcut(text) {
+  const t = text.toLowerCase().trim();
+  const page = window.location.pathname;
+
+  // ── Chronicles / skill tree ──────────────────────────────
+  if (page === '/learning-logs/') {
+    if (/\b(all|show all|reset|everything)\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'all' } } };
+    if (/\bcomplete[d]?\b|finished|done/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'completed' } } };
+    if (/\bin.?progress|working on|started|current/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'in-progress' } } };
+    if (/\bnot.?started|todo|haven.?t/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'not-started' } } };
+  }
+
+  // ── Cross-page nav shortcuts ─────────────────────────────
+  if (/\bcerts?\b|certifications?\b|emblems?\b/.test(t) && page !== '/certifications/')
+    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/certifications/' } } };
+  if (/\bbooks?\b|library|read\b|reading/.test(t) && page !== '/book-reviews/')
+    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/book-reviews/' } } };
+  if (/\bwriteups?\b|htb|hack.?the.?box|ctf/.test(t) && page !== '/writeups/')
+    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/writeups/' } } };
+  if (/\bchronicles\b|learning.?logs?\b/.test(t) && page !== '/learning-logs/')
+    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/learning-logs/' } } };
+
+  return null; // fall through to worker
+}
+
+/**
  * wireChat — attaches send logic to a form + messages container pair
  */
 function wireChat(formId, inputId, messagesId, chipsId, source) {
@@ -307,6 +340,14 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
 
     input.value = '';
     input.style.height = 'auto';
+
+    // Client-side shortcuts — handle common queries locally, no AI call needed
+    const shortcut = resolveShortcut(text);
+    if (shortcut) {
+      appendUserBubble(messages, text);
+      appendAiResponse(messages, shortcut, source);
+      return;
+    }
 
     appendUserBubble(messages, text);
     const typing = appendTyping(messages);
