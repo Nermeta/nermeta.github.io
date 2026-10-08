@@ -4,22 +4,22 @@
 
 const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev/chat';
 
-// Local badge image map — keyed by cert title (lowercase, trimmed)
-// Frontend resolves badge images directly; no dependency on AI returning paths
+// Local badge map — keyed by cert title (lowercase, trimmed)
+// Each entry: { src, shape } where shape matches .badge-round / .badge-shield / .badge-hex
 const CERT_BADGES = {
-  'google cloud associate cloud engineer': '/assets/images/badges/gcp-ace.png',
-  'certified ethical hacker':              '/assets/images/badges/ceh.png',
-  'google cybersecurity certificate':      '/assets/images/badges/google-cybersecurity.png',
-  'comptia security+':                     '/assets/images/badges/security-plus.png',
-  'aws solutions architect associate':     '/assets/images/badges/aws-saa.png',
-  'comptia linux+':                        '/assets/images/badges/linux-plus.png',
-  'comptia network+':                      '/assets/images/badges/network-plus.png',
+  'google cloud associate cloud engineer': { src: '/assets/images/badges/gcp-ace.png',            shape: 'round'  },
+  'certified ethical hacker':              { src: '/assets/images/badges/ceh.png',                shape: 'shield' },
+  'google cybersecurity certificate':      { src: '/assets/images/badges/google-cybersecurity.png', shape: 'round' },
+  'comptia security+':                     { src: '/assets/images/badges/security-plus.png',      shape: 'round'  },
+  'aws solutions architect associate':     { src: '/assets/images/badges/aws-saa.png',            shape: 'round'  },
+  'comptia linux+':                        { src: '/assets/images/badges/linux-plus.png',         shape: 'round'  },
+  'comptia network+':                      { src: '/assets/images/badges/network-plus.png',       shape: 'round'  },
 };
 
 function resolveBadge(card) {
   if (card.type !== 'certification') return null;
   const key = (card.title || '').toLowerCase().trim();
-  return CERT_BADGES[key] || card.badge_image || null;
+  return CERT_BADGES[key] || (card.badge_image ? { src: card.badge_image, shape: 'round' } : null);
 }
 
 /* ── STAR FIELD ─────────────────────────────────────────────── */
@@ -175,7 +175,7 @@ function appendAiResponse(container, data, source) {
         ? `<span>${escapeHtml(card.date)}</span>` : '';
       const badge   = resolveBadge(card);
       const imgHtml = badge
-        ? `<img src="${escapeHtml(badge)}" alt="" class="result-card-badge" loading="lazy">` : '';
+        ? `<div class="result-card-badge badge-${escapeHtml(badge.shape)}"><img src="${escapeHtml(badge.src)}" alt="" loading="lazy"></div>` : '';
       cardEl.innerHTML = `
         ${imgHtml}
         <div class="result-card-body">
