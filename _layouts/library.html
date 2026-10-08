@@ -293,32 +293,52 @@ body {
   /* --sc (spine color) injected by JS */
   background: linear-gradient(
     to right,
-    color-mix(in srgb, var(--sc, #3a2a6e) 60%, #000) 0%,
-    var(--sc, #3a2a6e) 40%,
-    color-mix(in srgb, var(--sc, #3a2a6e) 80%, #fff 8%) 60%,
-    color-mix(in srgb, var(--sc, #3a2a6e) 70%, #000) 100%
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,0,0,0.15) 12%,
+    var(--sc, #3a2a6e) 30%,
+    color-mix(in srgb, var(--sc, #3a2a6e) 85%, #fff) 50%,
+    var(--sc, #3a2a6e) 70%,
+    rgba(0,0,0,0.2) 88%,
+    rgba(0,0,0,0.6) 100%
   );
 }
 
-/* Subtle linen texture overlay */
+/* Linen texture + top page-edge highlight + bottom shadow */
 .spine-overlay {
   position: absolute;
   inset: 0;
   background:
+    /* fine horizontal cloth lines */
     repeating-linear-gradient(
       180deg,
       transparent 0px,
-      transparent 3px,
-      rgba(255,255,255,0.025) 3px,
-      rgba(255,255,255,0.025) 4px
+      transparent 2px,
+      rgba(255,255,255,0.018) 2px,
+      rgba(255,255,255,0.018) 3px
     ),
+    /* top page-edge glow */
     linear-gradient(
       to bottom,
-      rgba(255,255,255,0.08) 0%,
-      transparent 30%,
-      transparent 70%,
-      rgba(0,0,0,0.2) 100%
+      rgba(240,230,200,0.28) 0%,
+      rgba(240,230,200,0.08) 6px,
+      transparent 14px,
+      transparent 82%,
+      rgba(0,0,0,0.3) 100%
     );
+}
+
+/* Page-edge cap at top — cream paper look */
+.spine-top-edge {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(
+    180deg,
+    rgba(235,220,185,0.7) 0%,
+    rgba(200,185,150,0.4) 60%,
+    transparent 100%
+  );
+  z-index: 3;
 }
 
 /* Spine label — rotated title */
@@ -338,8 +358,11 @@ body {
   font-family: var(--font-body);
   font-size: 0.6rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.92);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 12px rgba(0,0,0,0.5);
+  color: #fff;
+  text-shadow:
+    0 0 8px rgba(0,0,0,0.9),
+    0 1px 3px rgba(0,0,0,1),
+    0 2px 8px rgba(0,0,0,0.8);
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
@@ -352,9 +375,9 @@ body {
 
 .spine-author {
   font-family: var(--font-mono);
-  font-size: 0.45rem;
-  color: rgba(255,255,255,0.6);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  font-size: 0.47rem;
+  color: rgba(255,255,255,0.82);
+  text-shadow: 0 1px 3px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.8);
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
