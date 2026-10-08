@@ -153,8 +153,18 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
-  // Drawer + navigate_to: don't redirect — fall through and render the message/cards inline
-  // (The home chat's site:action handler below still fires for non-drawer sources)
+  // Drawer + navigate_to: navigate only if the worker gave a real non-root URL
+  if (source === 'drawer' && data.action?.type === 'navigate_to') {
+    const dest = data.action.params?.url || '';
+    const isReal = dest && dest !== '/' && dest !== window.location.pathname;
+    if (isReal) {
+      window.dispatchEvent(new CustomEvent('site:action', {
+        detail: { type: 'navigate_to', params: data.action.params || {}, source }
+      }));
+      return;
+    }
+    // Bad/empty URL — fall through and render whatever message the worker sent
+  }
 
   // Silent filter action (e.g. filter_shelf with no message): just fire and return
   if (!data.message?.trim() && data.action?.type) {
@@ -345,8 +355,7 @@ wireChat('homeChatForm', 'homeChatInput', 'homeChatMessages', 'homeChatChips', '
 window.addEventListener('site:action', e => {
   const { type, params = {}, source } = e.detail || {};
 
-  // Only navigate from the home chat, never from the floating drawer
-  if (type === 'navigate_to' && source !== 'drawer' && params.url) {
+  if (type === 'navigate_to' && params.url) {
     const url = new URL(params.url, window.location.origin);
     if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
     if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
