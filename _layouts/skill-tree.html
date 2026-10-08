@@ -787,5 +787,36 @@ layout: default
   // Draw all trees, activate first
   trees.forEach(t => drawTree(t));
   goTo(0);
+
+  /* ── Cheshire drawer integration ────────────────────────── */
+  // Swap chips to be skill-tree specific
+  document.addEventListener('DOMContentLoaded', () => {
+    const drawerChips = document.getElementById('drawerChips');
+    if (drawerChips) {
+      drawerChips.innerHTML = `
+        <button class="chip">What have I completed?</button>
+        <button class="chip">What's in progress?</button>
+        <button class="chip">Show all paths</button>
+      `;
+    }
+  });
+
+  // Listen for filter_tree action from Cheshire
+  window.addEventListener('site:action', e => {
+    const { type, params = {} } = e.detail || {};
+    if (type === 'filter_tree' && params.status) {
+      const status = params.status.toLowerCase().replace(/\s+/g, '-');
+      const valid = ['all', 'completed', 'in-progress', 'not-started'];
+      if (!valid.includes(status)) return;
+      activeFilter = status;
+      document.querySelectorAll('.st-filter-btn').forEach(b => {
+        b.classList.remove('active', 'active-fuchsia');
+        if (b.dataset.filter === activeFilter) {
+          b.classList.add(activeFilter === 'in-progress' ? 'active-fuchsia' : 'active');
+        }
+      });
+      applyFilter();
+    }
+  });
 })();
 </script>
