@@ -265,80 +265,70 @@ function formatMessage(text) {
 }
 
 /**
- * resolveShortcut — handles simple queries client-side to save AI tokens.
- * Returns a fake response envelope, or null to fall through to the worker.
+ * Shortcuts registry — loaded once from shortcuts.json, shared by all chat instances.
+ * null = not yet fetched, [] = fetched but empty/failed.
+ */
+let _shortcuts = null;
+let _shortcutsPromise = null;
+
+function loadShortcuts() {
+  if (_shortcuts !== null) return Promise.resolve(_shortcuts);
+  if (_shortcutsPromise) return _shortcutsPromise;
+  _shortcutsPromise = fetch('/assets/data/shortcuts.json')
+    .then(r => r.json())
+    .then(data => { _shortcuts = data; return data; })
+    .catch(() => { _shortcuts = []; return []; });
+  return _shortcutsPromise;
+}
+
+// Kick off the fetch early so it's ready when the user types.
+loadShortcuts();
+
+/**
+ * resolveShortcut — matches input against shortcuts.json client-side to save AI tokens.
+ * Returns a fake response envelope synchronously (after shortcuts are loaded), or null.
  */
 function resolveShortcut(text) {
-  const t = text.toLowerCase().trim();
+  if (!_shortcuts || !_shortcuts.length) return null;
+  const t    = text.toLowerCase().trim();
   const page = window.location.pathname;
 
-  // ── Chronicles / skill tree ──────────────────────────────
-  if (page === '/learning-logs/') {
-    if (/\b(all|show all|reset|everything)\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'all' } } };
-    if (/\bcomplete[d]?\b|finished|done/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'completed' } } };
-    if (/\bin.?progress|working on|started|current/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'in-progress' } } };
-    if (/\bnot.?started|todo|haven.?t/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'not-started' } } };
+  for (const s of _shortcuts) {
+    // Page check — "*" = any page; array = must be in list
+    const pages = s.pages || ['*'];
+    const onCorrectPage = pages.includes('*') || pages.includes(page);
+    if (!onCorrectPage) continue;
+
+    // Exclude check — skip if already on the destination
+    const excluded = s.excludePages || [];
+    if (excluded.includes(page)) continue;
+
+    // Pattern match — any pattern in the array can trigger
+    const patterns = s.patterns || [];
+    const matched  = patterns.some(p => new RegExp(p).test(t));
+    if (!matched) continue;
+
+    return { message: '', cards: [], action: s.action };
   }
-
-  // ── Emblems / certifications ─────────────────────────────
-  if (page === '/certifications/') {
-    if (/\bearned\b|completed\b|have\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'earned' } } };
-    if (/\bin.?progress|working on|studying/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'in-progress' } } };
-    if (/\ball\b|show all|reset|everything/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'all' } } };
-    if (/\bcloud\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'cloud' } } };
-    if (/\bsecurity\b|cyber/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'security' } } };
-    if (/\bnetwork/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'networking' } } };
-    if (/\bsystems?\b|linux|windows/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'systems' } } };
-  }
-
-  // ── Library / book reviews ───────────────────────────────
-  if (page === '/book-reviews/') {
-    if (/\ball\b|show all|reset|everything/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['all'] } } };
-    if (/\bfiction\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['fiction'] } } };
-    if (/\bnon.?fiction\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['non-fiction'] } } };
-    if (/\btechnical?\b|tech\b/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['technical'] } } };
-    if (/\b5.?star|best|top rated|favorite/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { rating: '5' } } };
-    if (/\b4.?star/.test(t))
-      return { message: '', cards: [], action: { type: 'filter_shelf', params: { rating: '4' } } };
-  }
-
-  // ── Cross-page nav shortcuts ─────────────────────────────
-  const nav = (url) => ({ message: '', cards: [], action: { type: 'navigate_to', params: { url } } });
-
-  if (/\bcerts?\b|certif\w+|emblems?\b/.test(t) && page !== '/certifications/')
-    return nav('/certifications/');
-  if (/\bbooks?\b|library\b|read\b|reading\b|reviews?\b/.test(t) && page !== '/book-reviews/')
-    return nav('/book-reviews/');
-  if (/\bwriteups?\b|htb\b|hack.?the.?box|ctf\b|machines?\b|boxes?\b/.test(t) && page !== '/writeups/')
-    return nav('/writeups/');
-  if (/\bchronicles\b|learning.?logs?\b|skill.?tree\b/.test(t) && page !== '/learning-logs/')
-    return nav('/learning-logs/');
-  if (/\bdiscoveries\b|deep.?dive\b/.test(t) && page !== '/deep-dives/')
-    return nav('/deep-dives/');
-  if (/\bexplorations?\b|tutorials?\b|guides?\b|how.?to\b/.test(t) && page !== '/tutorials/')
-    return nav('/tutorials/');
-  if (/\babout\b|who is wynter|who are you|background|bio\b/.test(t) && page !== '/about/')
-    return nav('/about/');
-  if (/\bhome\b|main page|go back|start over/.test(t) && page !== '/')
-    return nav('/');
 
   return null; // fall through to worker
+}
+
+/**
+ * getChipsForPage — returns chip labels from shortcuts.json for a given page path.
+ * Filters to shortcuts with a non-null chip that are relevant on that page.
+ */
+function getChipsForPage(page) {
+  if (!_shortcuts) return [];
+  return _shortcuts
+    .filter(s => {
+      const pages    = s.pages || ['*'];
+      const excluded = s.excludePages || [];
+      return s.chip &&
+        (pages.includes('*') || pages.includes(page)) &&
+        !excluded.includes(page);
+    })
+    .map(s => s.chip);
 }
 
 /**
@@ -358,14 +348,28 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     input.style.height = input.scrollHeight + 'px';
   });
 
-  // Chip clicks → fill input
-  if (chips) {
+  // Wire chip clicks (shared helper, called after chip HTML is set)
+  function wireChips() {
+    if (!chips) return;
     chips.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
         input.value = chip.textContent.trim();
         input.dispatchEvent(new Event('input'));
         input.focus();
       });
+    });
+  }
+
+  // Populate chips from shortcuts.json for this page, then wire them
+  if (chips) {
+    loadShortcuts().then(() => {
+      const labels = getChipsForPage(window.location.pathname);
+      if (labels.length) {
+        chips.innerHTML = labels
+          .map(l => `<button class="chip">${l}</button>`)
+          .join('');
+      }
+      wireChips();
     });
   }
 
