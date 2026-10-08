@@ -862,15 +862,48 @@ body {
   applyFilters = function() { _origApply(); updateBookend(); };
   updateBookend();
 
+  // ── URL PARAMS (arriving from navigate_to on another page) ──────
+  (function applyUrlFilters() {
+    const p = new URLSearchParams(window.location.search);
+    const genre  = p.get('genre');
+    const rating = p.get('rating');
+    if (genre || rating) {
+      if (genre) {
+        document.querySelectorAll('.filter-btn[data-filter="genre"]').forEach(b => b.classList.remove('active'));
+        const match = document.querySelector(`.filter-btn[data-filter="genre"][data-value="${genre}"]`);
+        if (match) { match.classList.add('active'); activeGenre = genre; }
+      }
+      if (rating) {
+        document.querySelectorAll('.filter-btn[data-filter="rating"]').forEach(b => b.classList.remove('active'));
+        const match = document.querySelector(`.filter-btn[data-filter="rating"][data-value="${rating}"]`);
+        if (match) { match.classList.add('active'); activeRating = rating; }
+      }
+      applyFilters();
+      history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+
   // ── AI CHAT BRIDGE ─────────────────────────────────────────────
   window.addEventListener('site:action', e => {
     const { type, params } = e.detail || {};
-    if (type === 'filter_shelf' && params?.genres?.length) {
-      const genre = params.genres[0].toLowerCase();
-      document.querySelectorAll('.filter-btn[data-filter="genre"]').forEach(b => b.classList.remove('active'));
-      const match = document.querySelector(`.filter-btn[data-filter="genre"][data-value="${genre}"]`);
-      if (match) { match.classList.add('active'); activeGenre = genre; }
-      else { activeGenre = 'all'; }
+
+    if (type === 'filter_shelf') {
+      // Genre filter
+      if (params?.genres?.length) {
+        const genre = params.genres[0].toLowerCase();
+        document.querySelectorAll('.filter-btn[data-filter="genre"]').forEach(b => b.classList.remove('active'));
+        const match = document.querySelector(`.filter-btn[data-filter="genre"][data-value="${genre}"]`);
+        if (match) { match.classList.add('active'); activeGenre = genre; }
+        else { document.querySelector('.filter-btn[data-filter="genre"][data-value="all"]').classList.add('active'); activeGenre = 'all'; }
+      }
+      // Rating filter
+      if (params?.rating) {
+        const rVal = String(params.rating);
+        document.querySelectorAll('.filter-btn[data-filter="rating"]').forEach(b => b.classList.remove('active'));
+        const match = document.querySelector(`.filter-btn[data-filter="rating"][data-value="${rVal}"]`);
+        if (match) { match.classList.add('active'); activeRating = rVal; }
+        else { document.querySelector('.filter-btn[data-filter="rating"][data-value="all"]').classList.add('active'); activeRating = 'all'; }
+      }
       applyFilters();
     }
   });

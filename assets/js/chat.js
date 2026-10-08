@@ -347,6 +347,8 @@ window.addEventListener('site:action', e => {
     const url = new URL(params.url, window.location.origin);
     if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
     if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
+    if (params.genre  && params.genre  !== 'all') url.searchParams.set('genre',  params.genre);
+    if (params.rating && params.rating !== 'all') url.searchParams.set('rating', params.rating);
     window.location.href = url.toString();
   }
 });
