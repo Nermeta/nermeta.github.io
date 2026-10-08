@@ -30,15 +30,6 @@ layout: default
     <div class="st-divider"></div>
   </div>
 
-  <!-- Tree canvases — one per domain -->
-  <div class="st-canvas-wrap" id="stCanvasWrap">
-    {% for domain in domains %}
-      {% assign domain_logs = all_logs | where: "domain", domain %}
-      <div class="st-tree" id="tree-{{ domain | slugify }}" data-domain="{{ domain }}">
-      </div>
-    {% endfor %}
-  </div>
-
   <!-- Domain navigator -->
   <nav class="st-domain-nav" aria-label="Skill tree domains">
     <button class="st-nav-arrow st-nav-prev" aria-label="Previous domain">&#8249;</button>
@@ -58,6 +49,15 @@ layout: default
     <button class="st-filter-btn" data-filter="completed">Completed</button>
     <button class="st-filter-btn active-fuchsia" data-filter="in-progress">In Progress</button>
     <button class="st-filter-btn" data-filter="not-started">Not Started</button>
+  </div>
+
+  <!-- Tree canvases — one per domain -->
+  <div class="st-canvas-wrap" id="stCanvasWrap">
+    {% for domain in domains %}
+      {% assign domain_logs = all_logs | where: "domain", domain %}
+      <div class="st-tree" id="tree-{{ domain | slugify }}" data-domain="{{ domain }}">
+      </div>
+    {% endfor %}
   </div>
 
   <!-- Per-domain JSON data — avoids all HTML attribute escaping issues -->
