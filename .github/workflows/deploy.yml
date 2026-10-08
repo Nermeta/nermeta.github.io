@@ -34,7 +34,7 @@ jobs:
 
       - name: Fetch book covers and compute spine colors
         run: |
-          npm install jimp --no-save
+          npm ci
           node scripts/fetch-covers.js
         env:
           # Allow the script to commit fetched covers back to the repo

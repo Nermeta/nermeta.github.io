@@ -1,0 +1,10 @@
+{
+  "name": "nermeta-wonderland",
+  "private": true,
+  "scripts": {
+    "fetch-covers": "node scripts/fetch-covers.js"
+  },
+  "devDependencies": {
+    "jimp": "^0.22.12"
+  }
+}
