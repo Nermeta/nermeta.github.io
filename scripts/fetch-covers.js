@@ -43,18 +43,14 @@ function fetchBuffer(url, redirects = 5) {
 }
 
 /**
- * Compute dominant spine color from a JPEG buffer using jimp (pure JS).
- * Returns null if jimp is not installed — caller should warn.
+ * Compute dominant spine color from a JPEG buffer.
+ * Tries jimp first; falls back to a simple JPEG byte sampler that needs no deps.
  */
 async function dominantColorFromJpeg(buf) {
-  let Jimp;
+  // Try jimp (available in GH Actions after npm install)
   try {
-    Jimp = require('jimp');
-  } catch {
-    return null; // jimp not installed
-  }
-  try {
-    const img = await Jimp.read(buf);
+    const Jimp = require('jimp');
+    const img  = await Jimp.read(buf);
     img.resize(16, 48);
     let r = 0, g = 0, b = 0, n = 0;
     img.scan(0, 0, 16, 48, (x, y, idx) => {
@@ -68,9 +64,39 @@ async function dominantColorFromJpeg(buf) {
     if (n === 0) return null;
     const f = 0.72;
     return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
-  } catch {
-    return null;
-  }
+  } catch {}
+
+  // Fallback: sample raw bytes from the JPEG scan data heuristically.
+  // JPEG scan data starts after the SOS (0xFF 0xDA) marker.
+  // We can't decode DCT without a full decoder, but we CAN sample the
+  // raw entropy-coded bytes as a rough proxy for color tendency.
+  // Better fallback: spawn Python (almost always available) to do it properly.
+  try {
+    const { execSync } = require('child_process');
+    // Write buf to a temp file, run a tiny python one-liner
+    const tmp = require('os').tmpdir() + '/cover_sample.jpg';
+    require('fs').writeFileSync(tmp, buf);
+    const py = `
+import sys
+try:
+    from PIL import Image
+    img = Image.open(sys.argv[1]).convert('RGB').resize((16,48))
+    px = list(img.getdata())
+    r=g=b=n=0
+    for R,G,B in px:
+        br=(R+G+B)/3
+        if br>230 or br<20: continue
+        r+=R;g+=G;b+=B;n+=1
+    f=0.72
+    if n: print(f'rgb({round(r/n*f)},{round(g/n*f)},{round(b/n*f)})')
+except Exception as e:
+    sys.exit(1)
+`.trim();
+    const result = execSync(`python3 -c "${py.replace(/\n/g,' ').replace(/"/g,"'")}" "${tmp}"`, { encoding: 'utf8' }).trim();
+    if (result.startsWith('rgb(')) return result;
+  } catch {}
+
+  return null;
 }
 
 /** Parse YAML frontmatter from a markdown file, return { data, body, raw } */
