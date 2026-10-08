@@ -147,8 +147,10 @@ for (const { dir, type } of COLLECTIONS) {
 
     // Type-specific fields
     if (type === 'learning-log') {
-      entry.subject = meta.subject || null;
-      entry.status  = meta.status  || null;
+      entry.subject  = meta.subject  || null;
+      entry.status   = meta.status   || null;
+      entry.domain   = meta.domain   || null;
+      entry.requires = meta.requires || [];
     }
 
     if (type === 'certification') {

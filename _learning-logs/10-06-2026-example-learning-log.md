@@ -2,6 +2,9 @@
 title: "CompTIA Security+ Study Log"
 date: 2026-01-10
 type: learning-log
+domain: cybersecurity
+requires: []
+status: in-progress
 topic: cybersecurity
 subject: "CompTIA Security+"
 status: in-progress

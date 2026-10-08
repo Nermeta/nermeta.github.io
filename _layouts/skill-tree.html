@@ -1,0 +1,580 @@
+---
+layout: default
+---
+
+{% assign all_logs = site.learning-logs | where: "public", true %}
+
+{% comment %} Build domain list {% endcomment %}
+{% assign domains_raw = "" %}
+{% for log in all_logs %}
+  {% if log.domain %}
+    {% assign domains_raw = domains_raw | append: log.domain | append: "," %}
+  {% endif %}
+{% endfor %}
+{% assign domains = domains_raw | split: "," | uniq | sort %}
+{% assign domains = domains | reject: "" %}
+
+<main class="skill-tree-page" id="main-content">
+
+  <div class="st-header">
+    <h1 class="st-title">{{ page.title }}</h1>
+    <p class="st-subtitle">Navigate the paths. Chart your course.</p>
+  </div>
+
+  <!-- Domain navigator -->
+  <nav class="st-domain-nav" aria-label="Skill tree domains">
+    <button class="st-nav-arrow st-nav-prev" aria-label="Previous domain">&#8249;</button>
+    <div class="st-domain-label">
+      <span class="st-domain-name" id="domainName"></span>
+      <span class="st-domain-count" id="domainCount"></span>
+    </div>
+    <button class="st-nav-arrow st-nav-next" aria-label="Next domain">&#8250;</button>
+  </nav>
+
+  <!-- Domain pip indicators -->
+  <div class="st-pips" id="stPips" role="tablist"></div>
+
+  <!-- Tree canvases — one per domain -->
+  <div class="st-canvas-wrap" id="stCanvasWrap">
+    {% for domain in domains %}
+      {% assign domain_logs = all_logs | where: "domain", domain %}
+      <div class="st-tree" id="tree-{{ domain | slugify }}"
+           data-domain="{{ domain }}"
+           data-logs='{% assign first = true %}[{% for log in domain_logs %}{% unless first %},{% endunless %}{% assign first = false %}{"slug":"{{ log.name | replace: ".md","" }}","title":{{ log.title | jsonify }},"url":"{{ log.url | relative_url }}","status":"{{ log.status | default: "not-started" }}","summary":{{ log.summary | default: "" | jsonify }},"requires":{% if log.requires %}{{ log.requires | jsonify }}{% else %}[]{% endif %},"date":"{{ log.date | date: "%b %Y" }}"}{% endfor %}]'>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Node detail modal -->
+  <div class="st-modal" id="stModal" hidden role="dialog" aria-modal="true" aria-labelledby="stModalTitle">
+    <div class="st-modal-inner">
+      <button class="st-modal-close" id="stModalClose" aria-label="Close">&#x2715;</button>
+      <div class="st-modal-status" id="stModalStatus"></div>
+      <h2 class="st-modal-title" id="stModalTitle"></h2>
+      <p class="st-modal-summary" id="stModalSummary"></p>
+      <div class="st-modal-meta" id="stModalMeta"></div>
+      <a class="st-modal-link" id="stModalLink" href="#">Read the log &rarr;</a>
+    </div>
+  </div>
+  <div class="st-modal-backdrop" id="stModalBackdrop" hidden></div>
+
+</main>
+
+<style>
+/* ── Skill Tree Page ─────────────────────────────────────────── */
+.skill-tree-page {
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 4rem;
+  gap: 0;
+}
+
+.st-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.st-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--aqua);
+  text-shadow: 0 0 28px rgba(0,229,204,0.4);
+  margin: 0 0 0.4rem;
+}
+.st-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ── Domain Navigator ──────────────────────────────────────── */
+.st-domain-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.st-nav-arrow {
+  background: none;
+  border: 1px solid var(--aqua-border);
+  color: var(--aqua);
+  font-size: 2rem;
+  line-height: 1;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), transform var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.st-nav-arrow:hover {
+  background: var(--aqua-subtle);
+  border-color: var(--aqua);
+  transform: scale(1.1);
+}
+.st-domain-label {
+  text-align: center;
+  min-width: 200px;
+}
+.st-domain-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--fg);
+  letter-spacing: 0.05em;
+  text-transform: capitalize;
+}
+.st-domain-count {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+/* ── Pip Indicators ──────────────────────────────────────────── */
+.st-pips {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.st-pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  border: none;
+  cursor: pointer;
+  transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+.st-pip.active {
+  background: var(--aqua);
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(0,229,204,0.6);
+}
+
+/* ── Canvas Wrapper ──────────────────────────────────────────── */
+.st-canvas-wrap {
+  width: 100%;
+  max-width: 860px;
+  position: relative;
+}
+.st-tree {
+  display: none;
+  width: 100%;
+}
+.st-tree.active {
+  display: block;
+}
+.st-tree svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* ── Nodes ───────────────────────────────────────────────────── */
+.st-node {
+  cursor: pointer;
+}
+.st-node circle.node-ring {
+  transition: r 0.15s ease, filter 0.15s ease;
+}
+.st-node:hover circle.node-ring,
+.st-node:focus circle.node-ring {
+  filter: brightness(1.3) drop-shadow(0 0 6px currentColor);
+}
+.st-node:focus { outline: none; }
+.st-node:focus circle.node-ring {
+  stroke-width: 3;
+}
+
+/* ── Modal ───────────────────────────────────────────────────── */
+.st-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,9,14,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+}
+.st-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 101;
+  padding: 1rem;
+}
+.st-modal[hidden] { display: none; }
+.st-modal-inner {
+  background: var(--bg-surface);
+  border: 1px solid var(--aqua-border-hi);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,229,204,0.12), 0 8px 32px rgba(0,0,0,0.6);
+}
+.st-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--ease), border-color var(--ease);
+}
+.st-modal-close:hover { color: var(--fg); border-color: var(--border-hover); }
+.st-modal-status {
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.st-modal-status.completed  { color: var(--aqua); }
+.st-modal-status.in-progress { color: var(--fuchsia); }
+.st-modal-status.not-started { color: var(--fg-muted); }
+.st-modal-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--fg);
+  margin: 0 0 0.75rem;
+  line-height: 1.3;
+  padding-right: 1.5rem;
+}
+.st-modal-summary {
+  font-size: var(--text-sm);
+  color: var(--fg-secondary);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+.st-modal-meta {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  margin-bottom: 1.2rem;
+}
+.st-modal-link {
+  display: inline-block;
+  color: var(--aqua);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-bottom: 1px solid var(--aqua-border);
+  padding-bottom: 1px;
+  transition: color var(--ease), border-color var(--ease);
+}
+.st-modal-link:hover { color: var(--fg); border-color: var(--border-hover); }
+.st-modal-link.locked {
+  color: var(--fg-muted);
+  border-color: transparent;
+  pointer-events: none;
+}
+</style>
+
+<script>
+(function() {
+  /* ── Data ─────────────────────────────────────────────────── */
+  const trees = [];
+  document.querySelectorAll('.st-tree').forEach(el => {
+    const logs = JSON.parse(el.dataset.logs || '[]');
+    trees.push({ el, domain: el.dataset.domain, logs });
+  });
+
+  if (!trees.length) return;
+
+  let current = 0;
+
+  /* ── Color scheme per status ─────────────────────────────── */
+  const STATUS = {
+    completed:   { fill: '#00e5cc', stroke: '#00e5cc', glow: 'rgba(0,229,204,0.5)',  text: '#0a090e', ring: 22 },
+    'in-progress':{ fill: '#1a1830', stroke: '#e040fb', glow: 'rgba(224,64,251,0.5)', text: '#e040fb', ring: 22 },
+    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.3)',   text: '#5c5470', ring: 20 },
+  };
+
+  /* ── Layout algorithm ────────────────────────────────────── */
+  function layoutTree(logs) {
+    // Build adjacency: who requires whom
+    const bySlug = {};
+    logs.forEach(l => bySlug[l.slug] = l);
+
+    // Find roots (no requirements or requirements not in this domain)
+    const slugSet = new Set(logs.map(l => l.slug));
+    const roots = logs.filter(l => !l.requires.length || !l.requires.some(r => slugSet.has(r)));
+
+    // BFS to assign columns (depth) and rows
+    const depth = {};
+    const queue = [...roots.map(r => ({ slug: r.slug, d: 0 }))];
+    const visited = new Set();
+    while (queue.length) {
+      const { slug, d } = queue.shift();
+      if (visited.has(slug)) continue;
+      visited.add(slug);
+      depth[slug] = Math.max(depth[slug] || 0, d);
+      const node = bySlug[slug];
+      if (!node) continue;
+      // Find children (nodes that require this one)
+      logs.forEach(l => {
+        if (l.requires.includes(slug)) queue.push({ slug: l.slug, d: d + 1 });
+      });
+    }
+    // Any unvisited get depth 0
+    logs.forEach(l => { if (depth[l.slug] === undefined) depth[l.slug] = 0; });
+
+    // Group by depth
+    const cols = {};
+    logs.forEach(l => {
+      const d = depth[l.slug] || 0;
+      if (!cols[d]) cols[d] = [];
+      cols[d].push(l.slug);
+    });
+
+    const COL_W = 180;
+    const ROW_H = 110;
+    const PAD_X = 60;
+    const PAD_Y = 60;
+
+    const maxCol = Math.max(...Object.keys(cols).map(Number));
+    const maxRows = Math.max(...Object.values(cols).map(a => a.length));
+
+    const positions = {};
+    Object.entries(cols).forEach(([col, slugs]) => {
+      const x = PAD_X + Number(col) * COL_W;
+      slugs.forEach((slug, i) => {
+        const totalH = (slugs.length - 1) * ROW_H;
+        const y = PAD_Y + (maxRows - 1) * ROW_H / 2 - totalH / 2 + i * ROW_H;
+        positions[slug] = { x, y };
+      });
+    });
+
+    const W = PAD_X * 2 + maxCol * COL_W;
+    const H = PAD_Y * 2 + (maxRows - 1) * ROW_H;
+
+    return { positions, W: Math.max(W, 200), H: Math.max(H, 140), depth };
+  }
+
+  /* ── Draw SVG for a tree ─────────────────────────────────── */
+  function drawTree(treeData) {
+    const { logs, el } = treeData;
+    if (!logs.length) {
+      el.innerHTML = '<p style="text-align:center;color:var(--fg-muted);padding:3rem 0">No logs yet in this domain.</p>';
+      return;
+    }
+
+    const slugSet = new Set(logs.map(l => l.slug));
+    const bySlug = {};
+    logs.forEach(l => bySlug[l.slug] = l);
+    const { positions, W, H } = layoutTree(logs);
+
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', `Skill tree for ${treeData.domain}`);
+
+    // Defs: glows
+    const defs = document.createElementNS(ns, 'defs');
+    ['completed','in-progress','not-started'].forEach(s => {
+      const f = document.createElementNS(ns, 'filter');
+      f.setAttribute('id', `glow-${s.replace('-','')}`);
+      f.setAttribute('x', '-50%'); f.setAttribute('y', '-50%');
+      f.setAttribute('width', '200%'); f.setAttribute('height', '200%');
+      const fe = document.createElementNS(ns, 'feGaussianBlur');
+      fe.setAttribute('in', 'SourceGraphic');
+      fe.setAttribute('stdDeviation', s === 'not-started' ? '2' : '4');
+      f.appendChild(fe);
+      defs.appendChild(f);
+    });
+    svg.appendChild(defs);
+
+    // Edges
+    logs.forEach(log => {
+      if (!log.requires.length) return;
+      log.requires.forEach(req => {
+        if (!slugSet.has(req)) return;
+        const from = positions[req];
+        const to   = positions[log.slug];
+        if (!from || !to) return;
+
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', from.x); line.setAttribute('y1', from.y);
+        line.setAttribute('x2', to.x);   line.setAttribute('y2', to.y);
+
+        // Edge color based on destination status
+        const st = log.status || 'not-started';
+        const color = st === 'completed' ? '#00e5cc' : st === 'in-progress' ? '#e040fb' : '#2a2640';
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('stroke-opacity', st === 'not-started' ? '0.3' : '0.5');
+        if (st === 'not-started') line.setAttribute('stroke-dasharray', '4 4');
+        svg.appendChild(line);
+      });
+    });
+
+    // Nodes
+    logs.forEach(log => {
+      const pos = positions[log.slug];
+      if (!pos) return;
+      const st = log.status || 'not-started';
+      const scheme = STATUS[st] || STATUS['not-started'];
+
+      const g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'st-node');
+      g.setAttribute('tabindex', '0');
+      g.setAttribute('role', 'button');
+      g.setAttribute('aria-label', `${log.title} — ${st}`);
+      g.setAttribute('data-slug', log.slug);
+
+      // Outer glow ring
+      const glow = document.createElementNS(ns, 'circle');
+      glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y);
+      glow.setAttribute('r', scheme.ring + 8);
+      glow.setAttribute('fill', scheme.glow);
+      glow.setAttribute('filter', `url(#glow-${st.replace('-','')})`);
+      g.appendChild(glow);
+
+      // Main circle
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', pos.x); circle.setAttribute('cy', pos.y);
+      circle.setAttribute('r', scheme.ring);
+      circle.setAttribute('fill', scheme.fill);
+      circle.setAttribute('stroke', scheme.stroke);
+      circle.setAttribute('stroke-width', '1.5');
+      circle.setAttribute('class', 'node-ring');
+      g.appendChild(circle);
+
+      // Pulse ring for in-progress
+      if (st === 'in-progress') {
+        const pulse = document.createElementNS(ns, 'circle');
+        pulse.setAttribute('cx', pos.x); pulse.setAttribute('cy', pos.y);
+        pulse.setAttribute('r', scheme.ring);
+        pulse.setAttribute('fill', 'none');
+        pulse.setAttribute('stroke', scheme.stroke);
+        pulse.setAttribute('stroke-width', '2');
+        pulse.setAttribute('opacity', '0.6');
+        pulse.innerHTML = `<animate attributeName="r" values="${scheme.ring};${scheme.ring+10};${scheme.ring}" dur="2.4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0;0.6" dur="2.4s" repeatCount="indefinite"/>`;
+        g.appendChild(pulse);
+      }
+
+      // Label
+      const label = document.createElementNS(ns, 'text');
+      label.setAttribute('x', pos.x);
+      label.setAttribute('y', pos.y + scheme.ring + 16);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('fill', st === 'not-started' ? '#5c5470' : '#e8e0f0');
+      label.setAttribute('font-size', '11');
+      label.setAttribute('font-family', 'Raleway, system-ui, sans-serif');
+      label.setAttribute('font-weight', '600');
+      // Wrap long titles
+      const words = log.title.split(' ');
+      const line1 = words.slice(0, Math.ceil(words.length/2)).join(' ');
+      const line2 = words.slice(Math.ceil(words.length/2)).join(' ');
+      if (line2) {
+        label.innerHTML = `<tspan x="${pos.x}" dy="0">${line1}</tspan><tspan x="${pos.x}" dy="14">${line2}</tspan>`;
+      } else {
+        label.textContent = line1;
+      }
+      g.appendChild(label);
+
+      g.addEventListener('click', () => openModal(log));
+      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(log); } });
+
+      svg.appendChild(g);
+    });
+
+    el.innerHTML = '';
+    el.appendChild(svg);
+  }
+
+  /* ── Modal ───────────────────────────────────────────────── */
+  const modal    = document.getElementById('stModal');
+  const backdrop = document.getElementById('stModalBackdrop');
+  const modalClose = document.getElementById('stModalClose');
+
+  function openModal(log) {
+    const st = log.status || 'not-started';
+    const statusEl = document.getElementById('stModalStatus');
+    statusEl.textContent = st.replace(/-/g, ' ');
+    statusEl.className = `st-modal-status ${st}`;
+    document.getElementById('stModalTitle').textContent = log.title;
+    document.getElementById('stModalSummary').textContent = log.summary || '';
+    document.getElementById('stModalMeta').textContent = log.date ? `Started ${log.date}` : '';
+    const link = document.getElementById('stModalLink');
+    link.href = log.url;
+    link.className = st === 'not-started' ? 'st-modal-link locked' : 'st-modal-link';
+    link.textContent = st === 'not-started' ? 'Not yet unlocked' : 'Read the log →';
+    modal.hidden = false;
+    backdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    backdrop.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  /* ── Domain Navigation ───────────────────────────────────── */
+  const pipsEl    = document.getElementById('stPips');
+  const nameEl    = document.getElementById('domainName');
+  const countEl   = document.getElementById('domainCount');
+
+  // Build pips
+  trees.forEach((t, i) => {
+    const pip = document.createElement('button');
+    pip.className = 'st-pip';
+    pip.setAttribute('role', 'tab');
+    pip.setAttribute('aria-label', t.domain);
+    pip.addEventListener('click', () => goTo(i));
+    pipsEl.appendChild(pip);
+  });
+
+  function goTo(idx) {
+    trees[current].el.classList.remove('active');
+    pipsEl.children[current].classList.remove('active');
+    current = (idx + trees.length) % trees.length;
+    trees[current].el.classList.add('active');
+    pipsEl.children[current].classList.add('active');
+    const t = trees[current];
+    nameEl.textContent = t.domain.charAt(0).toUpperCase() + t.domain.slice(1);
+    countEl.textContent = `${t.logs.length} log${t.logs.length !== 1 ? 's' : ''}`;
+  }
+
+  document.querySelector('.st-nav-prev').addEventListener('click', () => goTo(current - 1));
+  document.querySelector('.st-nav-next').addEventListener('click', () => goTo(current + 1));
+
+  // Keyboard arrow navigation when modal is closed
+  document.addEventListener('keydown', e => {
+    if (!modal.hidden) return;
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  // Draw all trees, activate first
+  trees.forEach(t => drawTree(t));
+  goTo(0);
+})();
+</script>
