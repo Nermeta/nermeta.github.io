@@ -43,34 +43,33 @@ function fetchBuffer(url, redirects = 5) {
 }
 
 /**
- * Compute dominant spine color from a JPEG buffer.
- * Uses pure JS pixel sampling — no native canvas needed.
- * Reads every Nth pixel, skips near-white and near-black, averages, darkens.
+ * Compute dominant spine color from a JPEG buffer using jimp (pure JS).
+ * Returns null if jimp is not installed — caller should warn.
  */
-function dominantColorFromJpeg(buf) {
-  // Minimal JPEG decoder: find all 0xFF 0xC0 SOF0 markers to get dimensions,
-  // then sample raw DCT output — too complex without a library.
-  // Instead: use @jimp/core which is pure JS.
-  // This function is called only when jimp is available (installed in Action).
+async function dominantColorFromJpeg(buf) {
+  let Jimp;
   try {
-    const Jimp = require('jimp');
-    return Jimp.read(buf).then(img => {
-      img.resize(16, 48);
-      let r = 0, g = 0, b = 0, n = 0;
-      img.scan(0, 0, 16, 48, (x, y, idx) => {
-        const R = img.bitmap.data[idx];
-        const G = img.bitmap.data[idx + 1];
-        const B = img.bitmap.data[idx + 2];
-        const br = (R + G + B) / 3;
-        if (br > 230 || br < 20) return;
-        r += R; g += G; b += B; n++;
-      });
-      if (n === 0) return null;
-      const f = 0.72;
-      return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
-    });
+    Jimp = require('jimp');
   } catch {
-    return Promise.resolve(null);
+    return null; // jimp not installed
+  }
+  try {
+    const img = await Jimp.read(buf);
+    img.resize(16, 48);
+    let r = 0, g = 0, b = 0, n = 0;
+    img.scan(0, 0, 16, 48, (x, y, idx) => {
+      const R = img.bitmap.data[idx];
+      const G = img.bitmap.data[idx + 1];
+      const B = img.bitmap.data[idx + 2];
+      const br = (R + G + B) / 3;
+      if (br > 230 || br < 20) return;
+      r += R; g += G; b += B; n++;
+    });
+    if (n === 0) return null;
+    const f = 0.72;
+    return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
+  } catch {
+    return null;
   }
 }
 
@@ -149,6 +148,8 @@ async function main() {
         fs.writeFileSync(filePath, newContent);
         console.log(`  [color] ${file} → spine_color: ${color}`);
         colored++;
+      } else {
+        console.warn(`  [warn] ${file} — could not compute spine color (run: npm install jimp --no-save)`);
       }
     }
   }
