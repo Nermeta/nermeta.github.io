@@ -3,7 +3,27 @@
 
   <!-- Collapsed button -->
    <button class="floating-chat-trigger" id="chatTrigger" aria-expanded="false" aria-controls="chatDrawer" aria-label="Ask Cheshire">
-    <img src="{{ '/assets/images/favicon-512.png' | relative_url }}" alt="" aria-hidden="true" width="56" height="56">
+    <svg class="chat-trigger-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="32" height="32">
+      <!-- Ears -->
+      <polygon points="6,16 10,4 16,14" fill="currentColor" opacity="0.85"/>
+      <polygon points="38,16 34,4 28,14" fill="currentColor" opacity="0.85"/>
+      <polygon points="7.5,14.5 10.5,7 15,13" fill="var(--fuchsia)" opacity="0.6"/>
+      <polygon points="36.5,14.5 33.5,7 29,13" fill="var(--fuchsia)" opacity="0.6"/>
+      <!-- Head -->
+      <ellipse cx="22" cy="24" rx="15" ry="14" fill="currentColor" opacity="0.9"/>
+      <!-- Eyes — Cheshire grin shape: slightly tilted -->
+      <ellipse cx="16" cy="21" rx="2.8" ry="3.2" fill="var(--bg)" opacity="1"/>
+      <ellipse cx="28" cy="21" rx="2.8" ry="3.2" fill="var(--bg)" opacity="1"/>
+      <ellipse cx="16.4" cy="21.5" rx="1.4" ry="2" fill="var(--aqua)" opacity="1"/>
+      <ellipse cx="28.4" cy="21.5" rx="1.4" ry="2" fill="var(--aqua)" opacity="1"/>
+      <!-- Grin -->
+      <path d="M15 28.5 Q22 33.5 29 28.5" stroke="var(--bg)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <!-- Whiskers -->
+      <line x1="2" y1="25" x2="13" y2="26" stroke="var(--bg)" stroke-width="1" opacity="0.6"/>
+      <line x1="2" y1="28" x2="13" y2="27.5" stroke="var(--bg)" stroke-width="1" opacity="0.6"/>
+      <line x1="31" y1="26" x2="42" y2="25" stroke="var(--bg)" stroke-width="1" opacity="0.6"/>
+      <line x1="31" y1="27.5" x2="42" y2="28" stroke="var(--bg)" stroke-width="1" opacity="0.6"/>
+    </svg>
     <span class="floating-chat-tooltip">Ask Cheshire</span>
   </button>
 

@@ -4,9 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/wonderland.css' | relative_url }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
 
   <style>
+/* Override wonderland.css body styles so emblems keeps its own look */
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%) !important;
+  padding-inline: 1rem !important;
+  padding-block: calc(64px + 2.5rem) 5rem !important;
+}
+
 :root {
   color-scheme: dark;
 
@@ -642,6 +650,8 @@ body {
 </head>
 <body>
 
+{% include nav.html %}
+
 <main class="emblems-page">
 
   <header class="emblems-header">
@@ -793,6 +803,43 @@ body {
     applyFilters();
   };
 
+  /* ── URL FILTER PARAMS ── */
+  // Applied when navigating from the drawer chat with filter params
+  // e.g. /certifications/?status=earned or /certifications/?topic=cloud
+  (function applyUrlFilters() {
+    const p = new URLSearchParams(window.location.search);
+    const status = p.get('status');
+    const topic  = p.get('topic');
+    if (status || topic) {
+      window.emblemFilter({ status: status || undefined, topic: topic || undefined });
+      // Clean up URL without reload
+      history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+
+  /* ── AI CHAT BRIDGE ── */
+  // Listen for site:action events fired by chat.js when the Worker returns an action.
+  // Supports filter_emblems: { status, topic } — maps directly to window.emblemFilter().
+  window.addEventListener('site:action', e => {
+    const { type, params } = e.detail || {};
+    if (type === 'filter_emblems' && window.emblemFilter) {
+      window.emblemFilter(params || {});
+    }
+  });
+
+  // Swap the floating drawer chips for Emblems-specific suggestions
+  // Runs after DOMContentLoaded to ensure the drawer HTML is ready.
+  document.addEventListener('DOMContentLoaded', () => {
+    const drawerChips = document.getElementById('drawerChips');
+    if (drawerChips) {
+      drawerChips.innerHTML = `
+        <button class="chip">Show earned certs</button>
+        <button class="chip">What cloud certs?</button>
+        <button class="chip">What's in progress?</button>
+      `;
+    }
+  });
+
   /* ── MODAL ── */
   function openModal(box) {
     const d = box.dataset;
@@ -845,6 +892,8 @@ body {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
+
+{% include floating-chat.html %}
 
 </body>
 </html>

@@ -705,6 +705,28 @@ tr:last-child td { border-bottom: none; }
   height: 44px;
 }
 
+.chat-trigger-icon {
+  color: var(--fg-secondary, rgba(180,165,210,0.7));
+  transition: color var(--ease);
+  flex-shrink: 0;
+}
+
+.floating-chat-trigger:hover .chat-trigger-icon {
+  color: var(--aqua, #00e5cc);
+}
+
+.chat-link {
+  color: var(--aqua, #00e5cc);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--aqua, #00e5cc) 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color var(--ease), text-decoration-color var(--ease);
+}
+.chat-link:hover {
+  color: var(--fuchsia, #e040fb);
+  text-decoration-color: color-mix(in srgb, var(--fuchsia, #e040fb) 60%, transparent);
+}
+
 .floating-chat-trigger:hover {
   box-shadow:
     0 0 28px rgba(0,229,204,0.28),

@@ -48,9 +48,17 @@ function checkRateLimit(ip) {
 // ---------------------------------------------------------------------------
 // CORS helper
 // ---------------------------------------------------------------------------
-function corsHeaders(allowedOrigin) {
+const ALLOWED_ORIGINS = [
+  'https://nermeta.github.io',
+  'https://www.nermeta.github.io',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+];
+
+function corsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    'Access-Control-Allow-Origin':  allowedOrigin,
+    'Access-Control-Allow-Origin':  allowed,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -126,7 +134,14 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - "filter_archive"   — params: { topic: "topic name" }                      → Deep dive archive
 - "filter_writeups"  — params: { platform: "HTB", category: "ad", difficulty: "medium" } → Writeups board
 - "navigate_to"      — params: { url: "/path/to/page/" }                    → Browser navigation
+- "filter_emblems"   — params: { status: "earned"|"in-progress"|"all", topic: "cloud"|"security"|"networking"|"systems"|"cybersecurity"|"all" } → Emblems badge grid filter. Use ONLY when you know the visitor is already on the Emblems page.
+- "navigate_to"      — params: { url: string, status?: string, topic?: string } → Navigate to a page, optionally with filter params. For cert questions, always use url "/certifications/" and include any filter the visitor asked for as status/topic params (e.g. "show earned certs" → { url: "/certifications/", status: "earned" }, "cloud certs" → { url: "/certifications/", topic: "cloud" }). Never link to individual cert slugs — they 404.
 - null               — no UI action needed
+
+## Cert reply rules
+- NEVER link to individual certification URLs (e.g. /certifications/gcp-ace/). They don't exist as pages.
+- For ANY cert question, use action "navigate_to" with url "/certifications/" plus the relevant status/topic filter params.
+- Keep cert replies SHORT and quippy (1-2 sentences max). The Emblems page shows the details.
 
 ## Privacy
 Only discuss content that appears in the Site Content Index below. Do not speculate about Wynter's personal life beyond what she has published. If asked something you don't have data for, say so warmly and suggest what you do have. Do not mention the context index in your reponses.
@@ -149,7 +164,7 @@ ${contextBlock}`;
 // ---------------------------------------------------------------------------
 export default {
   async fetch(request, env, ctx) {
-    const allowedOrigin = env.ALLOWED_ORIGIN || 'https://nermeta.github.io';
+    const allowedOrigin = request.headers.get('Origin') || env.ALLOWED_ORIGIN || 'https://nermeta.github.io';
 
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
@@ -219,12 +234,13 @@ export default {
     let cfRes;
     try {
       cfRes = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/ai/v1/chat/completions`,
+        `https://gateway.ai.cloudflare.com/v1/${env.CF_ACCOUNT_ID}/wynters-wonderland/workers-ai/v1/chat/completions`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${env.CF_API_TOKEN}`,
+            'cf-aig-authorization': `Bearer ${env.CF_API_TOKEN}`,
           },
           body: JSON.stringify(cfPayload),
         }
