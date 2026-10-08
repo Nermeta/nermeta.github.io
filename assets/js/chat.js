@@ -160,6 +160,14 @@ function appendAiResponse(container, data, source) {
     return;
   }
 
+  // Silent filter action (e.g. filter_shelf with no message): just fire and return
+  if (!data.message?.trim() && data.action?.type) {
+    window.dispatchEvent(new CustomEvent('site:action', {
+      detail: { type: data.action.type, params: data.action.params || {}, source }
+    }));
+    return;
+  }
+
   const div = document.createElement('div');
   div.className = 'msg-ai';
 
