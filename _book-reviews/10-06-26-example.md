@@ -9,6 +9,7 @@ spine_color: "#c8a96e"
 genre: [nonfiction, productivity, self-development]
 rating: 5
 finished_date: 2026-01-28
+pages: 320
 tags: [habits, systems, behavior-change, productivity]
 audience: [general, tech]
 summary: "A practical framework for building good habits and breaking bad ones through small, compounding changes. One of the most actionable books I've read."

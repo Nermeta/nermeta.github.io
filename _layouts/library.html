@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/wonderland.css' | relative_url }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
+
+  <style>
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%) !important;
+  padding-inline: 1rem !important;
+  padding-block: calc(64px + 2.5rem) 5rem !important;
+}
+
+:root {
+  color-scheme: dark;
+
+  --wood-dark:   #1a0f05;
+  --wood-mid:    #2e1a08;
+  --wood-light:  #4a2c0f;
+  --brass:       #b8914a;
+  --brass-dim:   #8a6a30;
+  --brass-hi:    #d4af6a;
+
+  --aqua:        #00e5cc;
+  --aqua-dim:    #00b8a4;
+  --aqua-border: rgba(0,229,204,0.18);
+  --fuchsia:     #e040fb;
+  --fuchsia-dim: #b030c8;
+
+  --font-display: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
+  --font-body:    'Raleway', system-ui, sans-serif;
+  --font-mono:    'Share Tech Mono', monospace;
+
+  --fg:          #ede5ff;
+  --fg-muted:    #6a5e88;
+  --ease:        0.28s ease;
+
+  /* Page size brackets → spine height range */
+  --spine-min-h: 140px;
+  --spine-max-h: 220px;
+
+  /* Shared SVG textures */
+  --tex-wood: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='wood'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.018 0.006' numOctaves='5' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.15'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23wood)' opacity='0.38'/%3E%3C/svg%3E");
+  --tex-velvet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='velvet'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75 0.65' numOctaves='4' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='soft-light'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23velvet)' opacity='0.22'/%3E%3C/svg%3E");
+  --tex-wood2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='120'%3E%3Cfilter id='wood2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.012 0.004' numOctaves='6' seed='22' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.2'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='280' height='120' filter='url(%23wood2)' opacity='0.45'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  color: var(--fg);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+.library-page { max-width: 960px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.library-header { text-align: center; margin-bottom: 1rem; }
+.library-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  color: var(--brass-hi);
+  text-shadow: 0 0 30px rgba(184,145,74,0.4), 0 2px 4px rgba(0,0,0,0.8);
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.04em;
+}
+.library-header p {
+  color: var(--fg-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.brass-rule {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+.brass-rule::before, .brass-rule::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brass-dim), var(--brass), var(--brass-dim), transparent);
+}
+.brass-diamond {
+  width: 7px; height: 7px; background: var(--brass);
+  transform: rotate(45deg); box-shadow: 0 0 6px rgba(184,145,74,0.5);
+}
+
+/* ── FILTERS ── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  justify-content: center; margin-bottom: 2.25rem;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.filter-label {
+  font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--brass-dim); padding: 0 0.2rem;
+}
+.filter-btn {
+  background: transparent;
+  border: 1px solid rgba(184,145,74,0.25);
+  color: var(--fg-muted);
+  font-family: var(--font-body);
+  font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.3rem 0.85rem; border-radius: 999px; cursor: pointer;
+  transition: all var(--ease);
+}
+.filter-btn:hover { border-color: var(--brass); color: var(--brass-hi); background: rgba(184,145,74,0.06); }
+.filter-btn.active {
+  background: rgba(0,229,204,0.08); border-color: var(--aqua-dim); color: var(--aqua);
+  box-shadow: 0 0 12px rgba(0,229,204,0.18);
+}
+.filter-btn[data-filter="rating"].active {
+  background: rgba(224,64,251,0.08); border-color: var(--fuchsia-dim); color: var(--fuchsia);
+  box-shadow: 0 0 12px rgba(224,64,251,0.18);
+}
+.filter-divider { width: 1px; height: 20px; background: rgba(184,145,74,0.2); margin: 0 0.35rem; align-self: center; }
+
+/* ════════════════════════════════════════════
+   BOOKCASE OUTER CABINET
+════════════════════════════════════════════ */
+.bookcase-outer {
+  position: relative;
+  background:
+    var(--tex-wood2),
+    var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.012) 18px, rgba(255,255,255,0.012) 20px),
+    linear-gradient(180deg, #3d2208 0%, #2a1606 40%, #1e0f04 70%, #2a1606 100%);
+  border-radius: 10px;
+  padding: 0 20px;
+  box-shadow:
+    0 50px 120px rgba(0,0,0,0.9),
+    0 20px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(212,175,106,0.4),
+    inset 0 -1px 0 rgba(0,0,0,0.8),
+    inset 2px 0 0 rgba(212,175,106,0.1),
+    inset -2px 0 0 rgba(0,0,0,0.5);
+}
+
+.case-top-cap {
+  height: 36px;
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  border-bottom: 2px solid rgba(212,175,106,0.5);
+  position: relative;
+  background:
+    var(--tex-wood2), var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.01) 18px, rgba(255,255,255,0.01) 20px),
+    linear-gradient(180deg, #4a2c0f 0%, #3a2008 50%, #2e1a08 100%);
+}
+.case-top-cap::before {
+  content: '';
+  position: absolute;
+  bottom: -5px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.4), transparent);
+}
+.plate-ornament {
+  font-family: var(--font-display);
+  font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--brass-dim);
+}
+.plate-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(184,145,74,0.3), transparent); }
+
+.case-bottom-cap {
+  height: 28px;
+  border-top: 2px solid rgba(212,175,106,0.4);
+  position: relative;
+  background:
+    var(--tex-wood2), var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.01) 18px, rgba(255,255,255,0.01) 20px),
+    linear-gradient(180deg, #2e1a08 0%, #3a2008 60%, #4a2c0f 100%);
+}
+.case-bottom-cap::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
+}
+
+/* ── SHELF INTERIOR ── */
+.shelf-interior {
+  position: relative;
+  background:
+    var(--tex-velvet),
+    linear-gradient(180deg, #0a0818 0%, #07060f 50%, #0a0818 100%);
+  box-shadow:
+    inset 18px 0 30px rgba(0,0,0,0.7),
+    inset -18px 0 30px rgba(0,0,0,0.7),
+    inset 0 0 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+  padding: 28px 16px 0;
+}
+
+/* overhead glow */
+.shelf-interior::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 80px;
+  background:
+    radial-gradient(ellipse 60% 100% at 30% -5%, rgba(224,64,251,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 100% at 70% -5%, rgba(0,229,204,0.12) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* glass sheen over the whole shelf */
+.glass-pane {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 200;
+  background: linear-gradient(
+    118deg,
+    transparent 0%, transparent 28%,
+    rgba(210,225,255,0.025) 32%, rgba(210,225,255,0.015) 35%,
+    rgba(255,255,255,0.007) 38%, transparent 42%,
+    transparent 68%, rgba(255,255,255,0.008) 71%,
+    rgba(255,255,255,0.004) 73%, transparent 76%
+  );
+}
+
+/* ════════════════════════════════════════════
+   BOOK SHELF ROW
+════════════════════════════════════════════ */
+.shelf-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;      /* books stand on the shelf plank */
+  gap: 3px;
+  min-height: 240px;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+  z-index: 1;
+}
+
+/* The wooden shelf plank */
+.shelf-plank {
+  position: relative;
+  height: 22px;
+  background:
+    var(--tex-wood2), var(--tex-wood),
+    repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,255,255,0.015) 18px, rgba(255,255,255,0.015) 20px),
+    linear-gradient(180deg, #5a3614 0%, #3e2208 35%, #2c1606 65%, #3e2208 100%);
+  border-top: 2px solid rgba(212,175,106,0.55);
+  border-bottom: 1px solid rgba(0,0,0,0.8);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(212,175,106,0.3),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+/* empty state */
+.empty-state {
+  display: none; text-align: center;
+  padding: 3rem 1rem;
+  color: var(--fg-muted); font-style: italic; font-size: 0.82rem;
+  width: 100%;
+  align-self: center;
+}
+
+/* ════════════════════════════════════════════
+   BOOK SPINE
+════════════════════════════════════════════ */
+.book-spine {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 2px 0 0 2px;
+  overflow: hidden;
+  transition: transform var(--ease), box-shadow var(--ease);
+  /* height + width set inline per-book via JS */
+  box-shadow:
+    2px 0 4px rgba(0,0,0,0.5),
+    inset -2px 0 4px rgba(0,0,0,0.3),
+    inset 1px 0 0 rgba(255,255,255,0.06);
+}
+.book-spine[hidden] { display: none !important; }
+
+.book-spine:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    4px 0 16px rgba(0,0,0,0.7),
+    0 0 30px rgba(0,229,204,0.15),
+    inset -2px 0 4px rgba(0,0,0,0.3),
+    inset 1px 0 0 rgba(255,255,255,0.1);
+  z-index: 10;
+}
+
+/* Cover art as spine texture — cropped left strip */
+.spine-cover {
+  position: absolute;
+  inset: 0;
+  background-size: auto 100%;   /* full height, natural width */
+  background-position: center top;
+  background-repeat: no-repeat;
+  /* Fallback color set inline */
+}
+
+/* Darkening overlay so title stays readable */
+.spine-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.25) 100%
+  );
+}
+
+/* Spine label — rotated title */
+.spine-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  gap: 6px;
+  z-index: 2;
+}
+
+.spine-title {
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.7);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 85%;
+  letter-spacing: 0.04em;
+}
+
+.spine-author {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  color: rgba(255,255,255,0.6);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 40%;
+  letter-spacing: 0.06em;
+}
+
+/* top edge highlight — looks like cloth/paper binding */
+.spine-top-edge {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
+  z-index: 3;
+}
+
+/* ════════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(5,4,15,0.88);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.modal {
+  background: linear-gradient(160deg, #1a1028 0%, #100c1e 60%, #0d0a18 100%);
+  border: 1px solid rgba(184,145,74,0.3);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.8),
+    0 8px 40px rgba(0,0,0,0.7),
+    0 0 60px rgba(0,229,204,0.06),
+    inset 0 1px 0 rgba(184,145,74,0.15);
+  max-width: 480px; width: 100%;
+  position: relative;
+  transform: translateY(12px);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+}
+.modal-backdrop.open .modal { transform: translateY(0); }
+
+.modal-close {
+  position: absolute; top: 0.85rem; right: 0.9rem;
+  background: none; border: none; cursor: pointer;
+  color: var(--fg-muted); font-size: 1.1rem; line-height: 1;
+  padding: 0.2rem 0.4rem; border-radius: 3px;
+  transition: color var(--ease); z-index: 2;
+}
+.modal-close:hover { color: var(--brass-hi); }
+
+/* Cover art header band */
+.modal-cover-band {
+  width: 100%;
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  background: #0d0a18;
+}
+.modal-cover-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  display: block;
+}
+.modal-cover-img.loaded { opacity: 1; }
+.modal-cover-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 30%,
+    rgba(26,16,40,0.6) 70%,
+    #1a1028 100%
+  );
+}
+
+/* thumbnail in content area */
+.modal-book-row {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 1.25rem 1.5rem 0;
+}
+.modal-thumb {
+  width: 64px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  margin-top: -3.5rem;
+  position: relative;
+  z-index: 1;
+}
+.modal-thumb img {
+  width: 100%; display: block; border-radius: 2px;
+}
+.modal-book-info { flex: 1; min-width: 0; }
+.modal-title {
+  font-family: var(--font-body); font-size: 1rem; font-weight: 700;
+  color: var(--brass-hi); margin: 0 0 0.2rem; line-height: 1.3;
+}
+.modal-author {
+  font-size: 0.72rem; color: var(--fg-muted); margin: 0 0 0.4rem;
+}
+.modal-stars {
+  font-size: 0.82rem; color: var(--brass); letter-spacing: 0.05em;
+}
+
+.modal-body { padding: 1rem 1.5rem 1.5rem; }
+
+.modal-divider {
+  height: 1px; margin: 0.9rem 0;
+  background: linear-gradient(90deg, transparent, rgba(184,145,74,0.25), transparent);
+}
+.modal-summary {
+  font-size: 0.8rem; color: var(--fg); line-height: 1.65;
+  margin: 0 0 0.9rem;
+}
+.modal-tags {
+  display: flex; flex-wrap: wrap; gap: 0.35rem;
+  margin-bottom: 1.1rem;
+}
+.modal-tag {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  background: rgba(0,229,204,0.07); border: 1px solid rgba(0,229,204,0.2);
+  color: var(--aqua-dim);
+}
+.modal-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+.modal-meta-sm {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--fg-muted); letter-spacing: 0.08em;
+}
+.modal-review-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: rgba(184,145,74,0.1); border: 1px solid rgba(184,145,74,0.35);
+  color: var(--brass-hi); border-radius: 4px;
+  font-family: var(--font-body); font-size: 0.7rem;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.5rem 1rem; text-decoration: none;
+  transition: all var(--ease);
+}
+.modal-review-btn:hover {
+  background: rgba(184,145,74,0.18); border-color: var(--brass);
+  box-shadow: 0 0 16px rgba(184,145,74,0.2);
+}
+.modal-review-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .shelf-row { min-height: 180px; }
+}
+  </style>
+</head>
+<body>
+
+{% include nav.html %}
+
+<main class="library-page">
+
+  <header class="library-header">
+    <h1>Library</h1>
+    <p>Books Read &amp; Reviewed</p>
+  </header>
+
+  <div class="brass-rule">
+    <div class="brass-diamond"></div>
+    <div class="brass-diamond"></div>
+    <div class="brass-diamond"></div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Genre</span>
+      <button class="filter-btn active" data-filter="genre" data-value="all">All</button>
+      {% assign all_genres = "" | split: "" %}
+      {% for book in site.book-reviews %}
+        {% for g in book.genre %}
+          {% assign all_genres = all_genres | push: g %}
+        {% endfor %}
+      {% endfor %}
+      {% assign all_genres = all_genres | uniq | sort %}
+      {% for g in all_genres %}
+      <button class="filter-btn" data-filter="genre" data-value="{{ g }}">{{ g | capitalize }}</button>
+      {% endfor %}
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Rating</span>
+      <button class="filter-btn active" data-filter="rating" data-value="all">All</button>
+      <button class="filter-btn" data-filter="rating" data-value="5">★★★★★</button>
+      <button class="filter-btn" data-filter="rating" data-value="4">★★★★+</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ THE BOOKCASE ═══════════ -->
+  <div class="bookcase-outer">
+    <div class="case-top-cap">
+      <div class="plate-line"></div>
+      <span class="plate-ornament">✦ &nbsp; Wynter's Wonderland &nbsp; ✦</span>
+      <div class="plate-line"></div>
+    </div>
+
+    <div class="shelf-interior">
+      <div class="glass-pane"></div>
+
+      <!-- Book spines rendered here -->
+      <div class="shelf-row" id="shelfRow">
+
+        {% assign books = site.book-reviews | sort: "finished_date" | reverse %}
+        {% for book in books %}
+        <div class="book-spine"
+          data-genre="{{ book.genre | join: ',' }}"
+          data-rating="{{ book.rating }}"
+          data-title="{{ book.title }}"
+          data-author="{{ book.author }}"
+          data-isbn="{{ book.isbn }}"
+          data-summary="{{ book.summary }}"
+          data-tags="{{ book.tags | join: '|' }}"
+          data-rating-val="{{ book.rating }}"
+          data-finished="{{ book.finished_date | date: '%b %Y' }}"
+          data-pages="{{ book.pages | default: 250 }}"
+          data-spine-color="{{ book.spine_color | default: '#3a2a6e' }}"
+          data-url="{{ book.url | relative_url }}"
+          role="button" tabindex="0"
+          aria-label="View details for {{ book.title }}">
+          <div class="spine-cover"></div>
+          <div class="spine-overlay"></div>
+          <div class="spine-top-edge"></div>
+          <div class="spine-label">
+            <span class="spine-title">{{ book.title }}</span>
+            <span class="spine-author">{{ book.author }}</span>
+          </div>
+        </div>
+        {% endfor %}
+
+        <p class="empty-state" id="emptyState">No books match those filters.</p>
+      </div><!-- /.shelf-row -->
+
+      <!-- The wooden shelf plank -->
+      <div class="shelf-plank"></div>
+
+    </div><!-- /.shelf-interior -->
+
+    <div class="case-bottom-cap"></div>
+  </div><!-- /.bookcase-outer -->
+
+</main>
+
+<!-- Detail modal -->
+<div class="modal-backdrop" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-cover-band">
+      <img class="modal-cover-img" id="modalCoverImg" src="" alt="">
+      <div class="modal-cover-fade"></div>
+    </div>
+    <div class="modal-book-row">
+      <div class="modal-thumb">
+        <img id="modalThumbImg" src="" alt="">
+      </div>
+      <div class="modal-book-info">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-author" id="modalAuthor"></div>
+        <div class="modal-stars" id="modalStars"></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+      <p class="modal-summary" id="modalSummary"></p>
+      <div class="modal-tags" id="modalTags"></div>
+      <div class="modal-footer">
+        <span class="modal-meta-sm" id="modalFinished"></span>
+        <a class="modal-review-btn" id="modalReviewBtn" href="#">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V7M8 1h3m0 0v3m0-3L5 7"/>
+          </svg>
+          Read Full Review
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ content }}
+
+<script>
+(function () {
+  const COVER_BASE = 'https://covers.openlibrary.org/b/isbn/';
+
+  // ── SPINE SIZING ───────────────────────────────────────────────
+  // Pages → spine height (140–220px) and width (22–36px)
+  function spineHeight(pages) {
+    const p = Math.min(Math.max(pages || 200, 80), 800);
+    return Math.round(140 + ((p - 80) / (800 - 80)) * (220 - 140));
+  }
+  function spineWidth(pages) {
+    const p = Math.min(Math.max(pages || 200, 80), 800);
+    return Math.round(22 + ((p - 80) / (800 - 80)) * (36 - 22));
+  }
+
+  // ── COVER ART ──────────────────────────────────────────────────
+  function loadSpineCover(spine) {
+    const isbn  = spine.dataset.isbn;
+    const color = spine.dataset.spineColor || '#3a2a6e';
+    const cover = spine.querySelector('.spine-cover');
+
+    // Always set fallback color first
+    cover.style.backgroundColor = color;
+
+    if (!isbn) return;
+
+    const img = new Image();
+    img.onload = () => {
+      cover.style.backgroundImage = `url('${img.src}')`;
+      cover.style.backgroundSize  = 'auto 100%';
+      cover.style.backgroundPosition = 'center top';
+    };
+    // -S = small thumbnail, enough for a narrow spine
+    img.src = `${COVER_BASE}${isbn}-M.jpg`;
+  }
+
+  // ── INIT SPINES ────────────────────────────────────────────────
+  const allSpines = Array.from(document.querySelectorAll('.book-spine'));
+  allSpines.forEach(spine => {
+    const pages = parseInt(spine.dataset.pages, 10) || 250;
+    spine.style.height = spineHeight(pages) + 'px';
+    spine.style.width  = spineWidth(pages)  + 'px';
+    loadSpineCover(spine);
+  });
+
+  // ── FILTERS ────────────────────────────────────────────────────
+  const empty        = document.getElementById('emptyState');
+  let activeGenre  = 'all';
+  let activeRating = 'all';
+
+  function applyFilters() {
+    let visible = 0;
+    allSpines.forEach(spine => {
+      const genres  = (spine.dataset.genre || '').split(',').map(s => s.trim());
+      const rating  = parseInt(spine.dataset.ratingVal, 10) || 0;
+      const gMatch  = activeGenre  === 'all' || genres.includes(activeGenre);
+      const rMatch  = activeRating === 'all' ||
+                      (activeRating === '5' && rating === 5) ||
+                      (activeRating === '4' && rating >= 4);
+      const show = gMatch && rMatch;
+      spine.hidden = !show;
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.filter;
+      document.querySelectorAll(`.filter-btn[data-filter="${g}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (g === 'genre')  activeGenre  = btn.dataset.value;
+      if (g === 'rating') activeRating = btn.dataset.value;
+      applyFilters();
+    });
+  });
+
+  // ── MODAL ──────────────────────────────────────────────────────
+  const modal      = document.getElementById('bookModal');
+  const modalClose = document.getElementById('modalClose');
+
+  function stars(n) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function openModal(spine) {
+    const d      = spine.dataset;
+    const isbn   = d.isbn;
+    const cover  = isbn ? `${COVER_BASE}${isbn}-L.jpg` : '';
+    const thumb  = isbn ? `${COVER_BASE}${isbn}-M.jpg` : '';
+
+    // Cover band
+    const coverImg = document.getElementById('modalCoverImg');
+    coverImg.classList.remove('loaded');
+    if (cover) {
+      coverImg.src = cover;
+      coverImg.onload = () => coverImg.classList.add('loaded');
+      coverImg.alt = d.title + ' cover';
+    } else {
+      coverImg.src = '';
+    }
+
+    // Thumbnail
+    const thumbImg = document.getElementById('modalThumbImg');
+    thumbImg.src = thumb;
+    thumbImg.alt = d.title;
+
+    document.getElementById('modalTitle').textContent   = d.title  || '';
+    document.getElementById('modalAuthor').textContent  = d.author || '';
+    document.getElementById('modalStars').textContent   = stars(parseInt(d.ratingVal, 10) || 0);
+    document.getElementById('modalSummary').textContent = d.summary || '';
+    document.getElementById('modalFinished').textContent = d.finished ? 'Finished ' + d.finished : '';
+
+    // Tags
+    const tagsEl = document.getElementById('modalTags');
+    tagsEl.innerHTML = '';
+    if (d.tags) {
+      d.tags.split('|').filter(Boolean).forEach(t => {
+        const tag = document.createElement('span');
+        tag.className = 'modal-tag';
+        tag.textContent = t.trim();
+        tagsEl.appendChild(tag);
+      });
+    }
+
+    // Review link
+    document.getElementById('modalReviewBtn').href = d.url || '#';
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  allSpines.forEach(spine => {
+    spine.addEventListener('click', () => openModal(spine));
+    spine.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(spine); }
+    });
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── AI CHAT BRIDGE ─────────────────────────────────────────────
+  window.addEventListener('site:action', e => {
+    const { type, params } = e.detail || {};
+    if (type === 'filter_shelf' && params?.genres?.length) {
+      const genre = params.genres[0].toLowerCase();
+      document.querySelectorAll('.filter-btn[data-filter="genre"]').forEach(b => b.classList.remove('active'));
+      const match = document.querySelector(`.filter-btn[data-filter="genre"][data-value="${genre}"]`);
+      if (match) { match.classList.add('active'); activeGenre = genre; }
+      else { activeGenre = 'all'; }
+      applyFilters();
+    }
+  });
+
+  // Page-specific drawer chips
+  document.addEventListener('DOMContentLoaded', () => {
+    const drawerChips = document.getElementById('drawerChips');
+    if (drawerChips) {
+      drawerChips.innerHTML = `
+        <button class="chip">What has Wynter read?</button>
+        <button class="chip">Any 5-star books?</button>
+        <button class="chip">Recommend something</button>
+      `;
+    }
+  });
+
+})();
+</script>
+
+{% include floating-chat.html %}
+
+</body>
+</html>
