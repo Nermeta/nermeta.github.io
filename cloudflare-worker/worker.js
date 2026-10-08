@@ -124,7 +124,9 @@ Every response MUST be in this exact envelope:
   }
 }
 
-The "cards" array is reserved for future link card rendering — leave as empty array for now.
+The "cards" array renders clickable result cards below your message. Populate it when returning specific content items (certs, posts, books, etc.) so the visitor can click through. Each card:
+{ "title": "Item title", "url": "/page/url/", "type": "certification|post|book|writeup|etc", "date": "optional date string" }
+For cert questions: populate cards with the relevant certifications from the index (url = /certifications/, type = "certification"). Always use /certifications/ as the url for certs — never individual cert slugs.
 
 Action types you can trigger (set "type" to one of these, or null if no UI action needed):
 - "highlight_nodes"  — params: { subjects: ["subject name", ...] }         → Skill tree
