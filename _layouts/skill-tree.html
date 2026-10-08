@@ -611,16 +611,9 @@ layout: default
       ).join('');
       g.appendChild(label);
 
-      g.addEventListener('click', () => {
-        highlightPath(svg, log.slug, logs, nodeGroupMap, edgeLineMap);
-        openModal(log);
-      });
+      g.addEventListener('click', () => openModal(log));
       g.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          highlightPath(svg, log.slug, logs, nodeGroupMap, edgeLineMap);
-          openModal(log);
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(log); }
       });
 
       nodeGroupMap[log.slug] = g;
@@ -707,8 +700,6 @@ layout: default
     modal.hidden = true;
     backdrop.hidden = true;
     document.body.style.overflow = '';
-    // Clear path highlight when modal closes
-    if (trees[current] && trees[current].svg) clearHighlight(trees[current].svg);
   }
 
   modalClose.addEventListener('click', closeModal);
@@ -779,43 +770,17 @@ layout: default
   function applyFilter() {
     const t = trees[current];
     if (!t || !t.svg) return;
-    clearHighlight(t.svg);
-    if (activeFilter === 'all') {
-      t.svg.querySelectorAll('.node-g').forEach(g => { g.style.opacity = ''; });
-      t.svg.querySelectorAll('.edge-line').forEach(l => { l.style.opacity = ''; });
-      return;
-    }
-    // Highlight matching nodes + their full paths
-    const matchingSlugs = new Set(
-      t.logs.filter(l => (l.status || 'not-started') === activeFilter).map(l => l.slug)
-    );
-    if (!matchingSlugs.size) return;
-
-    // Expand each match to include its full ancestor/descendant path
-    const parents  = {}, children = {};
-    t.logs.forEach(l => { children[l.slug] = []; parents[l.slug] = []; });
-    t.logs.forEach(l => {
-      l.requires.forEach(r => {
-        if (t.nodeGroupMap[r]) { children[r].push(l.slug); parents[l.slug].push(r); }
-      });
+    // Filters just show/hide nodes by status — no path tracing
+    Object.entries(t.nodeGroupMap).forEach(([slug, g]) => {
+      const match = activeFilter === 'all' || g.dataset.status === activeFilter;
+      g.style.opacity = match ? '' : '0.08';
+      g.style.pointerEvents = match ? '' : 'none';
     });
-
-    const onPath = new Set();
-    matchingSlugs.forEach(slug => {
-      const q = [slug];
-      while (q.length) {
-        const cur = q.shift();
-        if (onPath.has(cur)) continue;
-        onPath.add(cur);
-        [...(parents[cur] || []), ...(children[cur] || [])].forEach(n => q.push(n));
-      }
-    });
-
-    t.svg.classList.add('has-highlight');
-    Object.entries(t.nodeGroupMap).forEach(([s, g]) => g.classList.toggle('on-path', onPath.has(s)));
+    // Dim edges where both endpoints are hidden
     t.svg.querySelectorAll('.edge-line').forEach(line => {
-      const f = line.dataset.from, to = line.dataset.to;
-      line.classList.toggle('on-path', onPath.has(f) && onPath.has(to));
+      const fMatch = activeFilter === 'all' || (t.nodeGroupMap[line.dataset.from] && t.nodeGroupMap[line.dataset.from].dataset.status === activeFilter);
+      const tMatch = activeFilter === 'all' || (t.nodeGroupMap[line.dataset.to]   && t.nodeGroupMap[line.dataset.to].dataset.status   === activeFilter);
+      line.style.opacity = (fMatch || tMatch) ? '' : '0.06';
     });
   }
 })();
