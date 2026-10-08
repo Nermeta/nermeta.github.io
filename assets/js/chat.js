@@ -155,9 +155,14 @@ function appendAiResponse(container, data, source) {
         ? `<span class="result-card-tag">${escapeHtml(card.type)}</span>` : '';
       const dateHtml = card.date
         ? `<span>${escapeHtml(card.date)}</span>` : '';
+      const imgHtml = card.badge_image
+        ? `<img src="${escapeHtml(card.badge_image)}" alt="" class="result-card-badge" loading="lazy">` : '';
       cardEl.innerHTML = `
-        <a href="${escapeHtml(card.url || '#')}">${escapeHtml(card.title || 'Untitled')}</a>
-        <div class="result-card-meta">${tagHtml}${dateHtml}</div>`;
+        ${imgHtml}
+        <div class="result-card-body">
+          <a href="${escapeHtml(card.url || '#')}">${escapeHtml(card.title || 'Untitled')}</a>
+          <div class="result-card-meta">${tagHtml}${dateHtml}</div>
+        </div>`;
       cardsDiv.appendChild(cardEl);
     });
     container.appendChild(cardsDiv);

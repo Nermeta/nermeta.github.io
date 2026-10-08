@@ -1,6 +1,22 @@
 {
-  "generated_at": "2026-10-07T18:21:44.767Z",
+  "generated_at": "2026-10-08T02:08:11.011Z",
   "entries": [
+    {
+      "type": "certification",
+      "title": "Google Cloud Associate Cloud Engineer",
+      "url": "/certifications/gcp-ace/",
+      "date": "2026-12-01",
+      "topic": "cloud",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "Google Cloud",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/gcp-ace.png",
+      "status": "in-progress"
+    },
     {
       "type": "post",
       "title": "Welcome to Jekyll!",
@@ -10,6 +26,22 @@
       "tags": [],
       "audience": [],
       "summary": "You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `je…"
+    },
+    {
+      "type": "certification",
+      "title": "Certified Ethical Hacker",
+      "url": "/certifications/ceh/",
+      "date": "2026-06-01",
+      "topic": "security",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "EC-Council",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/ceh.png",
+      "status": "in-progress"
     },
     {
       "type": "certification",
@@ -33,7 +65,9 @@
       "issuer": "Google / Coursera",
       "cert_date": "2026-03-15",
       "credential_url": "https://coursera.org/verify/professional-cert/PLACEHOLDER",
-      "expiry": null
+      "expiry": null,
+      "badge_image": null,
+      "status": "earned"
     },
     {
       "type": "writeup",
@@ -161,6 +195,70 @@
       "summary": "An ongoing log of my Security+ study sessions — what I'm covering, where I'm getting stuck, and what's clicking.",
       "subject": "CompTIA Security+",
       "status": "in-progress"
+    },
+    {
+      "type": "certification",
+      "title": "CompTIA Security+",
+      "url": "/certifications/security-plus/",
+      "date": "2025-01-15",
+      "topic": "security",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "CompTIA",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/security-plus.png",
+      "status": "earned"
+    },
+    {
+      "type": "certification",
+      "title": "AWS Solutions Architect Associate",
+      "url": "/certifications/aws-saa/",
+      "date": "2024-09-01",
+      "topic": "cloud",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "Amazon Web Services",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/aws-saa.png",
+      "status": "earned"
+    },
+    {
+      "type": "certification",
+      "title": "CompTIA Linux+",
+      "url": "/certifications/linux-plus/",
+      "date": "2024-06-01",
+      "topic": "systems",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "CompTIA",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/linux-plus.png",
+      "status": "earned"
+    },
+    {
+      "type": "certification",
+      "title": "CompTIA Network+",
+      "url": "/certifications/network-plus/",
+      "date": "2024-03-01",
+      "topic": "networking",
+      "tags": [],
+      "audience": [],
+      "summary": "",
+      "issuer": "CompTIA",
+      "cert_date": null,
+      "credential_url": null,
+      "expiry": null,
+      "badge_image": "/assets/images/badges/network-plus.png",
+      "status": "earned"
     }
   ]
 }

@@ -156,6 +156,8 @@ for (const { dir, type } of COLLECTIONS) {
       entry.cert_date      = meta.cert_date      || null;
       entry.credential_url = meta.credential_url || null;
       entry.expiry         = meta.expiry         || null;
+      entry.badge_image    = meta.badge_image    || null;
+      entry.status         = meta.status         || 'earned';
     }
 
     if (type === 'book-review') {

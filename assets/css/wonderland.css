@@ -541,9 +541,25 @@ tr:last-child td { border-bottom: none; }
   border-radius: var(--radius);
   padding: 10px 14px;
   transition: border-color var(--ease);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .result-card:hover { border-color: var(--border-hover); }
+
+.result-card-badge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
+.result-card-body {
+  flex: 1;
+  min-width: 0;
+}
 
 .result-card a {
   display: block;
