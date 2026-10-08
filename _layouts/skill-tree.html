@@ -802,7 +802,24 @@ layout: default
   // Listen for filter_tree action from Cheshire
   window.addEventListener('site:action', e => {
     const { type, params = {} } = e.detail || {};
-    if (type === 'filter_tree' && params.status) {
+    if (type !== 'filter_tree') return;
+
+    // Switch domain first if specified
+    if (params.domain) {
+      const target = params.domain.toLowerCase().trim();
+      const idx = trees.findIndex(t => t.domain.toLowerCase() === target);
+      if (idx !== -1 && idx !== current) goTo(idx);
+    } else if (params.status && params.status !== 'all') {
+      // Auto-switch to first domain that has a node matching the requested status
+      const status = params.status.toLowerCase().replace(/\s+/g, '-');
+      const idx = trees.findIndex(t =>
+        t.logs && t.logs.some(l => (l.status || 'not-started') === status)
+      );
+      if (idx !== -1 && idx !== current) goTo(idx);
+    }
+
+    // Apply status filter
+    if (params.status) {
       const status = params.status.toLowerCase().replace(/\s+/g, '-');
       const valid = ['all', 'completed', 'in-progress', 'not-started'];
       if (!valid.includes(status)) return;
