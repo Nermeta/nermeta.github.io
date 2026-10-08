@@ -66,33 +66,28 @@ async function dominantColorFromJpeg(buf) {
     return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
   } catch {}
 
-  // Fallback: sample raw bytes from the JPEG scan data heuristically.
-  // JPEG scan data starts after the SOS (0xFF 0xDA) marker.
-  // We can't decode DCT without a full decoder, but we CAN sample the
-  // raw entropy-coded bytes as a rough proxy for color tendency.
-  // Better fallback: spawn Python (almost always available) to do it properly.
+  // Fallback: write a real Python script to disk and run it
   try {
     const { execSync } = require('child_process');
-    // Write buf to a temp file, run a tiny python one-liner
-    const tmp = require('os').tmpdir() + '/cover_sample.jpg';
-    require('fs').writeFileSync(tmp, buf);
-    const py = `
-import sys
-try:
-    from PIL import Image
-    img = Image.open(sys.argv[1]).convert('RGB').resize((16,48))
-    px = list(img.getdata())
-    r=g=b=n=0
-    for R,G,B in px:
-        br=(R+G+B)/3
-        if br>230 or br<20: continue
-        r+=R;g+=G;b+=B;n+=1
-    f=0.72
-    if n: print(f'rgb({round(r/n*f)},{round(g/n*f)},{round(b/n*f)})')
-except Exception as e:
-    sys.exit(1)
-`.trim();
-    const result = execSync(`python3 -c "${py.replace(/\n/g,' ').replace(/"/g,"'")}" "${tmp}"`, { encoding: 'utf8' }).trim();
+    const os = require('os');
+    const tmpDir = os.tmpdir();
+    const imgTmp = tmpDir + '/cover_sample.jpg';
+    const pyTmp  = tmpDir + '/dominant_color.py';
+    fs.writeFileSync(imgTmp, buf);
+    fs.writeFileSync(pyTmp, [
+      'import sys',
+      'from PIL import Image',
+      'img = Image.open(sys.argv[1]).convert("RGB").resize((16,48))',
+      'px = list(img.getdata())',
+      'r=g=b=n=0',
+      'for R,G,B in px:',
+      '    br=(R+G+B)/3',
+      '    if br>230 or br<20: continue',
+      '    r+=R;g+=G;b+=B;n+=1',
+      'f=0.72',
+      'if n: print(f"rgb({round(r/n*f)},{round(g/n*f)},{round(b/n*f)})")',
+    ].join('\n'));
+    const result = execSync(`python3 "${pyTmp}" "${imgTmp}"`, { encoding: 'utf8' }).trim();
     if (result.startsWith('rgb(')) return result;
   } catch {}
 
