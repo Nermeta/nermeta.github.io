@@ -286,58 +286,20 @@ body {
   z-index: 10;
 }
 
-/* Gradient spine — color set via JS custom property */
+/* Flat spine — solid spine_color */
 .spine-cover {
   position: absolute;
   inset: 0;
-  /* --sc (spine color) injected by JS */
-  background: linear-gradient(
-    to right,
-    rgba(0,0,0,0.55) 0%,
-    rgba(0,0,0,0.15) 12%,
-    var(--sc, #3a2a6e) 30%,
-    color-mix(in srgb, var(--sc, #3a2a6e) 85%, #fff) 50%,
-    var(--sc, #3a2a6e) 70%,
-    rgba(0,0,0,0.2) 88%,
-    rgba(0,0,0,0.6) 100%
-  );
+  background: var(--sc, #3a2a6e);
 }
 
-/* Linen texture + top page-edge highlight + bottom shadow */
-.spine-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    /* fine horizontal cloth lines */
-    repeating-linear-gradient(
-      180deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(255,255,255,0.018) 2px,
-      rgba(255,255,255,0.018) 3px
-    ),
-    /* top page-edge glow */
-    linear-gradient(
-      to bottom,
-      rgba(240,230,200,0.28) 0%,
-      rgba(240,230,200,0.08) 6px,
-      transparent 14px,
-      transparent 82%,
-      rgba(0,0,0,0.3) 100%
-    );
-}
+.spine-overlay { display: none; }
 
-/* Page-edge cap at top — cream paper look */
 .spine-top-edge {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 5px;
-  background: linear-gradient(
-    180deg,
-    rgba(235,220,185,0.7) 0%,
-    rgba(200,185,150,0.4) 60%,
-    transparent 100%
-  );
+  height: 3px;
+  background: rgba(255,255,255,0.12);
   z-index: 3;
 }
 
