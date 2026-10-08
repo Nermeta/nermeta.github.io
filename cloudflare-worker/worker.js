@@ -48,9 +48,17 @@ function checkRateLimit(ip) {
 // ---------------------------------------------------------------------------
 // CORS helper
 // ---------------------------------------------------------------------------
-function corsHeaders(allowedOrigin) {
+const ALLOWED_ORIGINS = [
+  'https://nermeta.github.io',
+  'https://www.nermeta.github.io',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+];
+
+function corsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    'Access-Control-Allow-Origin':  allowedOrigin,
+    'Access-Control-Allow-Origin':  allowed,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -150,7 +158,7 @@ ${contextBlock}`;
 // ---------------------------------------------------------------------------
 export default {
   async fetch(request, env, ctx) {
-    const allowedOrigin = env.ALLOWED_ORIGIN || 'https://nermeta.github.io';
+    const allowedOrigin = request.headers.get('Origin') || env.ALLOWED_ORIGIN || 'https://nermeta.github.io';
 
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
