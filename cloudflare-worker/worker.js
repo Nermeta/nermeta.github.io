@@ -289,12 +289,51 @@ export default {
       const cleaned = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
       envelope = JSON.parse(cleaned);
     } catch {
-      // Model didn't return valid JSON — wrap plain text in the envelope shape
-      envelope = {
-        message: rawContent || "I couldn't form a response. Please try again.",
-        cards: [],
-        action: { type: null, params: {} },
-      };
+      // Model didn't return valid JSON — try to salvage it.
+      // Pattern: model outputs plain text followed by a JSON block.
+      // Find the first { that starts a top-level JSON object.
+      const jsonStart = rawContent.indexOf('\n{');
+      if (jsonStart !== -1) {
+        const textPart = rawContent.slice(0, jsonStart).trim();
+        const jsonPart = rawContent.slice(jsonStart).trim();
+        try {
+          const inner = JSON.parse(jsonPart);
+          // Use the text before the JSON as the message if inner.message is empty/missing
+          envelope = inner;
+          if (!envelope.message && textPart) envelope.message = textPart;
+        } catch {
+          envelope = {
+            message: textPart || rawContent || "I couldn't form a response. Please try again.",
+            cards: [],
+            action: { type: null, params: {} },
+          };
+        }
+      } else {
+        envelope = {
+          message: rawContent || "I couldn't form a response. Please try again.",
+          cards: [],
+          action: { type: null, params: {} },
+        };
+      }
+    }
+
+    // Guard: if message itself contains a JSON envelope, strip it out
+    if (typeof envelope.message === 'string') {
+      const msgJsonStart = envelope.message.indexOf('\n{');
+      if (msgJsonStart !== -1) {
+        const textBefore = envelope.message.slice(0, msgJsonStart).trim();
+        const jsonPart   = envelope.message.slice(msgJsonStart).trim();
+        try {
+          const inner = JSON.parse(jsonPart);
+          // Merge: keep the text as message, pull cards/action from inner if present
+          if (!envelope.cards?.length && inner.cards?.length) envelope.cards = inner.cards;
+          if (!envelope.action?.type && inner.action?.type)   envelope.action = inner.action;
+          envelope.message = textBefore || inner.message || envelope.message;
+        } catch {
+          // Not valid JSON — just strip it to show clean text
+          envelope.message = textBefore || envelope.message;
+        }
+      }
     }
 
     // Ensure envelope always has the required shape
