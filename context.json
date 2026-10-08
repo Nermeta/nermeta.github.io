@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T18:37:08.066Z",
+  "generated_at": "2026-10-08T20:04:24.076Z",
   "entries": [
     {
       "type": "certification",
@@ -178,7 +178,9 @@
         "self-development"
       ],
       "rating": 5,
-      "finished_date": "2026-01-28"
+      "finished_date": "2026-01-28",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg",
+      "badge_shape": "book"
     },
     {
       "type": "learning-log",
@@ -198,6 +200,147 @@
       "summary": "An ongoing log of my Security+ study sessions — what I'm covering, where I'm getting stuck, and what's clicking.",
       "subject": "CompTIA Security+",
       "status": "in-progress"
+    },
+    {
+      "type": "book-review",
+      "title": "The Design of Everyday Things",
+      "url": "/book-reviews/the-design-of-everyday-things/",
+      "date": "2025-11-10",
+      "topic": null,
+      "tags": [
+        "design",
+        "ux",
+        "human-factors",
+        "usability"
+      ],
+      "audience": [
+        "designers",
+        "tech"
+      ],
+      "summary": "A foundational text on why bad design is a human problem, not a user problem. Norman introduces affordances, signifiers, and feedback loops in a way that permanently changes how you see the world.",
+      "author": "Don Norman",
+      "isbn": "9780465050659",
+      "genre": [
+        "nonfiction",
+        "design",
+        "psychology"
+      ],
+      "rating": 5,
+      "finished_date": "2025-11-10",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9780465050659-M.jpg",
+      "badge_shape": "book"
+    },
+    {
+      "type": "book-review",
+      "title": "Piranesi",
+      "url": "/book-reviews/piranesi/",
+      "date": "2025-09-03",
+      "topic": null,
+      "tags": [
+        "mystery",
+        "labyrinth",
+        "unreliable-narrator",
+        "magical-realism"
+      ],
+      "audience": [
+        "general"
+      ],
+      "summary": "A man lives alone in a house with infinite halls filled with statues and tides. He keeps a journal. Something is deeply wrong. One of the strangest, most beautiful books I've read.",
+      "author": "Susanna Clarke",
+      "isbn": "9781635575637",
+      "genre": [
+        "fiction",
+        "fantasy",
+        "mystery"
+      ],
+      "rating": 5,
+      "finished_date": "2025-09-03",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9781635575637-M.jpg",
+      "badge_shape": "book"
+    },
+    {
+      "type": "book-review",
+      "title": "The Pragmatic Programmer",
+      "url": "/book-reviews/the-pragmatic-programmer/",
+      "date": "2025-07-22",
+      "topic": null,
+      "tags": [
+        "software",
+        "engineering",
+        "career",
+        "best-practices"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Timeless advice on software craftsmanship — DRY, orthogonality, tracer bullets. Some sections feel dated but the core philosophy holds up after 25 years.",
+      "author": "David Thomas & Andrew Hunt",
+      "isbn": "9780135957059",
+      "genre": [
+        "nonfiction",
+        "programming",
+        "career"
+      ],
+      "rating": 4,
+      "finished_date": "2025-07-22",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9780135957059-M.jpg",
+      "badge_shape": "book"
+    },
+    {
+      "type": "book-review",
+      "title": "The Name of the Wind",
+      "url": "/book-reviews/the-name-of-the-wind/",
+      "date": "2025-05-14",
+      "topic": null,
+      "tags": [
+        "fantasy",
+        "magic",
+        "coming-of-age",
+        "storytelling"
+      ],
+      "audience": [
+        "general"
+      ],
+      "summary": "A legend tells his own story. Rothfuss writes prose that feels like music — occasionally self-indulgent, always beautiful. The unfinished series is maddening.",
+      "author": "Patrick Rothfuss",
+      "isbn": "9780756404079",
+      "genre": [
+        "fiction",
+        "fantasy"
+      ],
+      "rating": 4,
+      "finished_date": "2025-05-14",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9780756404079-M.jpg",
+      "badge_shape": "book"
+    },
+    {
+      "type": "book-review",
+      "title": "Deep Work",
+      "url": "/book-reviews/deep-work/",
+      "date": "2025-03-30",
+      "topic": null,
+      "tags": [
+        "focus",
+        "productivity",
+        "career",
+        "distraction"
+      ],
+      "audience": [
+        "general",
+        "tech"
+      ],
+      "summary": "The ability to focus without distraction is becoming rare and valuable. Newport makes the case for protecting deep work time and gives concrete strategies for doing it.",
+      "author": "Cal Newport",
+      "isbn": "9781455586691",
+      "genre": [
+        "nonfiction",
+        "productivity",
+        "career"
+      ],
+      "rating": 4,
+      "finished_date": "2025-03-30",
+      "badge_image": "https://covers.openlibrary.org/b/isbn/9781455586691-M.jpg",
+      "badge_shape": "book"
     },
     {
       "type": "certification",
