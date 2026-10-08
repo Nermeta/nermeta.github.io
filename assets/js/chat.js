@@ -159,9 +159,16 @@ function appendAiResponse(container, data) {
 
   // Fire site action event if present
   if (data.action && data.action.type) {
-    window.dispatchEvent(new CustomEvent('site:action', {
-      detail: { type: data.action.type, params: data.action.params || {} }
-    }));
+    const { type, params = {} } = data.action;
+
+    if (type === 'navigate_to' && params.url) {
+      // Short delay so the user sees the reply before navigating
+      setTimeout(() => { window.location.href = params.url; }, 1200);
+    } else {
+      window.dispatchEvent(new CustomEvent('site:action', {
+        detail: { type, params }
+      }));
+    }
   }
 }
 
