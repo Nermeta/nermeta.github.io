@@ -204,6 +204,29 @@ index.entries.sort((a, b) => {
   return db - da;
 });
 
+// ---------------------------------------------------------------------------
+// Build section_images — representative badge/cover per collection page,
+// used by shortcuts.json chips so nothing is hardcoded in static JSON.
+// Strategy: pick highest-rated (books), first earned (certs), newest (others).
+// ---------------------------------------------------------------------------
+function pickSectionImage(entries, type, strategy) {
+  const pool = entries.filter(e => e.type === type && e.badge_image);
+  if (!pool.length) return null;
+  if (strategy === 'highest-rated') {
+    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  } else if (strategy === 'earned-first') {
+    const order = ['earned', 'in-progress', 'not-started'];
+    pool.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+  }
+  const pick = pool[0];
+  return { src: pick.badge_image, shape: pick.badge_shape || 'round' };
+}
+
+index.section_images = {
+  '/book-reviews/':   pickSectionImage(index.entries, 'book-review',   'highest-rated'),
+  '/certifications/': pickSectionImage(index.entries, 'certification',  'earned-first'),
+};
+
 const outputPath = path.join(ROOT, 'context.json');
 fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
 

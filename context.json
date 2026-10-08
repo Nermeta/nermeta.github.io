@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T20:04:24.076Z",
+  "generated_at": "2026-10-08T22:23:17.142Z",
   "entries": [
     {
       "type": "certification",
@@ -17,6 +17,98 @@
       "badge_image": "/assets/images/badges/gcp-ace.png",
       "badge_shape": "round",
       "status": "in-progress"
+    },
+    {
+      "type": "learning-log",
+      "title": "Python S04: Banner Grabbing",
+      "url": "/learning-logs/python-session-04/",
+      "date": "2026-09-08",
+      "topic": null,
+      "tags": [
+        "python",
+        "scripting",
+        "recon",
+        "banner-grabbing"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Extended the scanner to grab service banners from open ports. Got it working for SSH and HTTP, still fighting FTP.",
+      "subject": null,
+      "status": "in-progress",
+      "domain": "scripting",
+      "requires": [
+        "python-session-03"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "Python S03: Threading the Scanner",
+      "url": "/learning-logs/python-session-03/",
+      "date": "2026-09-05",
+      "topic": null,
+      "tags": [
+        "python",
+        "scripting",
+        "threading",
+        "performance"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Added threading to the port scanner with a queue. Scanning 1000 ports went from 16s to under 1s.",
+      "subject": null,
+      "status": "completed",
+      "domain": "scripting",
+      "requires": [
+        "python-session-02"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "Python S02: Sockets Basics",
+      "url": "/learning-logs/python-session-02/",
+      "date": "2026-09-03",
+      "topic": null,
+      "tags": [
+        "python",
+        "scripting",
+        "sockets",
+        "networking"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Dug into the socket library. Wrote a basic TCP connect scanner that actually works on my home network.",
+      "subject": null,
+      "status": "completed",
+      "domain": "scripting",
+      "requires": [
+        "python-session-01"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "Python S01: Environment Setup",
+      "url": "/learning-logs/python-session-01/",
+      "date": "2026-09-01",
+      "topic": null,
+      "tags": [
+        "python",
+        "scripting",
+        "environment",
+        "venv"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Got Python 3.12 set up properly with venv, pip, and VS Code. Ran first script. Figured out why PATH was broken.",
+      "subject": null,
+      "status": "completed",
+      "domain": "scripting",
+      "requires": [
+        "python-for-security"
+      ]
     },
     {
       "type": "post",
@@ -73,6 +165,30 @@
       "status": "earned"
     },
     {
+      "type": "learning-log",
+      "title": "Ethical Hacking Intro",
+      "url": "/learning-logs/ethical-hacking-intro/",
+      "date": "2026-03-10",
+      "topic": "cybersecurity",
+      "tags": [
+        "ethical-hacking",
+        "penetration-testing",
+        "ceh",
+        "offensive"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "The CEH methodology, recon techniques, vulnerability scanning, and the legal/ethical framework for offensive security work.",
+      "subject": "Ethical Hacking",
+      "status": "not-started",
+      "domain": "cybersecurity",
+      "requires": [
+        "active-directory",
+        "network-security-basics"
+      ]
+    },
+    {
       "type": "writeup",
       "title": "HTB: Escape — AD Certificate Services Abuse",
       "url": "/writeups/10-06-2026-example-writeup/",
@@ -103,6 +219,30 @@
       "outcome": "completed"
     },
     {
+      "type": "learning-log",
+      "title": "Python for Security",
+      "url": "/learning-logs/python-for-security/",
+      "date": "2026-03-01",
+      "topic": "scripting",
+      "tags": [
+        "python",
+        "scripting",
+        "security",
+        "automation"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Using Python to build security tooling — port scanners, log parsers, and API integrations with security platforms.",
+      "subject": "Python Scripting",
+      "status": "not-started",
+      "domain": "scripting",
+      "requires": [
+        "bash-scripting",
+        "powershell-fundamentals"
+      ]
+    },
+    {
       "type": "tutorial",
       "title": "Automating Active Directory Reports with PowerShell",
       "url": "/tutorials/10-06-2026-example-tutorial/",
@@ -125,6 +265,29 @@
         "active-directory"
       ],
       "estimated_read": 12
+    },
+    {
+      "type": "learning-log",
+      "title": "Firewalls & ACLs",
+      "url": "/learning-logs/firewalls-and-acls/",
+      "date": "2026-02-20",
+      "topic": "networking",
+      "tags": [
+        "networking",
+        "firewalls",
+        "acls",
+        "security"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Stateful vs stateless inspection, writing ACL rules, and how firewalls fit into a layered defense strategy.",
+      "subject": "Firewalls & Access Control Lists",
+      "status": "not-started",
+      "domain": "networking",
+      "requires": [
+        "vlans-and-routing"
+      ]
     },
     {
       "type": "deep-dive",
@@ -152,6 +315,96 @@
         "kerberos"
       ],
       "estimated_read": 18
+    },
+    {
+      "type": "learning-log",
+      "title": "Active Directory",
+      "url": "/learning-logs/active-directory/",
+      "date": "2026-02-15",
+      "topic": "cybersecurity",
+      "tags": [
+        "active-directory",
+        "windows",
+        "identity",
+        "ldap"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Domains, forests, OUs, Group Policy, and why AD is both the backbone of enterprise IT and the most-targeted attack surface in Windows environments.",
+      "subject": "Active Directory",
+      "status": "in-progress",
+      "domain": "cybersecurity",
+      "requires": [
+        "network-security-basics"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "PowerShell Fundamentals",
+      "url": "/learning-logs/powershell-fundamentals/",
+      "date": "2026-02-10",
+      "topic": "scripting",
+      "tags": [
+        "powershell",
+        "windows",
+        "scripting",
+        "automation"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Cmdlets, the pipeline, objects-not-text, and automating Windows administration tasks.",
+      "subject": "PowerShell",
+      "status": "in-progress",
+      "domain": "scripting",
+      "requires": [
+        "linux-basics"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "VLANs & Routing",
+      "url": "/learning-logs/vlans-and-routing/",
+      "date": "2026-02-02",
+      "topic": "networking",
+      "tags": [
+        "networking",
+        "vlans",
+        "routing",
+        "layer3"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Network segmentation with VLANs, trunk ports, and routing between segments. Practical lab work with Cisco IOS.",
+      "subject": "VLANs & Inter-VLAN Routing",
+      "status": "in-progress",
+      "domain": "networking",
+      "requires": [
+        "networking-fundamentals"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "Network Security Basics",
+      "url": "/learning-logs/network-security-basics/",
+      "date": "2026-01-30",
+      "topic": "cybersecurity",
+      "tags": [
+        "cybersecurity",
+        "network-security",
+        "threats",
+        "defense"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "CIA triad, common attack vectors, defense-in-depth, and the attacker mindset. The conceptual foundation for all security work.",
+      "subject": "Network Security",
+      "status": "completed",
+      "domain": "cybersecurity",
+      "requires": []
     },
     {
       "type": "book-review",
@@ -184,6 +437,52 @@
     },
     {
       "type": "learning-log",
+      "title": "Bash Scripting",
+      "url": "/learning-logs/bash-scripting/",
+      "date": "2026-01-25",
+      "topic": "scripting",
+      "tags": [
+        "bash",
+        "scripting",
+        "automation",
+        "linux"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Variables, loops, conditionals, functions, and writing scripts that actually hold up in production.",
+      "subject": "Bash Scripting",
+      "status": "completed",
+      "domain": "scripting",
+      "requires": [
+        "linux-basics"
+      ]
+    },
+    {
+      "type": "learning-log",
+      "title": "DNS & DHCP Deep Dive",
+      "url": "/learning-logs/dns-and-dhcp/",
+      "date": "2026-01-18",
+      "topic": "networking",
+      "tags": [
+        "networking",
+        "dns",
+        "dhcp",
+        "name-resolution"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "How DNS resolution works end-to-end, DHCP lease lifecycle, and how misconfigured DNS causes half of all network headaches.",
+      "subject": "DNS & DHCP",
+      "status": "completed",
+      "domain": "networking",
+      "requires": [
+        "networking-fundamentals"
+      ]
+    },
+    {
+      "type": "learning-log",
       "title": "CompTIA Security+ Study Log",
       "url": "/learning-logs/10-06-2026-example-learning-log/",
       "date": "2026-01-10",
@@ -199,7 +498,51 @@
       ],
       "summary": "An ongoing log of my Security+ study sessions — what I'm covering, where I'm getting stuck, and what's clicking.",
       "subject": "CompTIA Security+",
-      "status": "in-progress"
+      "status": "in-progress",
+      "domain": "cybersecurity",
+      "requires": []
+    },
+    {
+      "type": "learning-log",
+      "title": "Linux Basics",
+      "url": "/learning-logs/linux-basics/",
+      "date": "2026-01-08",
+      "topic": "scripting",
+      "tags": [
+        "linux",
+        "bash",
+        "cli",
+        "filesystem"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "Filesystem navigation, permissions, pipes, redirection, and the core commands you use every single day.",
+      "subject": "Linux Command Line",
+      "status": "completed",
+      "domain": "scripting",
+      "requires": []
+    },
+    {
+      "type": "learning-log",
+      "title": "Networking Fundamentals",
+      "url": "/learning-logs/networking-fundamentals/",
+      "date": "2026-01-05",
+      "topic": "networking",
+      "tags": [
+        "networking",
+        "osi-model",
+        "tcp-ip",
+        "subnetting"
+      ],
+      "audience": [
+        "tech"
+      ],
+      "summary": "OSI model, TCP/IP stack, subnetting, and core protocols. The bedrock everything else builds on.",
+      "subject": "Networking Fundamentals",
+      "status": "completed",
+      "domain": "networking",
+      "requires": []
     },
     {
       "type": "book-review",
@@ -410,5 +753,15 @@
       "badge_shape": "round",
       "status": "earned"
     }
-  ]
+  ],
+  "section_images": {
+    "/book-reviews/": {
+      "src": "https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg",
+      "shape": "book"
+    },
+    "/certifications/": {
+      "src": "/assets/images/badges/google-cybersecurity.png",
+      "shape": "round"
+    }
+  }
 }

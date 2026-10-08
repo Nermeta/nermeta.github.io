@@ -266,6 +266,7 @@ function formatMessage(text) {
 
 /**
  * Shortcuts registry — loaded once from shortcuts.json, shared by all chat instances.
+ * Images are resolved dynamically from context.json section_images so nothing is hardcoded.
  * null = not yet fetched, [] = fetched but empty/failed.
  */
 let _shortcuts = null;
@@ -274,10 +275,21 @@ let _shortcutsPromise = null;
 function loadShortcuts() {
   if (_shortcuts !== null) return Promise.resolve(_shortcuts);
   if (_shortcutsPromise) return _shortcutsPromise;
-  _shortcutsPromise = fetch('/assets/data/shortcuts.json')
-    .then(r => r.json())
-    .then(data => { _shortcuts = data; return data; })
-    .catch(() => { _shortcuts = []; return []; });
+  _shortcutsPromise = Promise.all([
+    fetch('/assets/data/shortcuts.json').then(r => r.json()).catch(() => []),
+    fetch('/context.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([shortcuts, ctx]) => {
+    const sectionImages = ctx.section_images || {};
+    // Resolve image_from_section → actual src + shape from context.json
+    _shortcuts = shortcuts.map(s => {
+      if (s.image_from_section && sectionImages[s.image_from_section]) {
+        const img = sectionImages[s.image_from_section];
+        return { ...s, image: img.src, image_shape: img.shape };
+      }
+      return s;
+    });
+    return _shortcuts;
+  });
   return _shortcutsPromise;
 }
 
