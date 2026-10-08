@@ -792,14 +792,17 @@ layout: default
 
   /* ── Cheshire drawer integration ────────────────────────── */
   // Swap drawer chips for Chronicles-specific suggestions
-  const drawerChips = document.getElementById('drawerChips');
-  if (drawerChips) {
-    drawerChips.innerHTML = `
-      <button class="chip">What have I completed?</button>
-      <button class="chip">What's in progress?</button>
-      <button class="chip">Show all paths</button>
-    `;
-  }
+  // Use setTimeout to ensure floating-chat.html has rendered its chips first
+  setTimeout(() => {
+    const drawerChips = document.getElementById('drawerChips');
+    if (drawerChips) {
+      drawerChips.innerHTML = `
+        <button class="chip">What have I completed?</button>
+        <button class="chip">What's in progress?</button>
+        <button class="chip">Show all paths</button>
+      `;
+    }
+  }, 0);
 
   // Listen for filter_tree action from Cheshire
   window.addEventListener('site:action', e => {
