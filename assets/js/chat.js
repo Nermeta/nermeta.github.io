@@ -322,8 +322,11 @@ function resolveShortcut(text) {
     const matched  = patterns.some(p => new RegExp(p).test(t));
     if (!matched) continue;
 
-    // Home chat never navigates — fall through to worker so it can return cards
-    if (page === '/' && s.action?.type === 'navigate_to') return null;
+    // Home chat never navigates — use home_message if present, otherwise fall through to worker
+    if (page === '/' && s.action?.type === 'navigate_to') {
+      if (s.home_message) return { message: s.home_message, cards: [], action: null };
+      return null;
+    }
 
     return { message: '', cards: [], action: s.action };
   }
