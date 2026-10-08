@@ -220,12 +220,13 @@ export default {
     let cfRes;
     try {
       cfRes = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/ai/v1/chat/completions`,
+        `https://gateway.ai.cloudflare.com/v1/${env.CF_ACCOUNT_ID}/wynters-wonderland/workers-ai/v1/chat/completions`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${env.CF_API_TOKEN}`,
+            'cf-aig-authorization': `Bearer ${env.CF_API_TOKEN}`,
           },
           body: JSON.stringify(cfPayload),
         }
