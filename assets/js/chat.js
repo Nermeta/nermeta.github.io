@@ -141,15 +141,29 @@ function appendUserBubble(container, text) {
   return div;
 }
 
+const TYPING_PHRASES = [
+  'curling through the corridors…',
+  'consulting the looking-glass…',
+  'rifling through the archives…',
+  'following the white rabbit…',
+  'tracing the path through the woods…',
+  'untangling the red thread…',
+  'peering behind the curtain…',
+  'searching the rabbit hole…',
+  'listening to the tea leaves…',
+  'shuffling through the cards…',
+];
+
 /**
- * appendTyping — adds an animated "typing" indicator
+ * appendTyping — adds an animated "typing" indicator with a rotating phrase
  */
 function appendTyping(container) {
+  const phrase = TYPING_PHRASES[Math.floor(Math.random() * TYPING_PHRASES.length)];
   const div = document.createElement('div');
   div.className = 'msg-ai msg-typing';
   div.innerHTML = `
     <div class="msg-ai-avatar" aria-hidden="true">🐱</div>
-    <div class="msg-bubble">curling through the corridors…</div>`;
+    <div class="msg-bubble"><span class="typing-text">${phrase}</span></div>`;
   container.appendChild(div);
   scrollToBottom(container);
   return div;
@@ -448,7 +462,7 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
       setTimeout(() => {
         typing.remove();
         appendAiResponse(messages, shortcut, source);
-      }, 400 + Math.random() * 300);
+      }, 900 + Math.random() * 600);
       return;
     }
     const typing = appendTyping(messages);
