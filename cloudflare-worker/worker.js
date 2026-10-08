@@ -126,9 +126,9 @@ Every response MUST be in this exact envelope:
 }
 
 The "cards" array renders clickable result cards below your message. Populate it when returning specific content items (certs, posts, books, etc.) so the visitor can click through. Each card:
-{ "title": "Item title", "url": "/page/url/", "type": "certification|post|book-review|writeup|etc", "date": "optional date string", "badge_image": "/path/to/badge.png or null", "isbn": "ISBN string for book-review type, omit otherwise" }
+{ "title": "Item title", "url": "/page/url/", "type": "certification|post|book-review|writeup|etc", "date": "optional date string", "badge_image": "/path/to/badge.png or null" }
 For cert questions: populate cards with the relevant certifications from the index (url = /certifications/, type = "certification"). Always use /certifications/ as the url for certs — never individual cert slugs. Include the badge_image field from the index entry when available.
-For book questions: populate cards with type "book-review". Always include the "isbn" field from the index entry when available — it is used to display the cover art.
+For book questions: populate cards with type "book-review". Always include the "badge_image" field from the index entry when available — it is used to display the cover art. Do not include an "isbn" field.
 
 Action types you can trigger (set "type" to one of these, or null if no UI action needed):
 - "highlight_nodes"  — params: { subjects: ["subject name", ...] }         → Skill tree
