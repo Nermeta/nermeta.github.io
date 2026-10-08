@@ -85,30 +85,33 @@ layout: default
 </main>
 
 <style>
-/* ── Skill Tree Page ─────────────────────────────────────────── */
+/* ── Skill Tree Page — full-viewport layout like Skyrim constellation screen ── */
 .skill-tree-page {
-  min-height: calc(100vh - var(--nav-height));
+  height: calc(100vh - var(--nav-height));
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1rem 4rem;
+  padding: 1rem 1rem 0.5rem;
   gap: 0;
+  overflow: hidden; /* no page scroll — tree fits the window */
+  box-sizing: border-box;
 }
 
 .st-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 .st-title {
   font-family: var(--font-display);
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
   color: var(--aqua);
   text-shadow: 0 0 28px rgba(0,229,204,0.4);
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.2rem;
 }
 .st-subtitle {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--fg-muted);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -120,16 +123,17 @@ layout: default
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
+  flex-shrink: 0;
 }
 .st-nav-arrow {
   background: none;
   border: 1px solid var(--aqua-border);
   color: var(--aqua);
-  font-size: 2rem;
+  font-size: 1.6rem;
   line-height: 1;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   cursor: pointer;
   transition: background var(--ease), border-color var(--ease), transform var(--ease);
@@ -144,12 +148,12 @@ layout: default
 }
 .st-domain-label {
   text-align: center;
-  min-width: 200px;
+  min-width: 160px;
 }
 .st-domain-name {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   color: var(--fg);
   letter-spacing: 0.05em;
   text-transform: capitalize;
@@ -160,18 +164,19 @@ layout: default
   color: var(--fg-muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 /* ── Pip Indicators ──────────────────────────────────────────── */
 .st-pips {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 .st-pip {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--fg-muted);
   border: none;
@@ -184,29 +189,27 @@ layout: default
   box-shadow: 0 0 8px rgba(0,229,204,0.6);
 }
 
-/* ── Canvas Wrapper ──────────────────────────────────────────── */
+/* ── Canvas Wrapper — grows to fill remaining height ─────────── */
 .st-canvas-wrap {
   width: 100%;
-  max-width: 900px;
+  flex: 1 1 0;
+  min-height: 0; /* critical for flex child to shrink */
   position: relative;
 }
 .st-tree {
   display: none;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: visible;
-  /* subtle scroll hint on wide trees */
-  scrollbar-width: thin;
-  scrollbar-color: var(--aqua-border) transparent;
+  height: 100%;
 }
 .st-tree.active {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .st-tree svg {
-  /* min-width ensures small trees still center; wide trees scroll */
-  min-width: 260px;
-  display: block;
-  margin: 0 auto;
+  /* SVG scales to fit its container via viewBox — no scrolling */
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
@@ -340,11 +343,11 @@ layout: default
   let current = 0;
 
   /* ── Color scheme per status ─────────────────────────────── */
-  const R = 14; // base node radius — kept small so labels fit
+  const R = 9; // base node radius — small stars like Skyrim constellations
   const STATUS = {
     completed:    { fill: '#00e5cc', stroke: '#00e5cc', glow: 'rgba(0,229,204,0.45)',  text: '#0a090e', ring: R },
     'in-progress':{ fill: '#1a1830', stroke: '#e040fb', glow: 'rgba(224,64,251,0.45)', text: '#e040fb', ring: R },
-    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.25)',   text: '#5c5470', ring: R - 2 },
+    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.25)',   text: '#5c5470', ring: R - 1 },
   };
 
   /* ── Layout algorithm ────────────────────────────────────── */
@@ -380,13 +383,13 @@ layout: default
       cols[d].push(l.slug);
     });
 
-    // Tighter spacing — designed for many nodes
-    const COL_W = 140;
-    const ROW_H = 80;
-    const PAD_X = 50;
-    const PAD_Y = 50;
+    // Tight spacing — designed to fit viewport without scrolling
+    const COL_W = 110;
+    const ROW_H = 55;
+    const PAD_X = 36;
+    const PAD_Y = 36;
     // Extra bottom padding so labels don't get clipped
-    const LABEL_H = 32;
+    const LABEL_H = 24;
 
     const maxCol  = Math.max(...Object.keys(cols).map(Number));
     const maxRows = Math.max(...Object.values(cols).map(a => a.length));
@@ -423,11 +426,10 @@ layout: default
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', `Skill tree for ${treeData.domain}`);
-    // Render at natural size — container scrolls if wider than viewport
-    svg.style.width  = W + 'px';
-    svg.style.height = H + 'px';
+    // Let CSS control sizing — viewBox handles scaling, no fixed pixels
 
     // Defs: glows
     const defs = document.createElementNS(ns, 'defs');
@@ -510,7 +512,7 @@ layout: default
         pulse.setAttribute('stroke', scheme.stroke);
         pulse.setAttribute('stroke-width', '2');
         pulse.setAttribute('opacity', '0.6');
-        pulse.innerHTML = `<animate attributeName="r" values="${scheme.ring};${scheme.ring+10};${scheme.ring}" dur="2.4s" repeatCount="indefinite"/>
+        pulse.innerHTML = `<animate attributeName="r" values="${scheme.ring};${scheme.ring+6};${scheme.ring}" dur="2.4s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values="0.6;0;0.6" dur="2.4s" repeatCount="indefinite"/>`;
         g.appendChild(pulse);
       }
@@ -518,7 +520,7 @@ layout: default
       // Label — sits below node, two lines max
       const label = document.createElementNS(ns, 'text');
       label.setAttribute('x', pos.x);
-      label.setAttribute('y', pos.y + scheme.ring + 13);
+      label.setAttribute('y', pos.y + scheme.ring + 10);
       label.setAttribute('text-anchor', 'middle');
       label.setAttribute('fill', st === 'not-started' ? '#5c5470' : '#e8e0f0');
       label.setAttribute('font-size', '10');
@@ -534,7 +536,7 @@ layout: default
         else cur.push(w);
       });
       const tspans = lines.slice(0, 2).map((l, i) =>
-        `<tspan x="${pos.x}" dy="${i === 0 ? 0 : 13}">${l.join(' ')}</tspan>`
+        `<tspan x="${pos.x}" dy="${i === 0 ? 0 : 12}">${l.join(' ')}</tspan>`
       ).join('');
       label.innerHTML = tspans;
       g.appendChild(label);
