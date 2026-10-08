@@ -3,10 +3,12 @@ title: "Google Cybersecurity Certificate"
 date: 2026-03-15
 type: certification
 topic: cybersecurity
+status: earned
 issuer: "Google / Coursera"
 cert_date: 2026-03-15
 credential_url: "https://coursera.org/verify/professional-cert/PLACEHOLDER"
 expiry: null
+badge_image: /assets/images/badges/google-cybersecurity.png
 tags: [google, cybersecurity, coursera, network-security, python, siem, linux]
 audience: [tech]
 summary: "Completed Google's professional cybersecurity certificate — 8 courses covering network security, Linux, Python scripting, and SIEM tools."

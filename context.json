@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T02:08:11.011Z",
+  "generated_at": "2026-10-08T02:10:58.690Z",
   "entries": [
     {
       "type": "certification",
@@ -66,7 +66,7 @@
       "cert_date": "2026-03-15",
       "credential_url": "https://coursera.org/verify/professional-cert/PLACEHOLDER",
       "expiry": null,
-      "badge_image": null,
+      "badge_image": "/assets/images/badges/google-cybersecurity.png",
       "status": "earned"
     },
     {
