@@ -1,0 +1,103 @@
+[
+  {
+    "type": "book-review",
+    "title": "Atomic Habits — James Clear",
+    "url": "/book-reviews/10-06-26-example/",
+    "date": "2026-01-28",
+    "status": null,
+    "topic": "productivity",
+    "rating": 5,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "nonfiction",
+      "productivity",
+      "self-development"
+    ],
+    "issuer": null
+  },
+  {
+    "type": "book-review",
+    "title": "The Design of Everyday Things",
+    "url": "/book-reviews/the-design-of-everyday-things/",
+    "date": "2025-11-10",
+    "status": null,
+    "topic": null,
+    "rating": 5,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9780465050659-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "nonfiction",
+      "design",
+      "psychology"
+    ],
+    "issuer": null
+  },
+  {
+    "type": "book-review",
+    "title": "Piranesi",
+    "url": "/book-reviews/piranesi/",
+    "date": "2025-09-03",
+    "status": null,
+    "topic": null,
+    "rating": 5,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9781635575637-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "fiction",
+      "fantasy",
+      "mystery"
+    ],
+    "issuer": null
+  },
+  {
+    "type": "book-review",
+    "title": "The Pragmatic Programmer",
+    "url": "/book-reviews/the-pragmatic-programmer/",
+    "date": "2025-07-22",
+    "status": null,
+    "topic": null,
+    "rating": 4,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9780135957059-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "nonfiction",
+      "programming",
+      "career"
+    ],
+    "issuer": null
+  },
+  {
+    "type": "book-review",
+    "title": "The Name of the Wind",
+    "url": "/book-reviews/the-name-of-the-wind/",
+    "date": "2025-05-14",
+    "status": null,
+    "topic": null,
+    "rating": 4,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9780756404079-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "fiction",
+      "fantasy"
+    ],
+    "issuer": null
+  },
+  {
+    "type": "book-review",
+    "title": "Deep Work",
+    "url": "/book-reviews/deep-work/",
+    "date": "2025-03-30",
+    "status": null,
+    "topic": null,
+    "rating": 4,
+    "badge_image": "https://covers.openlibrary.org/b/isbn/9781455586691-M.jpg",
+    "badge_shape": "book",
+    "genre": [
+      "nonfiction",
+      "productivity",
+      "career"
+    ],
+    "issuer": null
+  }
+]

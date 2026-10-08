@@ -270,9 +270,7 @@ function formatMessage(text) {
 }
 
 /**
- * Shortcuts registry — loaded once from shortcuts.json, shared by all chat instances.
- * Images are resolved dynamically from context.json section_images so nothing is hardcoded.
- * null = not yet fetched, [] = fetched but empty/failed.
+ * Shortcuts registry — loaded once from shortcuts.json + section-images.json.
  */
 let _shortcuts = null;
 let _shortcutsPromise = null;
@@ -290,12 +288,8 @@ function loadShortcuts() {
       if (!section) return s;
       return {
         ...s,
-        // Resolved image for the section card
-        image:         section.src   || s.image       || null,
-        image_shape:   section.shape || s.image_shape || 'round',
-        // Latest entry hint (text-only sections with no badge image)
-        section_latest_title: section.title || null,
-        section_latest_url:   section.url   || null,
+        image:       section.src   || s.image       || null,
+        image_shape: section.shape || s.image_shape || 'round',
       };
     });
     return _shortcuts;
@@ -303,64 +297,73 @@ function loadShortcuts() {
   return _shortcutsPromise;
 }
 
-// Kick off the fetch early so it's ready when the user types.
 loadShortcuts();
 
 /**
- * resolveShortcut — matches input against shortcuts.json client-side to save AI tokens.
- * Returns a fake response envelope synchronously (after shortcuts are loaded), or null.
+ * Collection cache — slim card data from assets/data/<name>.json, fetched on demand.
  */
-function resolveShortcut(text) {
+const _collectionCache = {};
+
+function loadCollection(name) {
+  if (_collectionCache[name]) return Promise.resolve(_collectionCache[name]);
+  return fetch(`/assets/data/${name}.json`)
+    .then(r => r.json())
+    .then(data => { _collectionCache[name] = data; return data; })
+    .catch(() => []);
+}
+
+/**
+ * filterCollection — applies a collection_filter object to an array of cards.
+ */
+function filterCollection(cards, filter) {
+  if (!filter) return cards;
+  return cards.filter(c => {
+    if (filter.status && c.status !== filter.status) return false;
+    if (filter.topic  && c.topic  !== filter.topic)  return false;
+    if (filter.min_rating != null && (c.rating || 0) < filter.min_rating) return false;
+    return true;
+  });
+}
+
+/**
+ * resolveShortcut — async, returns response envelope or null (fall through to worker).
+ * For nav shortcuts on home: fetches collection data and returns real result cards.
+ */
+async function resolveShortcut(text) {
+  await loadShortcuts();
   if (!_shortcuts || !_shortcuts.length) return null;
   const t    = text.toLowerCase().trim();
   const page = window.location.pathname;
 
   for (const s of _shortcuts) {
-    // Page check — "*" = any page; array = must be in list
     const pages = s.pages || ['*'];
     const onCorrectPage = pages.includes('*') || pages.includes(page);
     if (!onCorrectPage) continue;
 
-    // Exclude check — skip if already on the destination
     const excluded = s.excludePages || [];
     if (excluded.includes(page)) continue;
 
-    // Pattern match — any pattern in the array can trigger
     const patterns = s.patterns || [];
     const matched  = patterns.some(p => new RegExp(p).test(t));
     if (!matched) continue;
 
-    // Home chat never navigates — use home_message if present, otherwise fall through to worker
+    // Home chat never navigates — load collection cards + return home_message
     if (page === '/' && s.action?.type === 'navigate_to') {
-      if (s.home_message) {
-        const cards = [];
-        // Section overview card (with image if available)
-        if (s.card_title) {
-          cards.push({
-            title:       s.card_title,
-            url:         s.action.params?.url || '#',
-            badge_image: s.image       || null,
-            badge_shape: s.image_shape || 'round',
-          });
-        }
-        // Latest entry card from section-images.json (text-only sections)
-        if (s.section_latest_title && s.section_latest_url) {
-          cards.push({
-            title:       s.section_latest_title,
-            url:         s.section_latest_url,
-            badge_image: null,
-            badge_shape: null,
-          });
-        }
-        return { message: s.home_message, cards, action: null };
+      if (!s.home_message) return null;
+      let cards = [];
+      if (s.collection) {
+        const all     = await loadCollection(s.collection);
+        const filtered = filterCollection(all, s.collection_filter || null);
+        const limit   = s.collection_limit || filtered.length;
+        cards = filtered.slice(0, limit);
       }
-      return null;
+      return { message: s.home_message, cards, action: null };
     }
 
     return { message: '', cards: [], action: s.action };
   }
 
-  return null; // fall through to worker
+  return null;
 }
 
 /**
@@ -438,9 +441,9 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     input.style.height = 'auto';
 
     // Client-side shortcuts — handle common queries locally, no AI call needed
-    const shortcut = resolveShortcut(text);
+    appendUserBubble(messages, text);
+    const shortcut = await resolveShortcut(text);
     if (shortcut) {
-      appendUserBubble(messages, text);
       const typing = appendTyping(messages);
       setTimeout(() => {
         typing.remove();
@@ -448,8 +451,6 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
       }, 400 + Math.random() * 300);
       return;
     }
-
-    appendUserBubble(messages, text);
     const typing = appendTyping(messages);
 
     try {

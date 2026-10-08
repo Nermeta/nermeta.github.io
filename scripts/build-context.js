@@ -249,3 +249,40 @@ console.log(`✓ context.json written — ${index.entries.length} public entries
 const sectionImagesPath = path.join(ROOT, 'assets', 'data', 'section-images.json');
 fs.writeFileSync(sectionImagesPath, JSON.stringify(sectionImages, null, 2));
 console.log(`✓ section-images.json written`);
+
+// ---------------------------------------------------------------------------
+// Write slim collection card files — served by Jekyll, read by home chat to
+// return real result cards without hitting the AI worker.
+// Only the fields the card renderer needs: type, title, url, badge_image,
+// badge_shape, status, topic, rating, date.
+// ---------------------------------------------------------------------------
+function slimCard(e) {
+  return {
+    type:        e.type,
+    title:       e.title,
+    url:         e.url,
+    date:        e.date        || null,
+    status:      e.status      || null,
+    topic:       e.topic       || null,
+    rating:      e.rating      || null,
+    badge_image: e.badge_image || null,
+    badge_shape: e.badge_shape || null,
+    genre:       e.genre       || null,
+    issuer:      e.issuer      || null,
+  };
+}
+
+const collections = {
+  'certifications': index.entries.filter(e => e.type === 'certification').map(slimCard),
+  'book-reviews':   index.entries.filter(e => e.type === 'book-review').map(slimCard),
+  'writeups':       index.entries.filter(e => e.type === 'writeup').map(slimCard),
+  'deep-dives':     index.entries.filter(e => e.type === 'deep-dive').map(slimCard),
+  'tutorials':      index.entries.filter(e => e.type === 'tutorial').map(slimCard),
+  'learning-logs':  index.entries.filter(e => e.type === 'learning-log').map(slimCard),
+};
+
+for (const [name, cards] of Object.entries(collections)) {
+  const p = path.join(ROOT, 'assets', 'data', `${name}.json`);
+  fs.writeFileSync(p, JSON.stringify(cards, null, 2));
+  console.log(`✓ ${name}.json written — ${cards.length} entries`);
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "type": "certification",
+    "title": "Google Cloud Associate Cloud Engineer",
+    "url": "/certifications/gcp-ace/",
+    "date": "2026-12-01",
+    "status": "in-progress",
+    "topic": "cloud",
+    "rating": null,
+    "badge_image": "/assets/images/badges/gcp-ace.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "Google Cloud"
+  },
+  {
+    "type": "certification",
+    "title": "Certified Ethical Hacker",
+    "url": "/certifications/ceh/",
+    "date": "2026-06-01",
+    "status": "in-progress",
+    "topic": "security",
+    "rating": null,
+    "badge_image": "/assets/images/badges/ceh.png",
+    "badge_shape": "shield",
+    "genre": null,
+    "issuer": "EC-Council"
+  },
+  {
+    "type": "certification",
+    "title": "Google Cybersecurity Certificate",
+    "url": "/certifications/10-06-2026-example-cert/",
+    "date": "2026-03-15",
+    "status": "earned",
+    "topic": "cybersecurity",
+    "rating": null,
+    "badge_image": "/assets/images/badges/google-cybersecurity.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "Google / Coursera"
+  },
+  {
+    "type": "certification",
+    "title": "CompTIA Security+",
+    "url": "/certifications/security-plus/",
+    "date": "2025-01-15",
+    "status": "earned",
+    "topic": "security",
+    "rating": null,
+    "badge_image": "/assets/images/badges/security-plus.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "CompTIA"
+  },
+  {
+    "type": "certification",
+    "title": "AWS Solutions Architect Associate",
+    "url": "/certifications/aws-saa/",
+    "date": "2024-09-01",
+    "status": "earned",
+    "topic": "cloud",
+    "rating": null,
+    "badge_image": "/assets/images/badges/aws-saa.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "Amazon Web Services"
+  },
+  {
+    "type": "certification",
+    "title": "CompTIA Linux+",
+    "url": "/certifications/linux-plus/",
+    "date": "2024-06-01",
+    "status": "earned",
+    "topic": "systems",
+    "rating": null,
+    "badge_image": "/assets/images/badges/linux-plus.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "CompTIA"
+  },
+  {
+    "type": "certification",
+    "title": "CompTIA Network+",
+    "url": "/certifications/network-plus/",
+    "date": "2024-03-01",
+    "status": "earned",
+    "topic": "networking",
+    "rating": null,
+    "badge_image": "/assets/images/badges/network-plus.png",
+    "badge_shape": "round",
+    "genre": null,
+    "issuer": "CompTIA"
+  }
+]
