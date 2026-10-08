@@ -319,14 +319,24 @@ function resolveShortcut(text) {
   }
 
   // ── Cross-page nav shortcuts ─────────────────────────────
-  if (/\bcerts?\b|certifications?\b|emblems?\b/.test(t) && page !== '/certifications/')
-    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/certifications/' } } };
-  if (/\bbooks?\b|library\b|read\b|reading\b/.test(t) && page !== '/book-reviews/')
-    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/book-reviews/' } } };
-  if (/\bwriteups?\b|htb\b|hack.?the.?box|ctf\b/.test(t) && page !== '/writeups/')
-    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/writeups/' } } };
-  if (/\bchronicles\b|learning.?logs?\b/.test(t) && page !== '/learning-logs/')
-    return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/learning-logs/' } } };
+  const nav = (url) => ({ message: '', cards: [], action: { type: 'navigate_to', params: { url } } });
+
+  if (/\bcerts?\b|certif\w+|emblems?\b/.test(t) && page !== '/certifications/')
+    return nav('/certifications/');
+  if (/\bbooks?\b|library\b|read\b|reading\b|reviews?\b/.test(t) && page !== '/book-reviews/')
+    return nav('/book-reviews/');
+  if (/\bwriteups?\b|htb\b|hack.?the.?box|ctf\b|machines?\b|boxes?\b/.test(t) && page !== '/writeups/')
+    return nav('/writeups/');
+  if (/\bchronicles\b|learning.?logs?\b|skill.?tree\b/.test(t) && page !== '/learning-logs/')
+    return nav('/learning-logs/');
+  if (/\bdiscoveries\b|deep.?dive\b/.test(t) && page !== '/deep-dives/')
+    return nav('/deep-dives/');
+  if (/\bexplorations?\b|tutorials?\b|guides?\b|how.?to\b/.test(t) && page !== '/tutorials/')
+    return nav('/tutorials/');
+  if (/\babout\b|who is wynter|who are you|background|bio\b/.test(t) && page !== '/about/')
+    return nav('/about/');
+  if (/\bhome\b|main page|go back|start over/.test(t) && page !== '/')
+    return nav('/');
 
   return null; // fall through to worker
 }
