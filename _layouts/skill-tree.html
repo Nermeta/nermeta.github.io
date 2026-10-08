@@ -752,44 +752,39 @@ layout: default
     if (e.key === 'ArrowRight') goTo(current + 1);
   });
 
-  // Draw all trees, activate first
-  trees.forEach(t => drawTree(t));
-  goTo(0);
-
   /* ── Status filter ───────────────────────────────────────── */
   let activeFilter = 'all';
-  document.querySelectorAll('.st-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilter = btn.dataset.filter;
-      document.querySelectorAll('.st-filter-btn').forEach(b => {
-        const isActive = b.dataset.filter === activeFilter;
-        // restore original active class name per button
-        if (isActive) {
-          b.classList.add(b.dataset.filter === 'in-progress' ? 'active-fuchsia' : 'active');
-          b.classList.remove(b.dataset.filter === 'in-progress' ? 'active' : 'active-fuchsia');
-        } else {
-          b.classList.remove('active', 'active-fuchsia');
-        }
-      });
-      applyFilter();
-    });
-  });
 
   function applyFilter() {
     const t = trees[current];
     if (!t || !t.svg) return;
-    // Filters just show/hide nodes by status — no path tracing
     Object.entries(t.nodeGroupMap).forEach(([slug, g]) => {
       const match = activeFilter === 'all' || g.dataset.status === activeFilter;
       g.style.opacity = match ? '' : '0.08';
       g.style.pointerEvents = match ? '' : 'none';
     });
-    // Dim edges where both endpoints are hidden
     t.svg.querySelectorAll('.edge-line').forEach(line => {
       const fMatch = activeFilter === 'all' || (t.nodeGroupMap[line.dataset.from] && t.nodeGroupMap[line.dataset.from].dataset.status === activeFilter);
       const tMatch = activeFilter === 'all' || (t.nodeGroupMap[line.dataset.to]   && t.nodeGroupMap[line.dataset.to].dataset.status   === activeFilter);
       line.style.opacity = (fMatch || tMatch) ? '' : '0.06';
     });
   }
+
+  document.querySelectorAll('.st-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.filter;
+      document.querySelectorAll('.st-filter-btn').forEach(b => {
+        b.classList.remove('active', 'active-fuchsia');
+        if (b.dataset.filter === activeFilter) {
+          b.classList.add(activeFilter === 'in-progress' ? 'active-fuchsia' : 'active');
+        }
+      });
+      applyFilter();
+    });
+  });
+
+  // Draw all trees, activate first
+  trees.forEach(t => drawTree(t));
+  goTo(0);
 })();
 </script>
