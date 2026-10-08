@@ -360,6 +360,41 @@ body {
 }
 
 /* ════════════════════════════════════════════
+   BOOKEND
+════════════════════════════════════════════ */
+.bookend {
+  display: none; /* shown via JS when shelf has room */
+  align-self: flex-end;
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+.bookend.visible { display: block; }
+
+.bookend-base {
+  width: 48px;
+  height: 14px;
+  background:
+    var(--tex-wood),
+    linear-gradient(180deg, #5a3614 0%, #3e2208 50%, #2c1606 100%);
+  border-top: 2px solid rgba(212,175,106,0.6);
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,106,0.2);
+}
+
+.bookend-upright {
+  width: 14px;
+  height: 160px;
+  margin: 0 auto;
+  background:
+    var(--tex-wood),
+    linear-gradient(to right, #3e2208 0%, #5a3614 40%, #4a2c0f 100%);
+  border-left: 1px solid rgba(212,175,106,0.3);
+  border-right: 1px solid rgba(0,0,0,0.5);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.4), inset 1px 0 0 rgba(212,175,106,0.1);
+}
+
+/* ════════════════════════════════════════════
    MODAL
 ════════════════════════════════════════════ */
 .modal-backdrop {
@@ -588,6 +623,13 @@ body {
         {% endfor %}
 
         <p class="empty-state" id="emptyState">No books match those filters.</p>
+
+        <!-- Bookend — shown when there's empty shelf space -->
+        <div class="bookend" id="bookend" aria-hidden="true">
+          <div class="bookend-base"></div>
+          <div class="bookend-upright"></div>
+        </div>
+
       </div><!-- /.shelf-row -->
 
       <!-- The wooden shelf plank -->
@@ -770,6 +812,23 @@ body {
   modalClose.addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── BOOKEND ────────────────────────────────────────────────────
+  const bookend   = document.getElementById('bookend');
+  const shelfRow  = document.getElementById('shelfRow');
+
+  function updateBookend() {
+    const visibleSpines = allSpines.filter(s => !s.hidden);
+    const spineWidth = visibleSpines.reduce((sum, s) => sum + s.offsetWidth + 3, 0);
+    const shelfWidth = shelfRow.offsetWidth;
+    // Show bookend if more than 80px of empty space remains
+    bookend.classList.toggle('visible', shelfWidth - spineWidth > 80);
+  }
+
+  // Run after filter changes and on load
+  const _origApply = applyFilters;
+  applyFilters = function() { _origApply(); updateBookend(); };
+  updateBookend();
 
   // ── AI CHAT BRIDGE ─────────────────────────────────────────────
   window.addEventListener('site:action', e => {
