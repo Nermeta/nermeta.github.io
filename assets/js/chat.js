@@ -185,8 +185,6 @@ function appendAiResponse(container, data, source) {
     data.cards.forEach(card => {
       const cardEl = document.createElement('div');
       cardEl.className = 'result-card';
-      const tagHtml = card.type
-        ? `<span class="result-card-tag">${escapeHtml(card.type)}</span>` : '';
       const dateHtml = card.date
         ? `<span>${escapeHtml(card.date)}</span>` : '';
       const badge   = resolveBadge(card);
@@ -196,7 +194,7 @@ function appendAiResponse(container, data, source) {
         ${imgHtml}
         <div class="result-card-body">
           <a href="${escapeHtml(card.url || '#')}">${escapeHtml(card.title || 'Untitled')}</a>
-          <div class="result-card-meta">${tagHtml}${dateHtml}</div>
+          <div class="result-card-meta">${dateHtml}</div>
         </div>`;
       cardsDiv.appendChild(cardEl);
     });
