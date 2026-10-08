@@ -2,17 +2,25 @@
 layout: default
 ---
 
-{% assign all_logs = site.learning-logs | where: "public", true %}
+{% comment %}
+  Collect all public learning logs — `public: true` is the default via _config.yml defaults,
+  so we just grab everything in the collection and skip any explicitly marked false.
+{% endcomment %}
+{% assign all_logs = "" | split: "" %}
+{% for log in site.learning-logs %}
+  {% unless log.public == false %}
+    {% assign all_logs = all_logs | push: log %}
+  {% endunless %}
+{% endfor %}
 
-{% comment %} Build domain list {% endcomment %}
+{% comment %} Build sorted unique domain list {% endcomment %}
 {% assign domains_raw = "" %}
 {% for log in all_logs %}
   {% if log.domain %}
-    {% assign domains_raw = domains_raw | append: log.domain | append: "," %}
+    {% assign domains_raw = domains_raw | append: log.domain | append: "|" %}
   {% endif %}
 {% endfor %}
-{% assign domains = domains_raw | split: "," | uniq | sort %}
-{% assign domains = domains | reject: "" %}
+{% assign domains = domains_raw | split: "|" | uniq | sort %}
 
 <main class="skill-tree-page" id="main-content">
 
@@ -38,12 +46,28 @@ layout: default
   <div class="st-canvas-wrap" id="stCanvasWrap">
     {% for domain in domains %}
       {% assign domain_logs = all_logs | where: "domain", domain %}
-      <div class="st-tree" id="tree-{{ domain | slugify }}"
-           data-domain="{{ domain }}"
-           data-logs='{% assign first = true %}[{% for log in domain_logs %}{% unless first %},{% endunless %}{% assign first = false %}{"slug":"{{ log.name | replace: ".md","" }}","title":{{ log.title | jsonify }},"url":"{{ log.url | relative_url }}","status":"{{ log.status | default: "not-started" }}","summary":{{ log.summary | default: "" | jsonify }},"requires":{% if log.requires %}{{ log.requires | jsonify }}{% else %}[]{% endif %},"date":"{{ log.date | date: "%b %Y" }}"}{% endfor %}]'>
+      <div class="st-tree" id="tree-{{ domain | slugify }}" data-domain="{{ domain }}">
       </div>
     {% endfor %}
   </div>
+
+  <!-- Per-domain JSON data — avoids all HTML attribute escaping issues -->
+  {% for domain in domains %}
+    {% assign domain_logs = all_logs | where: "domain", domain %}
+    <script type="application/json" id="data-{{ domain | slugify }}">
+    [{% for log in domain_logs %}{% unless forloop.first %},{% endunless %}
+      {
+        "slug":     {{ log.slug | jsonify }},
+        "title":    {{ log.title | jsonify }},
+        "url":      {{ log.url | relative_url | jsonify }},
+        "status":   {{ log.status | default: "not-started" | jsonify }},
+        "summary":  {{ log.summary | default: "" | jsonify }},
+        "requires": {% if log.requires %}{{ log.requires | jsonify }}{% else %}[]{% endif %},
+        "date":     {{ log.date | date: "%b %Y" | jsonify }}
+      }{% endfor %}
+    ]
+    </script>
+  {% endfor %}
 
   <!-- Node detail modal -->
   <div class="st-modal" id="stModal" hidden role="dialog" aria-modal="true" aria-labelledby="stModalTitle">
@@ -294,11 +318,17 @@ layout: default
   /* ── Data ─────────────────────────────────────────────────── */
   const trees = [];
   document.querySelectorAll('.st-tree').forEach(el => {
-    const logs = JSON.parse(el.dataset.logs || '[]');
-    trees.push({ el, domain: el.dataset.domain, logs });
+    const domain = el.dataset.domain;
+    const scriptEl = document.getElementById('data-' + domain.replace(/[^a-z0-9]+/gi, '-').toLowerCase());
+    let logs = [];
+    if (scriptEl) {
+      try { logs = JSON.parse(scriptEl.textContent); } catch(e) { console.error('Skill tree JSON parse error for domain:', domain, e); }
+    }
+    trees.push({ el, domain, logs });
   });
 
-  if (!trees.length) return;
+  if (!trees.length) { console.warn('Skill tree: no .st-tree elements found'); return; }
+  console.log('Skill tree: loaded', trees.length, 'domains:', trees.map(t => t.domain + '(' + t.logs.length + ')').join(', '));
 
   let current = 0;
 
