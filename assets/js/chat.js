@@ -4,6 +4,24 @@
 
 const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev/chat';
 
+// Local badge image map — keyed by cert title (lowercase, trimmed)
+// Frontend resolves badge images directly; no dependency on AI returning paths
+const CERT_BADGES = {
+  'google cloud associate cloud engineer': '/assets/images/badges/gcp-ace.png',
+  'certified ethical hacker':              '/assets/images/badges/ceh.png',
+  'google cybersecurity certificate':      '/assets/images/badges/google-cybersecurity.png',
+  'comptia security+':                     '/assets/images/badges/security-plus.png',
+  'aws solutions architect associate':     '/assets/images/badges/aws-saa.png',
+  'comptia linux+':                        '/assets/images/badges/linux-plus.png',
+  'comptia network+':                      '/assets/images/badges/network-plus.png',
+};
+
+function resolveBadge(card) {
+  if (card.type !== 'certification') return null;
+  const key = (card.title || '').toLowerCase().trim();
+  return CERT_BADGES[key] || card.badge_image || null;
+}
+
 /* ── STAR FIELD ─────────────────────────────────────────────── */
 (function initStars() {
   const canvas = document.getElementById('stars');
@@ -155,8 +173,9 @@ function appendAiResponse(container, data, source) {
         ? `<span class="result-card-tag">${escapeHtml(card.type)}</span>` : '';
       const dateHtml = card.date
         ? `<span>${escapeHtml(card.date)}</span>` : '';
-      const imgHtml = card.badge_image
-        ? `<img src="${escapeHtml(card.badge_image)}" alt="" class="result-card-badge" loading="lazy">` : '';
+      const badge   = resolveBadge(card);
+      const imgHtml = badge
+        ? `<img src="${escapeHtml(badge)}" alt="" class="result-card-badge" loading="lazy">` : '';
       cardEl.innerHTML = `
         ${imgHtml}
         <div class="result-card-body">
