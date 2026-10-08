@@ -695,9 +695,41 @@ body {
   }
 
   // ── COVER ART ──────────────────────────────────────────────────
+  // Sample dominant color from cover art via canvas, fall back to spine_color
+  function dominantColor(imgEl) {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 16; canvas.height = 48;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgEl, 0, 0, 16, 48);
+      const d = ctx.getImageData(0, 0, 16, 48).data;
+      let r = 0, g = 0, b = 0, n = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        // Skip near-white and near-black pixels
+        const br = (d[i] + d[i+1] + d[i+2]) / 3;
+        if (br > 230 || br < 20) continue;
+        r += d[i]; g += d[i+1]; b += d[i+2]; n++;
+      }
+      if (n === 0) return null;
+      // Darken slightly so text stays readable
+      const factor = 0.72;
+      return `rgb(${Math.round(r/n*factor)},${Math.round(g/n*factor)},${Math.round(b/n*factor)})`;
+    } catch { return null; }
+  }
+
   function loadSpineCover(spine) {
-    const color = spine.dataset.spineColor || '#3a2a6e';
-    spine.style.setProperty('--sc', color);
+    const isbn    = spine.dataset.isbn;
+    const fallback = spine.dataset.spineColor || '#3a2a6e';
+    spine.style.setProperty('--sc', fallback);
+    if (!isbn) return;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const color = dominantColor(img) || fallback;
+      spine.style.setProperty('--sc', color);
+    };
+    img.src = `${COVER_BASE}${isbn}-M.jpg`;
   }
 
   // ── INIT SPINES ────────────────────────────────────────────────
