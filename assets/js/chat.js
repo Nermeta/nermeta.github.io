@@ -157,17 +157,20 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
-  // Drawer + navigate_to: navigate only if the worker gave a real non-root URL
-  if (source === 'drawer' && data.action?.type === 'navigate_to') {
-    const dest = data.action.params?.url || '';
-    const isReal = dest && dest !== '/' && dest !== window.location.pathname;
-    if (isReal) {
-      window.dispatchEvent(new CustomEvent('site:action', {
-        detail: { type: 'navigate_to', params: data.action.params || {}, source }
-      }));
-      return;
+  // navigate_to: drawer navigates, home chat never does (shows cards inline instead)
+  if (data.action?.type === 'navigate_to') {
+    if (source === 'drawer') {
+      const dest = data.action.params?.url || '';
+      const isReal = dest && dest !== '/' && dest !== window.location.pathname;
+      if (isReal) {
+        window.dispatchEvent(new CustomEvent('site:action', {
+          detail: { type: 'navigate_to', params: data.action.params || {}, source }
+        }));
+        return;
+      }
     }
-    // Bad/empty URL — fall through and render whatever message the worker sent
+    // Home source, or bad/empty URL — strip the action so it doesn't fire below
+    data = { ...data, action: null };
   }
 
   // Silent filter action (e.g. filter_shelf with no message): just fire and return
@@ -319,6 +322,9 @@ function resolveShortcut(text) {
     const patterns = s.patterns || [];
     const matched  = patterns.some(p => new RegExp(p).test(t));
     if (!matched) continue;
+
+    // Home chat never navigates — fall through to worker so it can return cards
+    if (page === '/' && s.action?.type === 'navigate_to') return null;
 
     return { message: '', cards: [], action: s.action };
   }
