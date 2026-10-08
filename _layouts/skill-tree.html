@@ -741,6 +741,8 @@ layout: default
     countEl.textContent = `${t.logs.length} log${t.logs.length !== 1 ? 's' : ''}`;
     // Re-apply active filter on domain switch
     if (typeof applyFilter === 'function') applyFilter();
+    // Expose current domain for chat context
+    window.__skillTreeDomain = t.domain;
   }
 
   document.querySelector('.st-nav-prev').addEventListener('click', () => goTo(current - 1));

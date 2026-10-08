@@ -228,7 +228,7 @@ export default {
       });
     }
 
-    const { messages } = body;
+    const { messages, currentPage, currentDomain } = body;
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: 'messages array required' }), {
         status: 400,
@@ -237,7 +237,13 @@ export default {
     }
 
     // Build system prompt (fetches context.json)
-    const systemPrompt = await buildSystemPrompt(env);
+    let systemPrompt = await buildSystemPrompt(env);
+
+    // Inject current page/domain context so the model knows where the visitor is
+    if (currentPage) {
+      systemPrompt += `\n\n## Current visitor location\nThe visitor is currently on: ${currentPage}`;
+      if (currentDomain) systemPrompt += `\nCurrently viewing domain: "${currentDomain}"`;
+    }
 
        // Call Cloudflare Workers AI
     const cfPayload = {

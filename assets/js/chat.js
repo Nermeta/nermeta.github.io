@@ -107,7 +107,11 @@ async function sendMessage(userText) {
   const response = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: chatHistory })
+    body: JSON.stringify({
+      messages: chatHistory,
+      currentPage: window.location.pathname,
+      currentDomain: window.__skillTreeDomain || null
+    })
   });
 
   if (!response.ok) {
