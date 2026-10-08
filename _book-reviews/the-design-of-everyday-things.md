@@ -4,7 +4,6 @@ date: 2025-11-10
 type: book-review
 author: "Don Norman"
 isbn: "9780465050659"
-spine_color: "#c0392b"
 genre: [nonfiction, design, psychology]
 rating: 5
 finished_date: 2025-11-10

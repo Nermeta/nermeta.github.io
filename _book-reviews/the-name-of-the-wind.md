@@ -4,7 +4,6 @@ date: 2025-05-14
 type: book-review
 author: "Patrick Rothfuss"
 isbn: "9780756404079"
-spine_color: "#6c3483"
 genre: [fiction, fantasy]
 rating: 4
 finished_date: 2025-05-14

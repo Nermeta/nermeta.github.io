@@ -5,7 +5,6 @@ type: book-review
 topic: productivity
 author: "James Clear"
 isbn: "9780735211292"
-spine_color: "#c8a96e"
 genre: [nonfiction, productivity, self-development]
 rating: 5
 finished_date: 2026-01-28

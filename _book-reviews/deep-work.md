@@ -4,7 +4,6 @@ date: 2025-03-30
 type: book-review
 author: "Cal Newport"
 isbn: "9781455586691"
-spine_color: "#2c3e50"
 genre: [nonfiction, productivity, career]
 rating: 4
 finished_date: 2025-03-30

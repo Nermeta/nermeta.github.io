@@ -4,7 +4,6 @@ date: 2025-09-03
 type: book-review
 author: "Susanna Clarke"
 isbn: "9781635575637"
-spine_color: "#1a5276"
 genre: [fiction, fantasy, mystery]
 rating: 5
 finished_date: 2025-09-03
