@@ -222,9 +222,22 @@ function pickSectionImage(entries, type, strategy) {
   return { src: pick.badge_image, shape: pick.badge_shape || 'round' };
 }
 
+// Helper: pick a representative entry by newest date for text-only sections
+function pickNewest(entries, type) {
+  const pool = entries.filter(e => e.type === type);
+  if (!pool.length) return null;
+  // Already sorted newest-first from the main sort above
+  return pool[0];
+}
+
 const sectionImages = {
   '/book-reviews/':   pickSectionImage(index.entries, 'book-review',   'highest-rated'),
   '/certifications/': pickSectionImage(index.entries, 'certification',  'earned-first'),
+  // Text-only sections — no badge image, but include entry metadata for future use
+  '/learning-logs/':  pickNewest(index.entries, 'learning-log')  ? { src: null, shape: null, title: pickNewest(index.entries, 'learning-log').title,  url: pickNewest(index.entries, 'learning-log').url  } : null,
+  '/writeups/':       pickNewest(index.entries, 'writeup')       ? { src: null, shape: null, title: pickNewest(index.entries, 'writeup').title,       url: pickNewest(index.entries, 'writeup').url       } : null,
+  '/deep-dives/':     pickNewest(index.entries, 'deep-dive')     ? { src: null, shape: null, title: pickNewest(index.entries, 'deep-dive').title,     url: pickNewest(index.entries, 'deep-dive').url     } : null,
+  '/tutorials/':      pickNewest(index.entries, 'tutorial')      ? { src: null, shape: null, title: pickNewest(index.entries, 'tutorial').title,      url: pickNewest(index.entries, 'tutorial').url      } : null,
 };
 
 // Write context.json (excluded from Jekyll, read by the Cloudflare worker)

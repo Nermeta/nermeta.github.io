@@ -6,5 +6,29 @@
   "/certifications/": {
     "src": "/assets/images/badges/google-cybersecurity.png",
     "shape": "round"
+  },
+  "/learning-logs/": {
+    "src": null,
+    "shape": null,
+    "title": "Python S04: Banner Grabbing",
+    "url": "/learning-logs/python-session-04/"
+  },
+  "/writeups/": {
+    "src": null,
+    "shape": null,
+    "title": "HTB: Escape — AD Certificate Services Abuse",
+    "url": "/writeups/10-06-2026-example-writeup/"
+  },
+  "/deep-dives/": {
+    "src": null,
+    "shape": null,
+    "title": "How Active Directory Actually Works",
+    "url": "/deep-dives/10-06-2026-example-deep-dive/"
+  },
+  "/tutorials/": {
+    "src": null,
+    "shape": null,
+    "title": "Automating Active Directory Reports with PowerShell",
+    "url": "/tutorials/10-06-2026-example-tutorial/"
   }
 }

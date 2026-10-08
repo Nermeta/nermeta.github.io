@@ -142,6 +142,7 @@
     "excludePages": ["/learning-logs/"],
     "action": { "type": "navigate_to", "params": { "url": "/learning-logs/" } },
     "home_message": "The [Chronicles](/learning-logs/) is Wynter's skill tree — an interactive map of everything she's learning, organized by domain and status.",
+    "card_title": "Chronicles",
     "chip": "What's in the Chronicles?",
     "image": null
   },
@@ -152,6 +153,7 @@
     "excludePages": ["/certifications/"],
     "action": { "type": "navigate_to", "params": { "url": "/certifications/" } },
     "home_message": "The [Emblems](/certifications/) page tracks Wynter's certifications — earned badges, in-progress studies, and what's up next.",
+    "card_title": "Emblems",
     "chip": "Any Emblems earned?",
     "image_from_section": "/certifications/"
   },
@@ -162,6 +164,7 @@
     "excludePages": ["/book-reviews/"],
     "action": { "type": "navigate_to", "params": { "url": "/book-reviews/" } },
     "home_message": "The [Library](/book-reviews/) has Wynter's book reviews — fiction, non-fiction, and technical reads, each with a rating and her take.",
+    "card_title": "Library",
     "chip": "Latest Library reviews",
     "image_from_section": "/book-reviews/"
   },
@@ -172,6 +175,7 @@
     "excludePages": ["/writeups/"],
     "action": { "type": "navigate_to", "params": { "url": "/writeups/" } },
     "home_message": "The [Writeups](/writeups/) section covers Wynter's CTF and HackTheBox walkthroughs — step-by-step breakdowns of machines and challenges.",
+    "card_title": "Writeups",
     "chip": "Show recent writeups",
     "image": null
   },
@@ -182,6 +186,7 @@
     "excludePages": ["/deep-dives/"],
     "action": { "type": "navigate_to", "params": { "url": "/deep-dives/" } },
     "home_message": "[Discoveries](/deep-dives/) are Wynter's deep-dive technical articles — thorough explorations of topics like Active Directory, networking, and security concepts.",
+    "card_title": "Discoveries",
     "chip": "Discoveries on Active Directory",
     "image": null
   },
@@ -192,6 +197,7 @@
     "excludePages": ["/tutorials/"],
     "action": { "type": "navigate_to", "params": { "url": "/tutorials/" } },
     "home_message": "[Field Notes](/tutorials/) are Wynter's practical tutorials and guides — hands-on walkthroughs for tools and techniques she's working with.",
+    "card_title": "Field Notes",
     "chip": "Show recent Field Notes",
     "image": null
   },

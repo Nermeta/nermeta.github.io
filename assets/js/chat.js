@@ -27,6 +27,8 @@ function resolveBadge(card) {
   if (card.type === 'book-review' || card.type === 'book') {
     if (card.badge_image) return { src: card.badge_image, shape: 'book' };
   }
+  // Generic fallback — section nav cards have badge_image but no type
+  if (card.badge_image) return { src: card.badge_image, shape: card.badge_shape || 'round' };
   return null;
 }
 
@@ -282,13 +284,19 @@ function loadShortcuts() {
     fetch('/assets/data/shortcuts.json').then(r => r.json()).catch(() => []),
     fetch('/assets/data/section-images.json').then(r => r.json()).catch(() => ({}))
   ]).then(([shortcuts, sectionImages]) => {
-    // Resolve image_from_section → actual src + shape from context.json
     _shortcuts = shortcuts.map(s => {
-      if (s.image_from_section && sectionImages[s.image_from_section]) {
-        const img = sectionImages[s.image_from_section];
-        return { ...s, image: img.src, image_shape: img.shape };
-      }
-      return s;
+      const sectionUrl = s.image_from_section || s.action?.params?.url;
+      const section = sectionUrl ? sectionImages[sectionUrl] : null;
+      if (!section) return s;
+      return {
+        ...s,
+        // Resolved image for the section card
+        image:         section.src   || s.image       || null,
+        image_shape:   section.shape || s.image_shape || 'round',
+        // Latest entry hint (text-only sections with no badge image)
+        section_latest_title: section.title || null,
+        section_latest_url:   section.url   || null,
+      };
     });
     return _shortcuts;
   });
@@ -324,7 +332,28 @@ function resolveShortcut(text) {
 
     // Home chat never navigates — use home_message if present, otherwise fall through to worker
     if (page === '/' && s.action?.type === 'navigate_to') {
-      if (s.home_message) return { message: s.home_message, cards: [], action: null };
+      if (s.home_message) {
+        const cards = [];
+        // Section overview card (with image if available)
+        if (s.card_title) {
+          cards.push({
+            title:       s.card_title,
+            url:         s.action.params?.url || '#',
+            badge_image: s.image       || null,
+            badge_shape: s.image_shape || 'round',
+          });
+        }
+        // Latest entry card from section-images.json (text-only sections)
+        if (s.section_latest_title && s.section_latest_url) {
+          cards.push({
+            title:       s.section_latest_title,
+            url:         s.section_latest_url,
+            badge_image: null,
+            badge_shape: null,
+          });
+        }
+        return { message: s.home_message, cards, action: null };
+      }
       return null;
     }
 
