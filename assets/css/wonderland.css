@@ -594,11 +594,11 @@ tr:last-child td { border-bottom: none; }
 .typing-text {
   background: linear-gradient(
     90deg,
-    var(--fg-muted) 0%,
-    var(--accent)   35%,
-    #c084fc         55%,
-    var(--accent)   75%,
-    var(--fg-muted) 100%
+    var(--fg-secondary) 0%,
+    var(--aqua)         25%,
+    var(--fuchsia)      55%,
+    var(--aqua)         75%,
+    var(--fg-secondary) 100%
   );
   background-size: 250% auto;
   -webkit-background-clip: text;
