@@ -4,22 +4,29 @@
 
 const WORKER_URL = 'https://wynters-wonderland-ai.nermeta.workers.dev/chat';
 
-// Local badge map — keyed by cert title (lowercase, trimmed)
-// Each entry: { src, shape } where shape matches .badge-round / .badge-shield / .badge-hex
-const CERT_BADGES = {
-  'google cloud associate cloud engineer': { src: '/assets/images/badges/gcp-ace.png',            shape: 'round'  },
-  'certified ethical hacker':              { src: '/assets/images/badges/ceh.png',                shape: 'shield' },
+// Fallback badge map — used only when context.json hasn't populated badge_image/badge_shape yet.
+// Primary source of truth is card.badge_image + card.badge_shape from the AI response.
+// Add new certs here only as a temporary fallback; the editor will write frontmatter which
+// flows through build-context.js → context.json → Worker → card data automatically.
+const CERT_BADGE_FALLBACKS = {
+  'google cloud associate cloud engineer': { src: '/assets/images/badges/gcp-ace.png',             shape: 'round'  },
+  'certified ethical hacker':              { src: '/assets/images/badges/ceh.png',                 shape: 'shield' },
   'google cybersecurity certificate':      { src: '/assets/images/badges/google-cybersecurity.png', shape: 'round' },
-  'comptia security+':                     { src: '/assets/images/badges/security-plus.png',      shape: 'round'  },
-  'aws solutions architect associate':     { src: '/assets/images/badges/aws-saa.png',            shape: 'round'  },
-  'comptia linux+':                        { src: '/assets/images/badges/linux-plus.png',         shape: 'round'  },
-  'comptia network+':                      { src: '/assets/images/badges/network-plus.png',       shape: 'round'  },
+  'comptia security+':                     { src: '/assets/images/badges/security-plus.png',       shape: 'round'  },
+  'aws solutions architect associate':     { src: '/assets/images/badges/aws-saa.png',             shape: 'round'  },
+  'comptia linux+':                        { src: '/assets/images/badges/linux-plus.png',          shape: 'round'  },
+  'comptia network+':                      { src: '/assets/images/badges/network-plus.png',        shape: 'round'  },
 };
 
 function resolveBadge(card) {
   if (card.type !== 'certification') return null;
+  // Prefer data from context.json (populated by build-context.js from frontmatter)
+  if (card.badge_image) {
+    return { src: card.badge_image, shape: card.badge_shape || 'round' };
+  }
+  // Fall back to local map for certs the Worker hasn't seen yet
   const key = (card.title || '').toLowerCase().trim();
-  return CERT_BADGES[key] || (card.badge_image ? { src: card.badge_image, shape: 'round' } : null);
+  return CERT_BADGE_FALLBACKS[key] || null;
 }
 
 /* ── STAR FIELD ─────────────────────────────────────────────── */

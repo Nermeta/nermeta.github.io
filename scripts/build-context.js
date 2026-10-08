@@ -157,6 +157,7 @@ for (const { dir, type } of COLLECTIONS) {
       entry.credential_url = meta.credential_url || null;
       entry.expiry         = meta.expiry         || null;
       entry.badge_image    = meta.badge_image    || null;
+      entry.badge_shape    = meta.shape          || 'round';
       entry.status         = meta.status         || 'earned';
     }
 
