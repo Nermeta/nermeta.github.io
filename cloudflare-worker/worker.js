@@ -86,6 +86,7 @@ async function buildSystemPrompt(env) {
         if (e.subject)   parts.push(`  Subject: ${e.subject} (${e.status || 'unknown status'})`);
         if (e.issuer)    parts.push(`  Issuer: ${e.issuer}, earned: ${e.cert_date}`);
         if (e.author)    parts.push(`  Author: ${e.author}, rating: ${e.rating}/5`);
+        if (e.badge_image && e.badge_shape === 'book') parts.push(`  Cover: ${e.badge_image}`);
         if (e.platform)  parts.push(`  Platform: ${e.platform}, category: ${e.category}, difficulty: ${e.difficulty}, outcome: ${e.outcome}`);
         if (e.tools?.length) parts.push(`  Tools: ${e.tools.join(', ')}`);
         if (e.tech_stack?.length) parts.push(`  Tech stack: ${e.tech_stack.join(', ')}`);

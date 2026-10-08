@@ -603,6 +603,7 @@ body {
           data-title="{{ book.title }}"
           data-author="{{ book.author }}"
           data-isbn="{{ book.isbn }}"
+          data-cover="{% if book.isbn %}/assets/images/covers/{{ book.isbn }}.jpg{% endif %}"
           data-summary="{{ book.summary }}"
           data-tags="{{ book.tags | join: '|' }}"
           data-rating-val="{{ book.rating }}"
@@ -718,18 +719,22 @@ body {
   }
 
   function loadSpineCover(spine) {
-    const isbn    = spine.dataset.isbn;
     const fallback = spine.dataset.spineColor || '#3a2a6e';
     spine.style.setProperty('--sc', fallback);
-    if (!isbn) return;
+
+    // If spine_color was pre-computed at build time, we're done
+    if (spine.dataset.spineColor) return;
+
+    // Otherwise derive from the locally cached cover image
+    const cover = spine.dataset.cover;
+    if (!cover) return;
 
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.onload = () => {
       const color = dominantColor(img) || fallback;
       spine.style.setProperty('--sc', color);
     };
-    img.src = `${COVER_BASE}${isbn}-M.jpg`;
+    img.src = cover;
   }
 
   // ── INIT SPINES ────────────────────────────────────────────────
@@ -783,9 +788,8 @@ body {
 
   function openModal(spine) {
     const d      = spine.dataset;
-    const isbn   = d.isbn;
-    const cover  = isbn ? `${COVER_BASE}${isbn}-L.jpg` : '';
-    const thumb  = isbn ? `${COVER_BASE}${isbn}-M.jpg` : '';
+    const cover  = d.cover || '';
+    const thumb  = d.cover || '';
 
     // Cover band
     const coverImg = document.getElementById('modalCoverImg');

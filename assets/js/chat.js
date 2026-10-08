@@ -25,7 +25,7 @@ function resolveBadge(card) {
     return CERT_BADGE_FALLBACKS[key] || null;
   }
   if (card.type === 'book-review' || card.type === 'book') {
-    if (card.isbn) return { src: `https://covers.openlibrary.org/b/isbn/${card.isbn}-M.jpg`, shape: 'book' };
+    if (card.badge_image) return { src: card.badge_image, shape: 'book' };
   }
   return null;
 }

@@ -167,6 +167,14 @@ for (const { dir, type } of COLLECTIONS) {
       entry.genre         = meta.genre         || [];
       entry.rating        = meta.rating        || null;
       entry.finished_date = meta.finished_date || null;
+      // Use locally cached cover if available, fall back to Open Library
+      if (meta.isbn) {
+        const localCover = path.join(__dirname, '..', 'assets', 'images', 'covers', `${meta.isbn}.jpg`);
+        entry.badge_image = fs.existsSync(localCover)
+          ? `/assets/images/covers/${meta.isbn}.jpg`
+          : `https://covers.openlibrary.org/b/isbn/${meta.isbn}-M.jpg`;
+        entry.badge_shape = 'book';
+      }
     }
 
     if (type === 'deep-dive' || type === 'tutorial') {
