@@ -222,12 +222,17 @@ function pickSectionImage(entries, type, strategy) {
   return { src: pick.badge_image, shape: pick.badge_shape || 'round' };
 }
 
-index.section_images = {
+const sectionImages = {
   '/book-reviews/':   pickSectionImage(index.entries, 'book-review',   'highest-rated'),
   '/certifications/': pickSectionImage(index.entries, 'certification',  'earned-first'),
 };
 
+// Write context.json (excluded from Jekyll, read by the Cloudflare worker)
 const outputPath = path.join(ROOT, 'context.json');
 fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
-
 console.log(`✓ context.json written — ${index.entries.length} public entries`);
+
+// Write assets/data/section-images.json (served by Jekyll, read by the browser)
+const sectionImagesPath = path.join(ROOT, 'assets', 'data', 'section-images.json');
+fs.writeFileSync(sectionImagesPath, JSON.stringify(sectionImages, null, 2));
+console.log(`✓ section-images.json written`);

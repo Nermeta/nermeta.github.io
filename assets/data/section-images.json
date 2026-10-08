@@ -1,0 +1,10 @@
+{
+  "/book-reviews/": {
+    "src": "https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg",
+    "shape": "book"
+  },
+  "/certifications/": {
+    "src": "/assets/images/badges/google-cybersecurity.png",
+    "shape": "round"
+  }
+}

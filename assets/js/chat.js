@@ -280,9 +280,8 @@ function loadShortcuts() {
   if (_shortcutsPromise) return _shortcutsPromise;
   _shortcutsPromise = Promise.all([
     fetch('/assets/data/shortcuts.json').then(r => r.json()).catch(() => []),
-    fetch('/context.json').then(r => r.json()).catch(() => ({}))
-  ]).then(([shortcuts, ctx]) => {
-    const sectionImages = ctx.section_images || {};
+    fetch('/assets/data/section-images.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([shortcuts, sectionImages]) => {
     // Resolve image_from_section → actual src + shape from context.json
     _shortcuts = shortcuts.map(s => {
       if (s.image_from_section && sectionImages[s.image_from_section]) {
@@ -333,8 +332,7 @@ function resolveShortcut(text) {
 }
 
 /**
- * getChipsForPage — returns chip data from shortcuts.json for a given page path.
- * Each item: { label, image, image_shape }
+ * getChipsForPage — returns chip labels from shortcuts.json for a given page path.
  */
 function getChipsForPage(page) {
   if (!_shortcuts) return [];
@@ -346,7 +344,7 @@ function getChipsForPage(page) {
         (pages.includes('*') || pages.includes(page)) &&
         !excluded.includes(page);
     })
-    .map(s => ({ label: s.chip, image: s.image || null, image_shape: s.image_shape || 'round' }));
+    .map(s => ({ label: s.chip }));
 }
 
 /**
@@ -383,12 +381,9 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     loadShortcuts().then(() => {
       const chipData = getChipsForPage(window.location.pathname);
       if (chipData.length) {
-        chips.innerHTML = chipData.map(c => {
-          const imgHtml = c.image
-            ? `<img src="${escapeHtml(c.image)}" alt="" class="chip-img chip-img--${escapeHtml(c.image_shape)}" loading="lazy">`
-            : '';
-          return `<button class="chip">${imgHtml}${escapeHtml(c.label)}</button>`;
-        }).join('');
+        chips.innerHTML = chipData
+          .map(c => `<button class="chip">${escapeHtml(c.label)}</button>`)
+          .join('');
       }
       wireChips();
     });
