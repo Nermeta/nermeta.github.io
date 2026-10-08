@@ -127,6 +127,14 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
+  // Drawer + navigate_to: fire the action silently, no reply bubble
+  if (source === 'drawer' && data.action?.type === 'navigate_to') {
+    window.dispatchEvent(new CustomEvent('site:action', {
+      detail: { type: 'navigate_to', params: data.action.params || {}, source }
+    }));
+    return;
+  }
+
   const div = document.createElement('div');
   div.className = 'msg-ai';
 
