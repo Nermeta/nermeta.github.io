@@ -44,10 +44,12 @@ function fetchBuffer(url, redirects = 5) {
 
 /**
  * Compute dominant spine color from a JPEG buffer.
- * Tries jimp first; falls back to a simple JPEG byte sampler that needs no deps.
+ * Pure Node — zero dependencies. Walks JPEG segments to find the scan data,
+ * samples bytes as interleaved Y/Cb/Cr, converts to RGB, averages and darkens.
+ * Also tries jimp first if it happens to be installed.
  */
 async function dominantColorFromJpeg(buf) {
-  // Try jimp (available in GH Actions after npm install)
+  // Try jimp if available
   try {
     const Jimp = require('jimp');
     const img  = await Jimp.read(buf);
@@ -61,34 +63,56 @@ async function dominantColorFromJpeg(buf) {
       if (br > 230 || br < 20) return;
       r += R; g += G; b += B; n++;
     });
+    if (n > 0) {
+      const f = 0.72;
+      return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
+    }
+  } catch {}
+
+  // Pure-Node fallback: walk JPEG segments to SOS marker, sample scan bytes
+  try {
+    let pos = 0;
+    while (pos < buf.length - 1) {
+      if (buf[pos] !== 0xFF) { pos++; continue; }
+      const marker = buf[pos + 1];
+      if (marker === 0xDA) { pos += 2; break; } // SOS — scan data starts here
+      if (marker === 0xD8 || marker === 0xD9) { pos += 2; continue; }
+      if (pos + 3 >= buf.length) break;
+      const segLen = (buf[pos + 2] << 8) | buf[pos + 3];
+      pos += 2 + segLen;
+    }
+
+    // Collect scan bytes (skip 0xFF escape sequences)
+    const samples = [];
+    while (pos < buf.length - 1 && samples.length < 4800) {
+      const b0 = buf[pos];
+      if (b0 === 0xFF) {
+        pos += 2; // skip marker or stuffed byte
+        if (buf[pos - 1] === 0x00) samples.push(0xFF);
+        continue;
+      }
+      samples.push(b0);
+      pos++;
+    }
+
+    if (samples.length < 9) return null;
+
+    // Treat as interleaved Y/Cb/Cr triplets → approximate RGB
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let i = 0; i + 2 < samples.length; i += 3) {
+      const Y  = samples[i];
+      const Cb = samples[i + 1] - 128;
+      const Cr = samples[i + 2] - 128;
+      const R = Math.max(0, Math.min(255, Math.round(Y + 1.402 * Cr)));
+      const G = Math.max(0, Math.min(255, Math.round(Y - 0.344 * Cb - 0.714 * Cr)));
+      const B = Math.max(0, Math.min(255, Math.round(Y + 1.772 * Cb)));
+      const br = (R + G + B) / 3;
+      if (br > 230 || br < 20) continue;
+      r += R; g += G; b += B; n++;
+    }
     if (n === 0) return null;
     const f = 0.72;
     return `rgb(${Math.round(r/n*f)},${Math.round(g/n*f)},${Math.round(b/n*f)})`;
-  } catch {}
-
-  // Fallback: write a real Python script to disk and run it
-  try {
-    const { execSync } = require('child_process');
-    const os = require('os');
-    const tmpDir = os.tmpdir();
-    const imgTmp = tmpDir + '/cover_sample.jpg';
-    const pyTmp  = tmpDir + '/dominant_color.py';
-    fs.writeFileSync(imgTmp, buf);
-    fs.writeFileSync(pyTmp, [
-      'import sys',
-      'from PIL import Image',
-      'img = Image.open(sys.argv[1]).convert("RGB").resize((16,48))',
-      'px = list(img.getdata())',
-      'r=g=b=n=0',
-      'for R,G,B in px:',
-      '    br=(R+G+B)/3',
-      '    if br>230 or br<20: continue',
-      '    r+=R;g+=G;b+=B;n+=1',
-      'f=0.72',
-      'if n: print(f"rgb({round(r/n*f)},{round(g/n*f)},{round(b/n*f)})")',
-    ].join('\n'));
-    const result = execSync(`python3 "${pyTmp}" "${imgTmp}"`, { encoding: 'utf8' }).trim();
-    if (result.startsWith('rgb(')) return result;
   } catch {}
 
   return null;
@@ -170,7 +194,7 @@ async function main() {
         console.log(`  [color] ${file} → spine_color: ${color}`);
         colored++;
       } else {
-        console.warn(`  [warn] ${file} — could not compute spine color (run: npm install jimp --no-save)`);
+        console.warn(`  [warn] ${file} — could not compute spine color from cover`);
       }
     }
   }
