@@ -42,14 +42,6 @@ layout: default
   <!-- Domain pip indicators -->
   <div class="st-pips" id="stPips" role="tablist"></div>
 
-  <!-- Status filter bar -->
-  <div class="st-filter-bar" id="stFilterBar">
-    <button class="st-filter-btn active" data-filter="all">All</button>
-    <button class="st-filter-btn" data-filter="completed">Completed</button>
-    <button class="st-filter-btn active-fuchsia" data-filter="in-progress">In Progress</button>
-    <button class="st-filter-btn" data-filter="not-started">Not Started</button>
-  </div>
-
   <!-- Tree canvases — one per domain -->
   <div class="st-canvas-wrap" id="stCanvasWrap">
     {% for domain in domains %}
@@ -57,6 +49,14 @@ layout: default
       <div class="st-tree" id="tree-{{ domain | slugify }}" data-domain="{{ domain }}">
       </div>
     {% endfor %}
+  </div>
+
+  <!-- Status filter bar -->
+  <div class="st-filter-bar" id="stFilterBar">
+    <button class="st-filter-btn active" data-filter="all">All</button>
+    <button class="st-filter-btn" data-filter="completed">Completed</button>
+    <button class="st-filter-btn active-fuchsia" data-filter="in-progress">In Progress</button>
+    <button class="st-filter-btn" data-filter="not-started">Not Started</button>
   </div>
 
   <!-- Per-domain JSON data — avoids all HTML attribute escaping issues -->
