@@ -284,12 +284,46 @@ function resolveShortcut(text) {
       return { message: '', cards: [], action: { type: 'filter_tree', params: { status: 'not-started' } } };
   }
 
+  // ── Emblems / certifications ─────────────────────────────
+  if (page === '/certifications/') {
+    if (/\bearned\b|completed\b|have\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'earned' } } };
+    if (/\bin.?progress|working on|studying/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'in-progress' } } };
+    if (/\ball\b|show all|reset|everything/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { status: 'all' } } };
+    if (/\bcloud\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'cloud' } } };
+    if (/\bsecurity\b|cyber/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'security' } } };
+    if (/\bnetwork/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'networking' } } };
+    if (/\bsystems?\b|linux|windows/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_emblems', params: { topic: 'systems' } } };
+  }
+
+  // ── Library / book reviews ───────────────────────────────
+  if (page === '/book-reviews/') {
+    if (/\ball\b|show all|reset|everything/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['all'] } } };
+    if (/\bfiction\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['fiction'] } } };
+    if (/\bnon.?fiction\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['non-fiction'] } } };
+    if (/\btechnical?\b|tech\b/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { genres: ['technical'] } } };
+    if (/\b5.?star|best|top rated|favorite/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { rating: '5' } } };
+    if (/\b4.?star/.test(t))
+      return { message: '', cards: [], action: { type: 'filter_shelf', params: { rating: '4' } } };
+  }
+
   // ── Cross-page nav shortcuts ─────────────────────────────
   if (/\bcerts?\b|certifications?\b|emblems?\b/.test(t) && page !== '/certifications/')
     return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/certifications/' } } };
-  if (/\bbooks?\b|library|read\b|reading/.test(t) && page !== '/book-reviews/')
+  if (/\bbooks?\b|library\b|read\b|reading\b/.test(t) && page !== '/book-reviews/')
     return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/book-reviews/' } } };
-  if (/\bwriteups?\b|htb|hack.?the.?box|ctf/.test(t) && page !== '/writeups/')
+  if (/\bwriteups?\b|htb\b|hack.?the.?box|ctf\b/.test(t) && page !== '/writeups/')
     return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/writeups/' } } };
   if (/\bchronicles\b|learning.?logs?\b/.test(t) && page !== '/learning-logs/')
     return { message: '', cards: [], action: { type: 'navigate_to', params: { url: '/learning-logs/' } } };
@@ -345,7 +379,11 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
     const shortcut = resolveShortcut(text);
     if (shortcut) {
       appendUserBubble(messages, text);
-      appendAiResponse(messages, shortcut, source);
+      const typing = appendTyping(messages);
+      setTimeout(() => {
+        typing.remove();
+        appendAiResponse(messages, shortcut, source);
+      }, 400 + Math.random() * 300);
       return;
     }
 
