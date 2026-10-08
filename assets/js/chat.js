@@ -195,10 +195,16 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-/** Convert newlines to <br> and bold **text** */
+/** Convert markdown to safe HTML: bold, links, newlines */
 function formatMessage(text) {
-  return escapeHtml(text)
+  // Escape HTML first, then selectively un-escape for markdown patterns
+  const escaped = escapeHtml(text);
+  return escaped
+    // **bold**
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // [link text](url) — only allow relative URLs and https
+    .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)]+)\)/g, '<a href="$2" class="chat-link">$1</a>')
+    // newlines
     .replace(/\n/g, '<br>');
 }
 

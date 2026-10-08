@@ -715,6 +715,18 @@ tr:last-child td { border-bottom: none; }
   color: var(--aqua, #00e5cc);
 }
 
+.chat-link {
+  color: var(--aqua, #00e5cc);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--aqua, #00e5cc) 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color var(--ease), text-decoration-color var(--ease);
+}
+.chat-link:hover {
+  color: var(--fuchsia, #e040fb);
+  text-decoration-color: color-mix(in srgb, var(--fuchsia, #e040fb) 60%, transparent);
+}
+
 .floating-chat-trigger:hover {
   box-shadow:
     0 0 28px rgba(0,229,204,0.28),
