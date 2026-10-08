@@ -187,19 +187,26 @@ layout: default
 /* ── Canvas Wrapper ──────────────────────────────────────────── */
 .st-canvas-wrap {
   width: 100%;
-  max-width: 860px;
+  max-width: 900px;
   position: relative;
 }
 .st-tree {
   display: none;
   width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  /* subtle scroll hint on wide trees */
+  scrollbar-width: thin;
+  scrollbar-color: var(--aqua-border) transparent;
 }
 .st-tree.active {
   display: block;
 }
 .st-tree svg {
-  width: 100%;
-  height: auto;
+  /* min-width ensures small trees still center; wide trees scroll */
+  min-width: 260px;
+  display: block;
+  margin: 0 auto;
   overflow: visible;
 }
 
@@ -333,23 +340,22 @@ layout: default
   let current = 0;
 
   /* ── Color scheme per status ─────────────────────────────── */
+  const R = 14; // base node radius — kept small so labels fit
   const STATUS = {
-    completed:   { fill: '#00e5cc', stroke: '#00e5cc', glow: 'rgba(0,229,204,0.5)',  text: '#0a090e', ring: 22 },
-    'in-progress':{ fill: '#1a1830', stroke: '#e040fb', glow: 'rgba(224,64,251,0.5)', text: '#e040fb', ring: 22 },
-    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.3)',   text: '#5c5470', ring: 20 },
+    completed:    { fill: '#00e5cc', stroke: '#00e5cc', glow: 'rgba(0,229,204,0.45)',  text: '#0a090e', ring: R },
+    'in-progress':{ fill: '#1a1830', stroke: '#e040fb', glow: 'rgba(224,64,251,0.45)', text: '#e040fb', ring: R },
+    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.25)',   text: '#5c5470', ring: R - 2 },
   };
 
   /* ── Layout algorithm ────────────────────────────────────── */
   function layoutTree(logs) {
-    // Build adjacency: who requires whom
     const bySlug = {};
     logs.forEach(l => bySlug[l.slug] = l);
 
-    // Find roots (no requirements or requirements not in this domain)
     const slugSet = new Set(logs.map(l => l.slug));
     const roots = logs.filter(l => !l.requires.length || !l.requires.some(r => slugSet.has(r)));
 
-    // BFS to assign columns (depth) and rows
+    // BFS depth assignment
     const depth = {};
     const queue = [...roots.map(r => ({ slug: r.slug, d: 0 }))];
     const visited = new Set();
@@ -360,15 +366,13 @@ layout: default
       depth[slug] = Math.max(depth[slug] || 0, d);
       const node = bySlug[slug];
       if (!node) continue;
-      // Find children (nodes that require this one)
       logs.forEach(l => {
         if (l.requires.includes(slug)) queue.push({ slug: l.slug, d: d + 1 });
       });
     }
-    // Any unvisited get depth 0
     logs.forEach(l => { if (depth[l.slug] === undefined) depth[l.slug] = 0; });
 
-    // Group by depth
+    // Group by depth column
     const cols = {};
     logs.forEach(l => {
       const d = depth[l.slug] || 0;
@@ -376,12 +380,15 @@ layout: default
       cols[d].push(l.slug);
     });
 
-    const COL_W = 180;
-    const ROW_H = 110;
-    const PAD_X = 60;
-    const PAD_Y = 60;
+    // Tighter spacing — designed for many nodes
+    const COL_W = 140;
+    const ROW_H = 80;
+    const PAD_X = 50;
+    const PAD_Y = 50;
+    // Extra bottom padding so labels don't get clipped
+    const LABEL_H = 32;
 
-    const maxCol = Math.max(...Object.keys(cols).map(Number));
+    const maxCol  = Math.max(...Object.keys(cols).map(Number));
     const maxRows = Math.max(...Object.values(cols).map(a => a.length));
 
     const positions = {};
@@ -395,9 +402,9 @@ layout: default
     });
 
     const W = PAD_X * 2 + maxCol * COL_W;
-    const H = PAD_Y * 2 + (maxRows - 1) * ROW_H;
+    const H = PAD_Y * 2 + (maxRows - 1) * ROW_H + LABEL_H;
 
-    return { positions, W: Math.max(W, 200), H: Math.max(H, 140), depth };
+    return { positions, W: Math.max(W, 260), H: Math.max(H, 160), depth };
   }
 
   /* ── Draw SVG for a tree ─────────────────────────────────── */
@@ -418,17 +425,21 @@ layout: default
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', `Skill tree for ${treeData.domain}`);
+    // Render at natural size — container scrolls if wider than viewport
+    svg.style.width  = W + 'px';
+    svg.style.height = H + 'px';
 
     // Defs: glows
     const defs = document.createElementNS(ns, 'defs');
     ['completed','in-progress','not-started'].forEach(s => {
+      const id = s.replace(/-/g, '');
       const f = document.createElementNS(ns, 'filter');
-      f.setAttribute('id', `glow-${s.replace('-','')}`);
+      f.setAttribute('id', `glow-${id}`);
       f.setAttribute('x', '-50%'); f.setAttribute('y', '-50%');
       f.setAttribute('width', '200%'); f.setAttribute('height', '200%');
       const fe = document.createElementNS(ns, 'feGaussianBlur');
       fe.setAttribute('in', 'SourceGraphic');
-      fe.setAttribute('stdDeviation', s === 'not-started' ? '2' : '4');
+      fe.setAttribute('stdDeviation', s === 'not-started' ? '2' : '3');
       f.appendChild(fe);
       defs.appendChild(f);
     });
@@ -477,7 +488,7 @@ layout: default
       glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y);
       glow.setAttribute('r', scheme.ring + 8);
       glow.setAttribute('fill', scheme.glow);
-      glow.setAttribute('filter', `url(#glow-${st.replace('-','')})`);
+      glow.setAttribute('filter', `url(#glow-${st.replace(/-/g,'')})`);
       g.appendChild(glow);
 
       // Main circle
@@ -504,24 +515,28 @@ layout: default
         g.appendChild(pulse);
       }
 
-      // Label
+      // Label — sits below node, two lines max
       const label = document.createElementNS(ns, 'text');
       label.setAttribute('x', pos.x);
-      label.setAttribute('y', pos.y + scheme.ring + 16);
+      label.setAttribute('y', pos.y + scheme.ring + 13);
       label.setAttribute('text-anchor', 'middle');
       label.setAttribute('fill', st === 'not-started' ? '#5c5470' : '#e8e0f0');
-      label.setAttribute('font-size', '11');
+      label.setAttribute('font-size', '10');
       label.setAttribute('font-family', 'Raleway, system-ui, sans-serif');
       label.setAttribute('font-weight', '600');
-      // Wrap long titles
+      label.setAttribute('letter-spacing', '0.02em');
+      // Split title into max 2 lines, ~16 chars each
       const words = log.title.split(' ');
-      const line1 = words.slice(0, Math.ceil(words.length/2)).join(' ');
-      const line2 = words.slice(Math.ceil(words.length/2)).join(' ');
-      if (line2) {
-        label.innerHTML = `<tspan x="${pos.x}" dy="0">${line1}</tspan><tspan x="${pos.x}" dy="14">${line2}</tspan>`;
-      } else {
-        label.textContent = line1;
-      }
+      const lines = [[]];
+      words.forEach(w => {
+        const cur = lines[lines.length - 1];
+        if (cur.length && (cur.join(' ') + ' ' + w).length > 16) lines.push([w]);
+        else cur.push(w);
+      });
+      const tspans = lines.slice(0, 2).map((l, i) =>
+        `<tspan x="${pos.x}" dy="${i === 0 ? 0 : 13}">${l.join(' ')}</tspan>`
+      ).join('');
+      label.innerHTML = tspans;
       g.appendChild(label);
 
       g.addEventListener('click', () => openModal(log));
