@@ -286,26 +286,39 @@ body {
   z-index: 10;
 }
 
-/* Cover art as spine texture — cropped left strip */
+/* Gradient spine — color set via JS custom property */
 .spine-cover {
   position: absolute;
   inset: 0;
-  background-size: auto 100%;   /* full height, natural width */
-  background-position: center top;
-  background-repeat: no-repeat;
-  /* Fallback color set inline */
+  /* --sc (spine color) injected by JS */
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--sc, #3a2a6e) 60%, #000) 0%,
+    var(--sc, #3a2a6e) 40%,
+    color-mix(in srgb, var(--sc, #3a2a6e) 80%, #fff 8%) 60%,
+    color-mix(in srgb, var(--sc, #3a2a6e) 70%, #000) 100%
+  );
 }
 
-/* Darkening overlay so title stays readable */
+/* Subtle linen texture overlay */
 .spine-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0,0,0,0.45) 0%,
-    rgba(0,0,0,0.15) 40%,
-    rgba(0,0,0,0.25) 100%
-  );
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,255,255,0.025) 3px,
+      rgba(255,255,255,0.025) 4px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.08) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(0,0,0,0.2) 100%
+    );
 }
 
 /* Spine label — rotated title */
@@ -323,10 +336,10 @@ body {
 
 .spine-title {
   font-family: var(--font-body);
-  font-size: 0.58rem;
-  font-weight: 600;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.7);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 12px rgba(0,0,0,0.5);
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
@@ -656,23 +669,8 @@ body {
 
   // ── COVER ART ──────────────────────────────────────────────────
   function loadSpineCover(spine) {
-    const isbn  = spine.dataset.isbn;
     const color = spine.dataset.spineColor || '#3a2a6e';
-    const cover = spine.querySelector('.spine-cover');
-
-    // Always set fallback color first
-    cover.style.backgroundColor = color;
-
-    if (!isbn) return;
-
-    const img = new Image();
-    img.onload = () => {
-      cover.style.backgroundImage = `url('${img.src}')`;
-      cover.style.backgroundSize  = 'auto 100%';
-      cover.style.backgroundPosition = 'center top';
-    };
-    // -S = small thumbnail, enough for a narrow spine
-    img.src = `${COVER_BASE}${isbn}-M.jpg`;
+    spine.style.setProperty('--sc', color);
   }
 
   // ── INIT SPINES ────────────────────────────────────────────────
