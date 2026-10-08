@@ -308,6 +308,6 @@ window.addEventListener('site:action', e => {
     const url = new URL(params.url, window.location.origin);
     if (params.status && params.status !== 'all') url.searchParams.set('status', params.status);
     if (params.topic  && params.topic  !== 'all') url.searchParams.set('topic',  params.topic);
-    setTimeout(() => { window.location.href = url.toString(); }, 1200);
+    window.location.href = url.toString();
   }
 });
