@@ -567,10 +567,12 @@ tr:last-child td { border-bottom: none; }
   display: block;
 }
 
-/* Match emblem shapes exactly */
-.result-card-badge.badge-round  { border-radius: 50%; }
-.result-card-badge.badge-shield { clip-path: polygon(50% 0%, 100% 15%, 100% 68%, 50% 100%, 0% 68%, 0% 15%); }
-.result-card-badge.badge-hex    { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+/* ── BADGE SHAPE MODIFIERS (shared with emblems page) ──────────
+   Size-agnostic — each context sets its own width/height.
+   Apply alongside a sized container: .badge-round, .badge-shield, .badge-hex */
+.badge-round  { border-radius: 50%; overflow: hidden; }
+.badge-shield { clip-path: polygon(50% 0%,100% 15%,100% 68%,50% 100%,0% 68%,0% 15%); overflow: hidden; }
+.badge-hex    { clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); overflow: hidden; }
 
 .result-card:hover .result-card-badge {
   filter: drop-shadow(0 0 8px rgba(0,229,204,0.55)) drop-shadow(0 0 20px rgba(224,64,251,0.25));
