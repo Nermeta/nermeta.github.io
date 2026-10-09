@@ -98,6 +98,8 @@ layout: default
     </section>
 
     <!-- ── Education ── -->
+    {% assign education = site.certifications | where: "category", "education" | sort: "date_end" | reverse %}
+    {% if education.size > 0 %}
     <section class="cv-section">
       <h2 class="cv-section-heading">
         <span class="cv-section-rule"></span>
@@ -106,32 +108,29 @@ layout: default
       </h2>
 
       <div class="cv-timeline">
-
+        {% for entry in education %}
         <div class="cv-entry">
           <div class="cv-entry-meta">
-            <span class="cv-entry-date">2021 – 2026</span>
+            <span class="cv-entry-date">{{ entry.years }}</span>
             <span class="cv-entry-dot" aria-hidden="true"></span>
           </div>
           <div class="cv-entry-body">
-            <h3 class="cv-entry-title">B.S. Cybersecurity</h3>
-            <p class="cv-entry-org">BYU–Idaho <span class="cv-entry-location">· Rexburg, ID · Graduated March 2026</span></p>
+            <h3 class="cv-entry-title">{{ entry.title }}</h3>
+            <p class="cv-entry-org">{{ entry.institution }}
+              {% if entry.location or entry.grad_label %}
+              <span class="cv-entry-location">·
+                {% if entry.location %}{{ entry.location }}{% endif %}
+                {% if entry.grad_label %} · {{ entry.grad_label }}{% endif %}
+              </span>
+              {% endif %}
+            </p>
+            {% if entry.note %}<p class="cv-entry-note">{{ entry.note }}</p>{% endif %}
           </div>
         </div>
-
-        <div class="cv-entry">
-          <div class="cv-entry-meta">
-            <span class="cv-entry-date">2019 – 2021</span>
-            <span class="cv-entry-dot" aria-hidden="true"></span>
-          </div>
-          <div class="cv-entry-body">
-            <h3 class="cv-entry-title">Culinary Arts</h3>
-            <p class="cv-entry-org">Davis Technical College <span class="cv-entry-location">· Kaysville, UT</span></p>
-            <p class="cv-entry-note">Worked as a front-of-house associate; program ended during COVID-19 closures</p>
-          </div>
-        </div>
-
+        {% endfor %}
       </div>
     </section>
+    {% endif %}
 
     <!-- ── Skills ── -->
     <section class="cv-section">
