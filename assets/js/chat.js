@@ -491,10 +491,10 @@ function isOffTopic(text) {
  * appendOffTopicResponse — Cheshire says "not my domain" + surfaces page chips
  */
 const CHESHIRE_REDIRECTS = [
-  'Curiouser and curiouser — but that's a bit outside my looking-glass. I'm just a guide to this corner of the web. Maybe one of these will help:',
-  'Oh my, that rabbit hole leads somewhere else entirely. I'm only a guide to Wynter's Wonderland. Try one of these instead:',
-  'That question wandered off the map! I know this site very well, but not much beyond it. Here's what I *can* help with:',
-  'We've gone a bit through the wrong door. I can only guide you around here — give one of these a try:',
+  "Curiouser and curiouser — but that's a bit outside my looking-glass. I'm just a guide to this corner of the web. Maybe one of these will help:",
+  "Oh my, that rabbit hole leads somewhere else entirely. I'm only a guide to Wynter's Wonderland. Try one of these instead:",
+  "That question wandered off the map! I know this site very well, but not much beyond it. Here's what I can help with:",
+  "We've gone a bit through the wrong door. I can only guide you around here — give one of these a try:",
 ];
 
 function appendOffTopicResponse(container, source) {
