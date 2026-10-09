@@ -16,4 +16,4 @@ public: true
 
 ## Overview
 
-Coming next — Python applied to security automation.
+Using Python to build real security tooling from scratch — port scanners, service enumeration, and eventually log parsers and API integrations. Working through this hands-on rather than following a course.
