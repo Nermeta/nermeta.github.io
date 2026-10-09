@@ -10,6 +10,13 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": "intermediate",
+    "tech_stack": [
+      "powershell",
+      "windows-server",
+      "active-directory"
+    ],
+    "estimated_read": 12
   }
 ]

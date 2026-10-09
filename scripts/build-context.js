@@ -258,17 +258,20 @@ console.log(`✓ section-images.json written`);
 // ---------------------------------------------------------------------------
 function slimCard(e) {
   return {
-    type:        e.type,
-    title:       e.title,
-    url:         e.url,
-    date:        e.date        || null,
-    status:      e.status      || null,
-    topic:       e.topic       || null,
-    rating:      e.rating      || null,
-    badge_image: e.badge_image || null,
-    badge_shape: e.badge_shape || null,
-    genre:       e.genre       || null,
-    issuer:      e.issuer      || null,
+    type:           e.type,
+    title:          e.title,
+    url:            e.url,
+    date:           e.date           || null,
+    status:         e.status         || null,
+    topic:          e.topic          || null,
+    rating:         e.rating         || null,
+    badge_image:    e.badge_image    || null,
+    badge_shape:    e.badge_shape    || null,
+    genre:          e.genre          || null,
+    issuer:         e.issuer         || null,
+    difficulty:     e.difficulty     || null,
+    tech_stack:     e.tech_stack     || null,
+    estimated_read: e.estimated_read || null,
   };
 }
 

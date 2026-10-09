@@ -1,0 +1,449 @@
+---
+layout: default
+---
+<main class="page-content tutorials-workbench" id="main-content">
+
+  <header class="collection-header">
+    <h1 class="collection-title">{{ page.title }}</h1>
+    {% assign tutorials = site.tutorials | where_exp: "doc", "doc.public != false" %}
+    <p class="collection-count">{{ tutorials.size }} field notes</p>
+  </header>
+
+  <!-- Filter bar -->
+  <div class="tut-filters" role="group" aria-label="Filter tutorials">
+
+    <div class="tut-filter-group">
+      <span class="tut-filter-label">Difficulty</span>
+      <div class="tut-chips" id="chips-difficulty">
+        <button class="tut-chip active" data-filter="difficulty" data-value="all">All</button>
+        <button class="tut-chip chip-novice"     data-filter="difficulty" data-value="novice">♦ Novice</button>
+        <button class="tut-chip chip-apprentice" data-filter="difficulty" data-value="apprentice">♣ Apprentice</button>
+        <button class="tut-chip chip-journeyman" data-filter="difficulty" data-value="journeyman">♠ Journeyman</button>
+        <button class="tut-chip chip-expert"     data-filter="difficulty" data-value="expert">♥ Expert</button>
+      </div>
+    </div>
+
+    {% assign all_topics = "" %}
+    {% for doc in tutorials %}
+      {% if doc.topic %}
+        {% assign all_topics = all_topics | append: doc.topic | append: "," %}
+      {% endif %}
+    {% endfor %}
+    {% assign topics_arr = all_topics | split: "," | uniq | sort %}
+    {% if topics_arr.size > 0 %}
+    <div class="tut-filter-group">
+      <span class="tut-filter-label">Topic</span>
+      <div class="tut-chips" id="chips-topic">
+        <button class="tut-chip active" data-filter="topic" data-value="all">All</button>
+        {% for t in topics_arr %}
+          {% if t != "" %}
+          <button class="tut-chip" data-filter="topic" data-value="{{ t }}">{{ t }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% assign all_tech = "" %}
+    {% for doc in tutorials %}
+      {% for tech in doc.tech_stack %}
+        {% assign all_tech = all_tech | append: tech | append: "," %}
+      {% endfor %}
+    {% endfor %}
+    {% assign tech_arr = all_tech | split: "," | uniq | sort %}
+    {% if tech_arr.size > 0 %}
+    <div class="tut-filter-group">
+      <span class="tut-filter-label">Tech</span>
+      <div class="tut-chips" id="chips-tech">
+        <button class="tut-chip active" data-filter="tech" data-value="all">All</button>
+        {% for t in tech_arr %}
+          {% if t != "" %}
+          <button class="tut-chip" data-filter="tech" data-value="{{ t }}">{{ t }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Card deck -->
+  {% assign sorted = tutorials | sort: 'date' | reverse %}
+  {% if sorted.size > 0 %}
+  <div class="tut-deck" id="tut-deck" aria-label="Tutorial cards">
+    {% for doc in sorted %}
+    {% assign diff = doc.difficulty | downcase %}
+    {% if diff == "novice" %}
+      {% assign suit = "♦" %}
+      {% assign suit_class = "suit-novice" %}
+    {% elsif diff == "apprentice" %}
+      {% assign suit = "♣" %}
+      {% assign suit_class = "suit-apprentice" %}
+    {% elsif diff == "journeyman" %}
+      {% assign suit = "♠" %}
+      {% assign suit_class = "suit-journeyman" %}
+    {% elsif diff == "expert" %}
+      {% assign suit = "♥" %}
+      {% assign suit_class = "suit-expert" %}
+    {% else %}
+      {% assign suit = "·" %}
+      {% assign suit_class = "suit-unknown" %}
+    {% endif %}
+
+    <a class="tut-card {{ suit_class }}"
+       href="{{ doc.url | relative_url }}"
+       data-difficulty="{{ doc.difficulty | downcase }}"
+       data-topic="{{ doc.topic }}"
+       data-tech="{{ doc.tech_stack | join: ',' }}"
+       style="--deal-i: {{ forloop.index0 }}">
+
+      <!-- Corner pips — top-left -->
+      <span class="card-corner card-corner-tl" aria-hidden="true">
+        <span class="corner-suit">{{ suit }}</span>
+        <span class="corner-label">{{ doc.difficulty | capitalize }}</span>
+      </span>
+
+      <!-- Card body -->
+      <div class="card-body">
+        {% if doc.topic %}
+          <span class="card-topic">{{ doc.topic }}</span>
+        {% endif %}
+        <h2 class="card-title">{{ doc.title }}</h2>
+        {% if doc.summary %}
+          <p class="card-summary">{{ doc.summary | truncate: 120 }}</p>
+        {% endif %}
+        <div class="card-meta">
+          {% if doc.estimated_read %}
+            <span class="card-read-time">{{ doc.estimated_read }} min</span>
+          {% endif %}
+          {% if doc.tech_stack.size > 0 %}
+            <div class="card-tech">
+              {% for tech in doc.tech_stack limit: 3 %}
+                <span class="card-tech-tag">{{ tech }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Corner pips — bottom-right (rotated) -->
+      <span class="card-corner card-corner-br" aria-hidden="true">
+        <span class="corner-suit">{{ suit }}</span>
+        <span class="corner-label">{{ doc.difficulty | capitalize }}</span>
+      </span>
+
+    </a>
+    {% endfor %}
+  </div>
+
+  <p class="tut-empty" id="tut-empty" hidden>No field notes match that filter — try a different combination.</p>
+
+  {% else %}
+  <p style="color:var(--fg-muted)">Nothing here yet — check back soon.</p>
+  {% endif %}
+
+</main>
+
+<style>
+/* ─── Tutorial Workbench ─────────────────────────────── */
+
+/* Difficulty color tokens */
+:root {
+  --novice:     #00e5cc;   /* aqua */
+  --apprentice: #7c6fcd;   /* violet */
+  --journeyman: #e040fb;   /* fuchsia */
+  --expert:     #ff6b6b;   /* coral-red */
+}
+
+/* ─── Filter bar ─────────────────────────────────────── */
+.tut-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 2.5rem;
+}
+
+.tut-filter-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tut-filter-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding-top: 6px;
+  min-width: 4.5rem;
+  flex-shrink: 0;
+}
+
+.tut-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tut-chip {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border, rgba(255,255,255,0.12));
+  background: transparent;
+  color: var(--fg-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.tut-chip:hover {
+  border-color: rgba(255,255,255,0.28);
+  color: var(--fg);
+}
+
+.tut-chip.active {
+  border-color: var(--aqua-border-hi);
+  color: var(--aqua);
+  background: var(--aqua-subtle);
+}
+
+/* Difficulty chip colors when active */
+.tut-chip.chip-novice.active     { border-color: var(--novice); color: var(--novice); background: rgba(0,229,204,0.1); }
+.tut-chip.chip-apprentice.active { border-color: var(--apprentice); color: var(--apprentice); background: rgba(124,111,205,0.1); }
+.tut-chip.chip-journeyman.active { border-color: var(--journeyman); color: var(--journeyman); background: rgba(224,64,251,0.1); }
+.tut-chip.chip-expert.active     { border-color: var(--expert); color: var(--expert); background: rgba(255,107,107,0.1); }
+
+/* ─── Card deck ──────────────────────────────────────── */
+.tut-deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+/* ─── Deal animation ─────────────────────────────────── */
+@keyframes card-deal {
+  from {
+    opacity: 0;
+    transform: translateY(32px) rotate(calc(var(--deal-rot, 0deg))) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--deal-rot, 0deg)) scale(1);
+  }
+}
+
+/* ─── Individual card ────────────────────────────────── */
+.tut-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-surface);
+  padding: 1.25rem;
+  text-decoration: none;
+  color: var(--fg);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+
+  /* Staggered deal */
+  animation: card-deal 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--deal-i) * 80ms);
+  /* Subtle random-ish rotation using index */
+  --deal-rot: calc((var(--deal-i, 0) * 137deg) mod 7deg - 3.5deg);
+}
+
+/* Hover: straighten + lift */
+.tut-card:hover {
+  transform: translateY(-6px) rotate(0deg) scale(1.015);
+  border-color: var(--card-accent, var(--aqua-border-hi));
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--card-accent, var(--aqua-border-hi));
+  text-decoration: none;
+}
+
+/* Suit-specific accent */
+.suit-novice     { --card-accent: var(--novice); }
+.suit-apprentice { --card-accent: var(--apprentice); }
+.suit-journeyman { --card-accent: var(--journeyman); }
+.suit-expert     { --card-accent: var(--expert); }
+
+/* Faint colored top edge */
+.suit-novice::before,
+.suit-apprentice::before,
+.suit-journeyman::before,
+.suit-expert::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent);
+  opacity: 0.6;
+  border-radius: 12px 12px 0 0;
+}
+
+/* ─── Corner pips ────────────────────────────────────── */
+.card-corner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  gap: 1px;
+  color: var(--card-accent, var(--fg-muted));
+}
+
+.card-corner-tl {
+  top: 10px;
+  left: 12px;
+}
+
+.card-corner-br {
+  bottom: 10px;
+  right: 12px;
+  transform: rotate(180deg);
+}
+
+.corner-suit {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.corner-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* ─── Card body ──────────────────────────────────────── */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  /* Inset so content doesn't clash with corner pips */
+  padding: 0.25rem 1.5rem 0.25rem 1.5rem;
+  flex: 1;
+}
+
+.card-topic {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--aqua-dim));
+  opacity: 0.9;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fg);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.card-summary {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--fg-secondary);
+  margin: 0;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.card-read-time {
+  font-size: 0.7rem;
+  color: var(--fg-muted);
+}
+
+.card-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.card-tech-tag {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--fg-muted);
+}
+
+/* ─── Hidden state ───────────────────────────────────── */
+.tut-card[hidden] {
+  display: none !important;
+}
+
+.tut-empty {
+  text-align: center;
+  color: var(--fg-muted);
+  padding: 3rem 0;
+}
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 540px) {
+  .tut-deck {
+    grid-template-columns: 1fr;
+  }
+  .tut-filter-label {
+    min-width: unset;
+  }
+}
+</style>
+
+<script>
+(function () {
+  const deck   = document.getElementById('tut-deck');
+  const empty  = document.getElementById('tut-empty');
+  if (!deck) return;
+
+  const cards  = Array.from(deck.querySelectorAll('.tut-card'));
+  const state  = { difficulty: 'all', topic: 'all', tech: 'all' };
+
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach(card => {
+      const diff  = card.dataset.difficulty || '';
+      const topic = card.dataset.topic      || '';
+      const tech  = (card.dataset.tech      || '').split(',');
+
+      const okDiff  = state.difficulty === 'all' || diff  === state.difficulty;
+      const okTopic = state.topic      === 'all' || topic === state.topic;
+      const okTech  = state.tech       === 'all' || tech.includes(state.tech);
+
+      const show = okDiff && okTopic && okTech;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    empty.hidden = visible > 0;
+  }
+
+  document.querySelectorAll('.tut-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      const value  = btn.dataset.value;
+      state[filter] = value;
+
+      // Update active state within this group
+      const group = btn.closest('.tut-chips');
+      group.querySelectorAll('.tut-chip').forEach(b => b.classList.toggle('active', b === btn));
+
+      applyFilters();
+    });
+  });
+})();
+</script>
