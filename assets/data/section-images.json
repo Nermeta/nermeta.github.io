@@ -28,7 +28,7 @@
   "/tutorials/": {
     "src": null,
     "shape": null,
-    "title": "Automating Active Directory Reports with PowerShell",
-    "url": "/tutorials/10-06-2026-example-tutorial/"
+    "title": "Kerberos Delegation Attacks and Defenses",
+    "url": "/tutorials/kerberos-delegation-attacks/"
   }
 }
