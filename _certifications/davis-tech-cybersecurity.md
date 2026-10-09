@@ -1,5 +1,5 @@
 ---
-title: "Culinary Arts"
+title: "Cybersecurity"
 category: education
 institution: "Davis Technical College"
 location: "Kaysville, UT"
@@ -9,6 +9,6 @@ graduated: false
 grad_label: null
 years: "2019 – 2021"
 status: earned
-note: "Program ended during COVID-19 closures"
+note: "Worked in the culinary program during enrollment; program disrupted by COVID-19 closures"
 public: true
 ---
