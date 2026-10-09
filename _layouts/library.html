@@ -577,7 +577,7 @@ body {
       <span class="filter-label">Rating</span>
       <button class="filter-btn active" data-filter="rating" data-value="all">All</button>
       <button class="filter-btn" data-filter="rating" data-value="5">★★★★★</button>
-      <button class="filter-btn" data-filter="rating" data-value="4">★★★★+</button>
+      <button class="filter-btn" data-filter="rating" data-value="4">★★★★</button>
     </div>
   </div>
 
@@ -758,8 +758,7 @@ body {
       const rating  = parseInt(spine.dataset.ratingVal, 10) || 0;
       const gMatch  = activeGenre  === 'all' || genres.includes(activeGenre);
       const rMatch  = activeRating === 'all' ||
-                      (activeRating === '5' && rating === 5) ||
-                      (activeRating === '4' && rating >= 4);
+                      rating === parseInt(activeRating, 10);
       const show = gMatch && rMatch;
       spine.hidden = !show;
       if (show) visible++;
