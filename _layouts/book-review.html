@@ -1,0 +1,371 @@
+---
+layout: default
+---
+<main class="br-post" id="main-content">
+
+  <div class="br-card">
+
+    <header class="br-header">
+      <a class="br-back" href="{{ '/library/' | relative_url }}">← Library</a>
+
+      <div class="br-book-block">
+        <div class="br-book-spine" aria-hidden="true">
+          <span class="br-spine-title">{{ page.title }}</span>
+        </div>
+
+        <div class="br-book-info">
+          <h1 class="br-title">{{ page.title }}</h1>
+
+          {% if page.author %}
+          <p class="br-author">by {{ page.author }}</p>
+          {% endif %}
+
+          {% if page.rating %}
+          <div class="br-stars" aria-label="Rating: {{ page.rating }} out of 5">
+            {% assign full = page.rating | floor %}
+            {% assign empty = 5 | minus: full %}
+            {% for i in (1..full) %}<span class="br-star br-star--full" aria-hidden="true">★</span>{% endfor %}
+            {% for i in (1..empty) %}<span class="br-star br-star--empty" aria-hidden="true">★</span>{% endfor %}
+            <span class="br-rating-num">{{ page.rating }}/5</span>
+          </div>
+          {% endif %}
+
+          <div class="br-meta-row">
+            {% if page.genre %}
+            <div class="br-meta-item">
+              <span class="br-meta-label">Genre</span>
+              <div class="br-genre-tags">
+                {% for g in page.genre %}
+                <span class="br-genre-tag">{{ g | replace: "-", " " }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+            {% if page.pages %}
+            <div class="br-meta-item">
+              <span class="br-meta-label">Pages</span>
+              <span class="br-meta-value">{{ page.pages }}</span>
+            </div>
+            {% endif %}
+            {% if page.finished_date %}
+            <div class="br-meta-item">
+              <span class="br-meta-label">Finished</span>
+              <span class="br-meta-value">{{ page.finished_date | date: "%b %Y" }}</span>
+            </div>
+            {% endif %}
+          </div>
+
+          {% if page.summary %}
+          <p class="br-summary">{{ page.summary }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <div class="br-divider" aria-hidden="true">
+      <span class="br-divider-line"></span>
+      <span class="br-divider-pip">◆</span>
+      <span class="br-divider-line"></span>
+    </div>
+
+    <article class="br-body">
+      {{ content }}
+    </article>
+
+    {% if page.isbn %}
+    <footer class="br-footer">
+      <span class="br-isbn">ISBN {{ page.isbn }}</span>
+    </footer>
+    {% endif %}
+
+  </div><!-- /.br-card -->
+
+</main>
+
+<style>
+/* ── Book Review Detail Page ────────────────────────────────── */
+
+.br-post {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 2rem) 1.5rem 5rem;
+}
+
+.br-card {
+  background: var(--bg-surface, #0d0b18);
+  border: 1px solid rgba(224, 64, 251, 0.12);
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px rgba(224,64,251,0.04),
+    0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Header */
+.br-header {
+  padding: 2rem 2.5rem 1.5rem;
+  border-bottom: 1px solid rgba(224, 64, 251, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.br-back {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted, #6a5e88);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.br-back:hover { color: var(--fuchsia, #e040fb); }
+
+/* Book block — spine + info side by side */
+.br-book-block {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.br-book-spine {
+  flex-shrink: 0;
+  width: 32px;
+  min-height: 140px;
+  background: linear-gradient(135deg, rgba(224,64,251,0.18), rgba(224,64,251,0.06));
+  border: 1px solid rgba(224,64,251,0.2);
+  border-radius: 3px 2px 2px 3px;
+  box-shadow:
+    inset -2px 0 4px rgba(0,0,0,0.4),
+    2px 0 4px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.br-book-spine::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, rgba(224,64,251,0.3), rgba(224,64,251,0.05));
+}
+
+.br-spine-title {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: rgba(224,64,251,0.5);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  max-height: 120px;
+  text-overflow: ellipsis;
+  transform: rotate(180deg);
+}
+
+.br-book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.br-title {
+  font-family: var(--font-display, 'Cinzel Decorative', serif);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: var(--fg, #ede5ff);
+  margin: 0;
+  text-wrap: balance;
+  line-height: 1.3;
+}
+
+.br-author {
+  font-size: 0.82rem;
+  color: var(--fuchsia-dim, #b030c8);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Stars */
+.br-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.br-star {
+  font-size: 1rem;
+  line-height: 1;
+}
+.br-star--full  { color: #e040fb; }
+.br-star--empty { color: rgba(224,64,251,0.2); }
+
+.br-rating-num {
+  font-size: 0.7rem;
+  color: var(--fg-muted, #6a5e88);
+  margin-left: 0.35rem;
+}
+
+.br-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.br-meta-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.br-meta-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted, #6a5e88);
+}
+
+.br-meta-value {
+  font-size: 0.76rem;
+  color: var(--fg, #ede5ff);
+  opacity: 0.65;
+}
+
+.br-genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.br-genre-tag {
+  font-size: 0.6rem;
+  color: rgba(224,64,251,0.7);
+  background: rgba(224,64,251,0.06);
+  border: 1px solid rgba(224,64,251,0.12);
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
+  text-transform: capitalize;
+}
+
+.br-summary {
+  font-size: 0.86rem;
+  color: var(--fg-muted, #6a5e88);
+  line-height: 1.65;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Divider */
+.br-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 2.5rem;
+}
+
+.br-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(224,64,251,0.15), transparent);
+}
+
+.br-divider-pip {
+  font-size: 0.45rem;
+  color: rgba(224,64,251,0.25);
+}
+
+/* Body */
+.br-body {
+  padding: 2rem 2.5rem 2rem;
+  font-family: var(--font-body, 'Raleway', system-ui, sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--fg, #ede5ff);
+}
+
+.br-body h2 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fuchsia, #e040fb);
+  margin: 2rem 0 0.6rem;
+  opacity: 0.85;
+}
+
+.br-body h3 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--fg, #ede5ff);
+  opacity: 0.75;
+  margin: 1.25rem 0 0.35rem;
+}
+
+.br-body p { margin: 0 0 1rem; }
+
+.br-body ul,
+.br-body ol {
+  padding-left: 1.4rem;
+  margin: 0 0 1rem;
+}
+
+.br-body li { margin: 0.25rem 0; }
+
+.br-body a {
+  color: var(--fuchsia, #e040fb);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.8;
+}
+.br-body a:hover { opacity: 1; }
+
+.br-body strong { color: var(--fg, #ede5ff); }
+
+.br-body blockquote {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-left: 3px solid rgba(224,64,251,0.3);
+  background: rgba(224,64,251,0.04);
+  color: var(--fg-muted, #6a5e88);
+  font-style: italic;
+}
+
+.br-body code {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 0.82em;
+  background: rgba(224,64,251,0.06);
+  border: 1px solid rgba(224,64,251,0.1);
+  border-radius: 2px;
+  padding: 0.1em 0.4em;
+  color: rgba(224,64,251,0.8);
+}
+
+/* Footer */
+.br-footer {
+  padding: 1rem 2.5rem;
+  border-top: 1px solid rgba(224,64,251,0.06);
+}
+
+.br-isbn {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted, #6a5e88);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .br-header,
+  .br-body,
+  .br-footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .br-divider { padding: 0 1.25rem; }
+  .br-book-spine { min-height: 100px; width: 26px; }
+  .br-title { font-size: 1rem; }
+}
+</style>

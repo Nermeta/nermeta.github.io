@@ -11,7 +11,6 @@ layout: default
 
       <div class="cx-illuminated">
         <div class="cx-drop-cap-wrap">
-          {% assign first_char = content | strip_html | slice: 0 %}
           <span class="cx-drop-cap" aria-hidden="true">{{ page.title | slice: 0 }}</span>
         </div>
 
@@ -119,7 +118,7 @@ layout: default
 .cx-post {
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 5rem;
+  padding: calc(var(--nav-height) + 2rem) 1.5rem 5rem;
 }
 
 /* Scroll wrapper */
