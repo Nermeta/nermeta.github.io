@@ -229,6 +229,7 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - "filter_shelf"     — params: { genres: ["genre", ...] }                   → Bookshelf
 - "focus_cert"       — params: { title: "cert title" }                      → Display case
 - "filter_cards"     — params: { difficulty?: "novice"|"apprentice"|"journeyman"|"expert", topic?: "sysadmin"|"security"|"homelab"|"development" } → Tutorials workbench. Use ONLY when visitor is already on /tutorials/.
+- "filter_discoveries" — params: { topic?: "cybersecurity"|"networking"|"sysadmin"|"linux"|"all" } → Discoveries scroll shelf. Use ONLY when visitor is already on /deep-dives/. Pass "all" to show all topics.
 - "filter_archive"   — params: { topic: "topic name" }                      → Deep dive archive
 - "filter_writeups"  — params: { platform: "HTB", category: "ad", difficulty: "medium" } → Writeups board
 - "navigate_to"      — params: { url: "/path/to/page/" }                    → Browser navigation
@@ -252,6 +253,13 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - If the visitor is on /writeups/ and asks to filter by platform (HTB, HackTheBox, THM, TryHackMe, CTF): use "filter_writeups" with the matching platform slug (hackthebox, tryhackme, ctf), NO message, NO cards — just trigger the action.
 - If the visitor is on /writeups/ and asks a general question about writeups: reply normally with a short message.
 - If the visitor is NOT on /writeups/ and asks about writeups or Field Notes: use "navigate_to" with url "/writeups/".
+
+## Discoveries reply rules
+- If the visitor is on /deep-dives/ and asks to filter by topic (cybersecurity, security, networking, sysadmin, linux, etc.): use "filter_discoveries" with the matching topic slug, NO message (set "message" to ""), NO cards — just trigger the action silently. The shelf updates itself.
+- If the visitor is on /deep-dives/ and asks to show all or reset: use "filter_discoveries" with topic "all", NO message, NO cards.
+- If the visitor is on /deep-dives/ and asks a general question about Discoveries: reply normally with a short message, no action.
+- If the visitor is NOT on /deep-dives/ and asks about Discoveries or deep dives: use "navigate_to" with url "/deep-dives/". Include a topic param if they specified one.
+- Never use "navigate_to" with url "/deep-dives/" if the visitor is already there — use "filter_discoveries" instead.
 
 ## Chronicles reply rules
 - If the visitor is on /learning-logs/ and asks to filter by status (completed, in progress, not started, all): use "filter_tree" with the matching status and the domain that has the most matching logs if you can infer it, NO message (set "message" to ""), NO cards — just trigger the action silently. The tree updates itself.

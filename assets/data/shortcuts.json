@@ -210,6 +210,46 @@
     "image": null
   },
   {
+    "id": "discoveries-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "all" } },
+    "chip": "Show all scrolls",
+    "image": null
+  },
+  {
+    "id": "discoveries-cybersecurity",
+    "patterns": ["\\bcyber\\b", "\\bsecurity\\b", "\\bhacking\\b", "\\bpentest\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "cybersecurity" } },
+    "chip": "Cybersecurity",
+    "image": null
+  },
+  {
+    "id": "discoveries-networking",
+    "patterns": ["\\bnetwork\\b", "\\bnetworking\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "networking" } },
+    "chip": "Networking",
+    "image": null
+  },
+  {
+    "id": "discoveries-sysadmin",
+    "patterns": ["\\bsysadmin\\b", "\\bwindows\\b", "\\bactive.?directory\\b", "\\bad\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "sysadmin" } },
+    "chip": "Sysadmin",
+    "image": null
+  },
+  {
+    "id": "discoveries-linux",
+    "patterns": ["\\blinux\\b", "\\bbash\\b", "\\bshell\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "linux" } },
+    "chip": "Linux",
+    "image": null
+  },
+  {
     "id": "tutorials-all",
     "patterns": ["\\ball\\b", "show all", "reset", "everything"],
     "pages": ["/tutorials/"],
