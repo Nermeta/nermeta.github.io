@@ -175,7 +175,7 @@
   },
   {
     "id": "nav-writeups",
-    "patterns": ["\\bwriteups?\\b", "\\bhtb\\b", "hack.?the.?box", "\\bctf\\b", "\\bmachines?\\b", "\\bboxes?\\b"],
+    "patterns": ["\\bwriteups?\\b", "\\bfield.?notes?\\b", "\\bhtb\\b", "hack.?the.?box", "\\bctf\\b", "\\bmachines?\\b", "\\bboxes?\\b"],
     "pages": ["*"],
     "excludePages": ["/writeups/"],
     "action": { "type": "navigate_to", "params": { "url": "/writeups/" } },
