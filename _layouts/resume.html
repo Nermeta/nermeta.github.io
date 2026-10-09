@@ -154,10 +154,27 @@ layout: default
           {% assign topic_skills = topic_skills | uniq %}
           {% if topic_skills.size > 0 %}
         <div class="cv-skill-group">
-          <h3 class="cv-skill-heading">{{ topic | capitalize }}</h3>
+          <h3 class="cv-skill-heading">
+            <a class="cv-skill-heading-link" href="{{ '/certifications/' | relative_url }}#{{ topic }}">{{ topic | capitalize }}</a>
+          </h3>
           <ul class="cv-skill-list">
             {% for skill in topic_skills %}
-            <li>{{ skill }}</li>
+              {% assign skill_cert = nil %}
+              {% for cert in topic_certs %}
+                {% if skill_cert == nil and cert.skills contains skill %}
+                  {% assign cert_url = cert.cert_url | default: cert.credential_url %}
+                  {% if cert_url and cert_url != "" %}
+                    {% assign skill_cert = cert_url %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            <li>
+              {% if skill_cert %}
+                <a class="cv-skill-link" href="{{ skill_cert }}" target="_blank" rel="noopener">{{ skill }}</a>
+              {% else %}
+                {{ skill }}
+              {% endif %}
+            </li>
             {% endfor %}
           </ul>
         </div>
@@ -455,6 +472,28 @@ layout: default
   font-size: 0.8rem;
   color: var(--cv-ink-dim);
   line-height: 1.5;
+}
+
+.cv-skill-heading-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(138,110,42,0.3);
+  transition: color 0.15s, border-color 0.15s;
+}
+.cv-skill-heading-link:hover {
+  color: var(--cv-gold);
+  border-color: var(--cv-gold-dim);
+}
+
+.cv-skill-link {
+  color: var(--cv-ink-dim);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(201,168,76,0.25);
+  transition: color 0.15s, border-color 0.15s;
+}
+.cv-skill-link:hover {
+  color: var(--cv-gold-dim);
+  border-color: var(--cv-gold-dim);
 }
 
 .cv-skill-group--learning .cv-skill-heading {
