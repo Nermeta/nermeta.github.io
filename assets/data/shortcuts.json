@@ -210,6 +210,78 @@
     "image": null
   },
   {
+    "id": "tutorials-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": {} },
+    "chip": "Show all",
+    "image": null
+  },
+  {
+    "id": "tutorials-novice",
+    "patterns": ["\\bnovice\\b", "\\bbeginner\\b", "\\beasy\\b", "\\bstart\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "novice" } },
+    "chip": "♦ Novice",
+    "image": null
+  },
+  {
+    "id": "tutorials-apprentice",
+    "patterns": ["\\bapprentice\\b", "\\bintermediate\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "apprentice" } },
+    "chip": "♣ Apprentice",
+    "image": null
+  },
+  {
+    "id": "tutorials-journeyman",
+    "patterns": ["\\bjourneyman\\b", "\\badvanced\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "journeyman" } },
+    "chip": "♠ Journeyman",
+    "image": null
+  },
+  {
+    "id": "tutorials-expert",
+    "patterns": ["\\bexpert\\b", "\\bhard\\b", "\\bmaster\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "expert" } },
+    "chip": "♥ Expert",
+    "image": null
+  },
+  {
+    "id": "tutorials-sysadmin",
+    "patterns": ["\\bsysadmin\\b", "\\bsystems? admin\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "sysadmin" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-security",
+    "patterns": ["\\bsecurity\\b", "\\bharden\\b", "\\battack\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "security" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-homelab",
+    "patterns": ["\\bhomelab\\b", "\\bhome.?lab\\b", "\\blab\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "homelab" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-development",
+    "patterns": ["\\bdevelopment\\b", "\\bdev\\b", "\\bpython\\b", "\\bscript\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "development" } },
+    "chip": null,
+    "image": null
+  },
+  {
     "id": "nav-about",
     "patterns": ["\\babout\\b", "who is wynter", "who are you", "\\bbackground\\b", "\\bbio\\b"],
     "pages": ["*"],

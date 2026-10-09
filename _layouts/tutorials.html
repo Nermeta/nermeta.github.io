@@ -514,5 +514,29 @@ layout: default
 
   /* ── Initial layout ──────────────────────────────────── */
   applyFilters();
+
+  /* ── site:action bridge (chat → filter) ──────────────── */
+  // Exposed globally so the site:action listener can call it
+  window.tutorialFilter = function(params) {
+    // params may have: difficulty, topic, tech — reset omitted ones to 'all'
+    state.difficulty = params.difficulty || 'all';
+    state.topic      = params.topic      || 'all';
+    state.tech       = params.tech       || 'all';
+
+    // Sync chip UI to match
+    ['difficulty', 'topic', 'tech'].forEach(filter => {
+      const val = state[filter];
+      document.querySelectorAll(`[data-filter="${filter}"]`).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === val);
+      });
+    });
+
+    applyFilters();
+  };
+
+  window.addEventListener('site:action', e => {
+    if (e.detail?.type !== 'filter_cards') return;
+    window.tutorialFilter(e.detail.params || {});
+  });
 })();
 </script>

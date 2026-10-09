@@ -697,6 +697,17 @@ tr:last-child td { border-bottom: none; }
   text-transform: uppercase;
 }
 
+/* Difficulty pip in tutorial result cards */
+.rc-difficulty {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.rc-diff-novice     { color: #00e5cc; }
+.rc-diff-apprentice { color: #7c6fcd; }
+.rc-diff-journeyman { color: #e040fb; }
+.rc-diff-expert     { color: #ff6b6b; }
+
 /* Chips */
 .chat-chips {
   padding: 4px 20px 12px;

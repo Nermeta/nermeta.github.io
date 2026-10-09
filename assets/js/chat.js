@@ -213,16 +213,30 @@ function appendAiResponse(container, data, source) {
     data.cards.forEach(card => {
       const cardEl = document.createElement('div');
       cardEl.className = 'result-card';
-      const dateHtml = card.date
-        ? `<span>${escapeHtml(card.date)}</span>` : '';
+
       const badge   = resolveBadge(card);
       const imgHtml = badge
         ? `<div class="result-card-badge badge-${escapeHtml(badge.shape)}"><img src="${escapeHtml(badge.src)}" alt="" loading="lazy"></div>` : '';
+
+      // Build meta line — varies by card type
+      const metaParts = [];
+      if (card.type === 'tutorial' || card.type === 'deep-dive') {
+        const SUIT = { novice: '♦', apprentice: '♣', journeyman: '♠', expert: '♥' };
+        const diff = (card.difficulty || '').toLowerCase();
+        if (diff && SUIT[diff]) {
+          metaParts.push(`<span class="rc-difficulty rc-diff-${escapeHtml(diff)}">${SUIT[diff]} ${escapeHtml(card.difficulty)}</span>`);
+        }
+        if (card.estimated_read) metaParts.push(`<span>${escapeHtml(String(card.estimated_read))} min</span>`);
+      } else {
+        if (card.date) metaParts.push(`<span>${escapeHtml(card.date)}</span>`);
+      }
+      const metaHtml = metaParts.length ? metaParts.join('') : '';
+
       cardEl.innerHTML = `
         ${imgHtml}
         <div class="result-card-body">
           <a href="${escapeHtml(card.url || '#')}">${escapeHtml(card.title || 'Untitled')}</a>
-          <div class="result-card-meta">${dateHtml}</div>
+          <div class="result-card-meta">${metaHtml}</div>
         </div>`;
       cardsDiv.appendChild(cardEl);
     });
