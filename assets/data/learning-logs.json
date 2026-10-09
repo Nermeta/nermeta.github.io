@@ -10,7 +10,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -23,7 +26,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -36,7 +42,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -49,7 +58,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -62,7 +74,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -75,7 +90,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -88,7 +106,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -101,7 +122,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -114,7 +138,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -127,7 +154,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -140,7 +170,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -153,7 +186,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -166,7 +202,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -179,7 +218,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -192,7 +234,10 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "learning-log",
@@ -205,6 +250,9 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   }
 ]

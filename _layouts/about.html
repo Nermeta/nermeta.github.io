@@ -1,0 +1,407 @@
+---
+layout: default
+---
+<main class="letter-main" id="main-content">
+
+  <article class="letter">
+
+    <!-- side flourishes -->
+    <div class="letter-flourish letter-flourish--left" aria-hidden="true">
+      <svg viewBox="0 0 40 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- top swirl -->
+        <path d="M20 10 C10 10, 4 18, 8 26 C12 34, 22 30, 20 22 C18 14, 10 16, 12 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <!-- top loop accent -->
+        <path d="M8 26 C4 36, 6 48, 14 50 C22 52, 28 44, 24 36" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <!-- main vertical stem with gentle wave -->
+        <path d="M16 50 C14 80, 22 100, 18 130 C14 160, 22 180, 18 210 C14 240, 22 260, 18 290" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <!-- mid flourish curl left -->
+        <path d="M18 130 C10 124, 4 130, 6 138 C8 146, 18 144, 18 136" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <!-- mid flourish curl right -->
+        <path d="M18 180 C26 174, 32 180, 30 188 C28 196, 18 194, 18 186" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <!-- bottom loop -->
+        <path d="M18 290 C16 302, 10 308, 8 316 C10 320, 16 318, 20 312 C24 306, 22 298, 18 294" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <!-- small dot cap -->
+        <circle cx="8" cy="317" r="1.2" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <div class="letter-flourish letter-flourish--right" aria-hidden="true">
+      <svg viewBox="0 0 40 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- mirror: top swirl -->
+        <path d="M20 10 C30 10, 36 18, 32 26 C28 34, 18 30, 20 22 C22 14, 30 16, 28 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M32 26 C36 36, 34 48, 26 50 C18 52, 12 44, 16 36" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <path d="M24 50 C26 80, 18 100, 22 130 C26 160, 18 180, 22 210 C26 240, 18 260, 22 290" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M22 130 C30 124, 36 130, 34 138 C32 146, 22 144, 22 136" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <path d="M22 180 C14 174, 8 180, 10 188 C12 196, 22 194, 22 186" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+        <path d="M22 290 C24 302, 30 308, 32 316 C30 320, 24 318, 20 312 C16 306, 18 298, 22 294" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <circle cx="32" cy="317" r="1.2" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- paper -->
+    <div class="letter-paper">
+
+      <!-- header: date -->
+      <header class="letter-head">
+        <span class="letter-date">{{ site.time | date: "%B %Y" }}</span>
+      </header>
+
+      <!-- top divider -->
+      <div class="letter-divider" aria-hidden="true">
+        <span class="letter-rule"></span>
+        <span class="letter-ornament">✦</span>
+        <span class="letter-rule"></span>
+      </div>
+
+      <!-- salutation -->
+      <p class="letter-salutation">To whoever finds their way here,</p>
+
+      <!-- body -->
+      <div class="letter-body">
+        {{ content }}
+      </div>
+
+      <!-- closing -->
+      <footer class="letter-closing">
+        <div class="letter-divider letter-divider--closing" aria-hidden="true">
+          <span class="letter-rule"></span>
+          <span class="letter-ornament">✦</span>
+          <span class="letter-rule"></span>
+        </div>
+        <div class="letter-sign-block">
+          <p class="letter-valediction">With curiosity,</p>
+          <p class="letter-signature">Wynter</p>
+          <p class="letter-postscript">P.S. — The Cheshire Cat in the corner can help you find your way around if you'd rather just ask.</p>
+        </div>
+
+        <!-- contact seal -->
+        <div class="letter-seal" aria-label="Contact information">
+          <div class="letter-seal-inner">
+            <span class="letter-seal-ornament" aria-hidden="true">✦</span>
+            <p class="letter-seal-heading">Find me elsewhere</p>
+            <ul class="letter-seal-links">
+              <li>
+                <a class="letter-seal-link" href="mailto:wynter@davaga.net">
+                  <svg class="letter-seal-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M1.5 4L8 9.5L14.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                  </svg>
+                  wynter@davaga.net
+                </a>
+              </li>
+              <li>
+                <a class="letter-seal-link" href="https://github.com/Nermeta" target="_blank" rel="noopener">
+                  <svg class="letter-seal-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                  </svg>
+                  github.com/Nermeta
+                </a>
+              </li>
+              <li>
+                <a class="letter-seal-link" href="https://www.linkedin.com/in/wynter-gailey-7389b0b8" target="_blank" rel="noopener">
+                  <svg class="letter-seal-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                  </svg>
+                  LinkedIn
+                </a>
+              </li>
+              <li>
+                <a class="letter-seal-link" href="/resume/">
+                  <svg class="letter-seal-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="2" y="1" width="10" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                  </svg>
+                  Full résumé
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </footer>
+
+    </div><!-- /.letter-paper -->
+
+  </article>
+
+</main>
+
+<style>
+/* ── About — Letter Layout ──────────────────────────────────── */
+
+:root {
+  --lt-paper:       #0d0d10;
+  --lt-paper-edge:  #080809;
+  --lt-ink:         #ccc8d8;
+  --lt-ink-dim:     #7a7690;
+  --lt-ink-muted:   #484560;
+  --lt-gold:        #c9a84c;
+  --lt-gold-dim:    #8a6e2a;
+  --lt-rule:        rgba(201,168,76,0.12);
+  --lt-border:      rgba(201,168,76,0.16);
+  --lt-flourish:    rgba(201,168,76,0.28);
+}
+
+.letter-main {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 4rem 6rem;
+}
+
+/* ── Wrapper holds flourishes + paper ── */
+.letter {
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+}
+
+/* ── Side flourishes ── */
+.letter-flourish {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 320px;
+  color: var(--lt-flourish);
+  pointer-events: none;
+}
+
+.letter-flourish--left  { right: calc(100% + 12px); }
+.letter-flourish--right { left:  calc(100% + 12px); }
+
+.letter-flourish svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Letter card ── */
+.letter-paper {
+  background: var(--lt-paper);
+  border: 1px solid var(--lt-border);
+  border-radius: 2px;
+  padding: 2.25rem 3.5rem 3rem;
+  box-shadow:
+    0 0 0 4px rgba(201,168,76,0.03),
+    3px 3px 0 var(--lt-paper-edge),
+    6px 6px 0 rgba(0,0,0,0.3),
+    0 24px 64px rgba(0,0,0,0.55);
+  background-image:
+    radial-gradient(ellipse at 25% 8%,  rgba(120,110,180,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 92%, rgba(201,168,76,0.02) 0%, transparent 55%);
+  position: relative;
+}
+
+/* inner decorative frame */
+.letter-paper::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(201,168,76,0.05);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* ── Header ── */
+.letter-head {
+  margin-bottom: 0.75rem;
+}
+
+.letter-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lt-ink-muted);
+  display: block;
+}
+
+/* ── Ornamental divider ── */
+.letter-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.letter-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--lt-gold-dim), transparent);
+}
+
+.letter-ornament {
+  font-size: 0.55rem;
+  color: var(--lt-gold-dim);
+  letter-spacing: 0.3em;
+  font-family: 'Cinzel', serif;
+}
+
+/* ── Salutation ── */
+.letter-salutation {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--lt-ink-dim);
+  margin: 0 0 1.75rem;
+  font-style: italic;
+}
+
+/* ── Body ── */
+.letter-body {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--lt-ink);
+}
+
+.letter-body p {
+  margin: 0 0 1.4em;
+}
+
+.letter-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Drop cap on the very first paragraph */
+.letter-body > p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.4em;
+  font-weight: 700;
+  color: var(--lt-gold);
+  float: left;
+  line-height: 0.78;
+  margin: 0.06em 0.1em 0 0;
+  text-shadow: 0 0 24px rgba(201,168,76,0.25);
+}
+
+.letter-body a {
+  color: var(--lt-gold-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.letter-body a:hover { color: var(--lt-gold); }
+
+/* ── Closing ── */
+.letter-closing {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.letter-divider--closing {
+  margin-bottom: 1.5rem;
+}
+
+.letter-sign-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-left: 0.25rem;
+}
+
+.letter-valediction {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--lt-ink-dim);
+  margin: 0;
+  font-style: italic;
+}
+
+.letter-signature {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--lt-gold);
+  margin: 0.2em 0 0;
+  text-shadow: 0 0 20px rgba(201,168,76,0.2);
+  line-height: 1.2;
+}
+
+.letter-postscript {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--lt-ink-muted);
+  line-height: 1.65;
+  margin: 1rem 0 0;
+  font-style: italic;
+  border-top: 1px solid var(--lt-rule);
+  padding-top: 0.85rem;
+}
+
+/* ── Contact seal ── */
+.letter-seal {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.letter-seal-inner {
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 2px;
+  padding: 1.25rem 2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(201,168,76,0.02);
+  min-width: 260px;
+}
+
+.letter-seal-ornament {
+  font-size: 0.5rem;
+  color: var(--lt-gold-dim);
+  letter-spacing: 0.6em;
+  font-family: 'Cinzel', serif;
+  opacity: 0.6;
+}
+
+.letter-seal-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lt-ink-muted);
+  margin: 0;
+}
+
+.letter-seal-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-start;
+}
+
+.letter-seal-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--lt-ink-dim);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.letter-seal-link:hover { color: var(--lt-gold-dim); }
+
+.letter-seal-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ── Responsive ── */
+@media (max-width: 780px) {
+  .letter-main { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .letter-flourish { display: none; }
+  .letter-paper { padding: 2rem 1.75rem; }
+  .letter-signature { font-size: 1.3rem; }
+}
+</style>

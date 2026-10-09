@@ -1,0 +1,556 @@
+---
+layout: default
+---
+<main class="cv-main" id="main-content">
+
+  <header class="cv-header">
+    <div class="cv-header-ornament" aria-hidden="true">✦</div>
+    <h1 class="cv-name">Wynter Gailey</h1>
+    <p class="cv-tagline">Technical Support · Cybersecurity · Systems Administration</p>
+    <div class="cv-contact-row">
+      <a class="cv-contact-link" href="mailto:wynter@davaga.net">wynter@davaga.net</a>
+      <span class="cv-contact-sep" aria-hidden="true">·</span>
+      <a class="cv-contact-link" href="https://github.com/Nermeta" target="_blank" rel="noopener">github.com/Nermeta</a>
+      <span class="cv-contact-sep" aria-hidden="true">·</span>
+      <a class="cv-contact-link" href="https://www.linkedin.com/in/wynter-gailey-7389b0b8" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="cv-header-ornament" aria-hidden="true">✦</div>
+  </header>
+
+  <div class="cv-body">
+
+    <!-- ── Technical Experience ── -->
+    <section class="cv-section">
+      <h2 class="cv-section-heading">
+        <span class="cv-section-rule"></span>
+        <span class="cv-section-label">Experience</span>
+        <span class="cv-section-rule"></span>
+      </h2>
+
+      <div class="cv-timeline">
+
+        <div class="cv-entry">
+          <div class="cv-entry-meta">
+            <span class="cv-entry-date">2026 – Present</span>
+            <span class="cv-entry-dot" aria-hidden="true"></span>
+          </div>
+          <div class="cv-entry-body">
+            <h3 class="cv-entry-title">Technical Support Engineer I</h3>
+            <p class="cv-entry-org">Cities Digital <span class="cv-entry-location">· Utah</span></p>
+            <ul class="cv-entry-details">
+              <li>Provide technical support for document management and records systems in government and municipal environments</li>
+              <li>Diagnose and resolve software, configuration, and integration issues across client deployments</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-meta">
+            <span class="cv-entry-date">2026</span>
+            <span class="cv-entry-dot" aria-hidden="true"></span>
+          </div>
+          <div class="cv-entry-body">
+            <h3 class="cv-entry-title">Cloud Engineering Intern</h3>
+            <p class="cv-entry-org">DanaCloud <span class="cv-entry-location">· Seoul, South Korea</span></p>
+            <ul class="cv-entry-details">
+              <li>Assisted with cloud infrastructure projects and documentation</li>
+              <li>Gained hands-on exposure to cloud platforms and DevOps tooling</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-meta">
+            <span class="cv-entry-date">2024 – 2026</span>
+            <span class="cv-entry-dot" aria-hidden="true"></span>
+          </div>
+          <div class="cv-entry-body">
+            <h3 class="cv-entry-title">Customer Support Representative → Workforce Management Analyst</h3>
+            <p class="cv-entry-org">Melaleuca <span class="cv-entry-location">· Idaho Falls, ID</span></p>
+            <ul class="cv-entry-details">
+              <li>Monitored real-time queue data and agent adherence using Calabrio WFM; adjusted staffing in response to volume fluctuations</li>
+              <li>Built SQL scripts for ad hoc reporting and workforce data analysis</li>
+              <li>Developed Python/API integrations to automate reporting workflows</li>
+              <li>Began as a Customer Support Representative, promoted to WFM Analyst after approximately one year</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-meta">
+            <span class="cv-entry-date">2019 – 2021</span>
+            <span class="cv-entry-dot" aria-hidden="true"></span>
+          </div>
+          <div class="cv-entry-body">
+            <h3 class="cv-entry-title">IT Intern → IT Manager</h3>
+            <p class="cv-entry-org">Syracuse Arts Academy <span class="cv-entry-location">· Syracuse, UT</span></p>
+            <ul class="cv-entry-details">
+              <li>Managed Active Directory, Group Policy, and Windows Server infrastructure for a K–12 charter school</li>
+              <li>Administered hardware fleet and MDM solution; handled procurement, imaging, and deployment</li>
+              <li>Wrote PowerShell scripts for user provisioning and routine maintenance tasks</li>
+              <li>Authored SOPs for IT operations; provided helpdesk support to faculty and staff</li>
+              <li>Started as a summer intern (2019), promoted to part-time then full-time IT Manager</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Education ── -->
+    {% assign education = site.certifications | where: "category", "education" | sort: "date_end" | reverse %}
+    {% if education.size > 0 %}
+    <section class="cv-section">
+      <h2 class="cv-section-heading">
+        <span class="cv-section-rule"></span>
+        <span class="cv-section-label">Education</span>
+        <span class="cv-section-rule"></span>
+      </h2>
+
+      <div class="cv-timeline">
+        {% for entry in education %}
+        <div class="cv-entry">
+          <div class="cv-entry-meta">
+            <span class="cv-entry-date">{{ entry.years }}</span>
+            <span class="cv-entry-dot" aria-hidden="true"></span>
+          </div>
+          <div class="cv-entry-body">
+            <h3 class="cv-entry-title">{{ entry.title }}</h3>
+            <p class="cv-entry-org">{{ entry.institution }}
+              {% if entry.location or entry.grad_label %}
+              <span class="cv-entry-location">·
+                {% if entry.location %}{{ entry.location }}{% endif %}
+                {% if entry.grad_label %} · {{ entry.grad_label }}{% endif %}
+              </span>
+              {% endif %}
+            </p>
+            {% if entry.note %}<p class="cv-entry-note">{{ entry.note }}</p>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ── Skills ── -->
+    {% assign cert_topics = site.certifications | where_exp: "item", "item.category != 'education'" | map: "topic" | compact | uniq | sort %}
+    {% assign active_logs = site.learning-logs | where: "status", "in-progress" %}
+    <section class="cv-section">
+      <h2 class="cv-section-heading">
+        <span class="cv-section-rule"></span>
+        <span class="cv-section-label">Skills</span>
+        <span class="cv-section-rule"></span>
+      </h2>
+
+      <div class="cv-skills-grid">
+        {% for topic in cert_topics %}
+          {% assign topic_certs = site.certifications | where: "topic", topic | where_exp: "item", "item.category != 'education'" %}
+          {% assign topic_skills = "" | split: "" %}
+          {% for cert in topic_certs %}
+            {% if cert.skills %}
+              {% assign topic_skills = topic_skills | concat: cert.skills %}
+            {% endif %}
+          {% endfor %}
+          {% assign topic_skills = topic_skills | uniq %}
+          {% if topic_skills.size > 0 %}
+        <div class="cv-skill-group">
+          <h3 class="cv-skill-heading">
+            <a class="cv-skill-heading-link" href="{{ '/certifications/' | relative_url }}#{{ topic }}">{{ topic | capitalize }}</a>
+          </h3>
+          <ul class="cv-skill-list">
+            {% for skill in topic_skills %}
+              {% assign skill_cert = nil %}
+              {% for cert in topic_certs %}
+                {% if skill_cert == nil and cert.skills contains skill %}
+                  {% assign cert_url = cert.cert_url | default: cert.credential_url %}
+                  {% if cert_url and cert_url != "" %}
+                    {% assign skill_cert = cert_url %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            <li>
+              {% if skill_cert %}
+                <a class="cv-skill-link" href="{{ skill_cert }}" target="_blank" rel="noopener">{{ skill }}</a>
+              {% else %}
+                {{ skill }}
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+          {% endif %}
+        {% endfor %}
+
+        {% if active_logs.size > 0 %}
+        <div class="cv-skill-group cv-skill-group--learning">
+          <h3 class="cv-skill-heading">Currently Learning</h3>
+          <ul class="cv-skill-list">
+            {% for log in active_logs %}
+            <li><a class="cv-skill-link" href="{{ log.url | relative_url }}">{{ log.subject | default: log.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- ── Earlier experience ── -->
+    <section class="cv-section cv-section--earlier">
+      <h2 class="cv-section-heading">
+        <span class="cv-section-rule"></span>
+        <span class="cv-section-label">Earlier Experience</span>
+        <span class="cv-section-rule"></span>
+      </h2>
+      <p class="cv-earlier-note">
+        Before moving into IT full-time: sports photography (Endzone Photography), food service (Arctic Circle, McDonald's, Harmons, Broulim's), rides team lead at Lagoon, and catering support for a family business. These roles built a foundation in customer-facing work, operational reliability, and team leadership.
+      </p>
+    </section>
+
+  </div><!-- /.cv-body -->
+
+  <div class="cv-footer-ornament" aria-hidden="true">
+    <span class="cv-footer-rule"></span>
+    <span class="cv-footer-mark">✦</span>
+    <span class="cv-footer-rule"></span>
+  </div>
+
+</main>
+
+<style>
+/* ── Resume / CV Layout ─────────────────────────────────────── */
+
+:root {
+  --cv-bg:          #0c0b0f;
+  --cv-surface:     #0f0e13;
+  --cv-ink:         #ccc8d8;
+  --cv-ink-dim:     #7a7690;
+  --cv-ink-muted:   #48455e;
+  --cv-gold:        #c9a84c;
+  --cv-gold-dim:    #8a6e2a;
+  --cv-rule:        rgba(201,168,76,0.12);
+  --cv-border:      rgba(201,168,76,0.15);
+  --cv-dot:         rgba(201,168,76,0.5);
+  --cv-timeline:    rgba(201,168,76,0.1);
+}
+
+.cv-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+/* ── Header ── */
+.cv-header {
+  text-align: center;
+  padding: 1.5rem 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cv-header-ornament {
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  color: var(--cv-gold-dim);
+  opacity: 0.7;
+}
+
+.cv-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--cv-gold);
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-shadow: 0 0 40px rgba(201,168,76,0.18);
+}
+
+.cv-tagline {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cv-ink-dim);
+  margin: 0;
+}
+
+.cv-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.cv-contact-link {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--cv-ink-dim);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.15s;
+}
+.cv-contact-link:hover { color: var(--cv-gold-dim); }
+
+.cv-contact-sep {
+  color: var(--cv-ink-muted);
+  font-size: 0.7rem;
+}
+
+/* ── Body ── */
+.cv-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Section heading ── */
+.cv-section {
+  padding: 2rem 0 0;
+}
+
+.cv-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 2rem;
+}
+
+.cv-section-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cv-gold-dim), transparent);
+}
+
+.cv-section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cv-gold-dim);
+  white-space: nowrap;
+}
+
+/* ── Timeline ── */
+.cv-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0;
+}
+
+.cv-entry {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0 1.5rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+/* vertical line connecting entries */
+.cv-entry + .cv-entry::before {
+  content: '';
+  position: absolute;
+  left: 108px;   /* aligns with dot center */
+  top: -2rem;
+  bottom: auto;
+  height: 2rem;
+  width: 1px;
+  background: var(--cv-timeline);
+}
+
+/* ── Entry meta (date + dot) ── */
+.cv-entry-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  padding-top: 0.15rem;
+  position: relative;
+}
+
+.cv-entry-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: var(--cv-ink-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cv-entry-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cv-gold-dim);
+  box-shadow: 0 0 6px rgba(201,168,76,0.3);
+  flex-shrink: 0;
+  margin-right: -3.5px; /* centers on the column gap line */
+}
+
+/* ── Entry body ── */
+.cv-entry-body {
+  border-left: 1px solid var(--cv-timeline);
+  padding-left: 1.5rem;
+}
+
+.cv-entry-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cv-ink);
+  margin: 0 0 0.2rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.cv-entry-org {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--cv-gold-dim);
+  margin: 0 0 0.6rem;
+}
+
+.cv-entry-location {
+  color: var(--cv-ink-muted);
+  font-size: 0.72rem;
+}
+
+.cv-entry-details {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cv-entry-details li {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--cv-ink-dim);
+  line-height: 1.6;
+}
+
+.cv-entry-note {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--cv-ink-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Skills grid ── */
+.cv-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2.5rem;
+}
+
+.cv-skill-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cv-gold-dim);
+  margin: 0 0 0.6rem;
+}
+
+.cv-skill-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cv-skill-list li {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--cv-ink-dim);
+  line-height: 1.5;
+}
+
+.cv-skill-heading-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(138,110,42,0.3);
+  transition: color 0.15s, border-color 0.15s;
+}
+.cv-skill-heading-link:hover {
+  color: var(--cv-gold);
+  border-color: var(--cv-gold-dim);
+}
+
+.cv-skill-link {
+  color: var(--cv-ink-dim);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(201,168,76,0.25);
+  transition: color 0.15s, border-color 0.15s;
+}
+.cv-skill-link:hover {
+  color: var(--cv-gold-dim);
+  border-color: var(--cv-gold-dim);
+}
+
+.cv-skill-group--learning .cv-skill-heading {
+  color: var(--cv-ink-muted);
+  font-style: italic;
+}
+
+.cv-skill-group--learning .cv-skill-list li {
+  color: var(--cv-ink-muted);
+}
+.cv-skill-group--learning .cv-skill-list li::marker {
+  color: var(--cv-gold-dim);
+  opacity: 0.4;
+}
+
+/* ── Earlier experience ── */
+.cv-earlier-note {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--cv-ink-muted);
+  line-height: 1.75;
+  margin: 0;
+  font-style: italic;
+  max-width: 65ch;
+}
+
+/* ── Footer ornament ── */
+.cv-footer-ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 0 0;
+}
+
+.cv-footer-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cv-gold-dim), transparent);
+  opacity: 0.4;
+}
+
+.cv-footer-mark {
+  font-size: 0.55rem;
+  color: var(--cv-gold-dim);
+  opacity: 0.5;
+  letter-spacing: 0.3em;
+  font-family: 'Cinzel', serif;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .cv-entry {
+    grid-template-columns: 80px 1fr;
+    gap: 0 1rem;
+  }
+  .cv-entry + .cv-entry::before { left: 87px; }
+  .cv-skills-grid { grid-template-columns: 1fr; }
+  .cv-entry-body { padding-left: 1rem; }
+}
+</style>

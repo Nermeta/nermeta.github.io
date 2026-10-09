@@ -10,7 +10,10 @@
     "badge_image": "/assets/images/badges/gcp-ace.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "Google Cloud"
+    "issuer": "Google Cloud",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -23,7 +26,10 @@
     "badge_image": "/assets/images/badges/ceh.png",
     "badge_shape": "shield",
     "genre": null,
-    "issuer": "EC-Council"
+    "issuer": "EC-Council",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -36,7 +42,10 @@
     "badge_image": "/assets/images/badges/google-cybersecurity.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "Google / Coursera"
+    "issuer": "Google / Coursera",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -49,7 +58,10 @@
     "badge_image": "/assets/images/badges/security-plus.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "CompTIA"
+    "issuer": "CompTIA",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -62,7 +74,10 @@
     "badge_image": "/assets/images/badges/aws-saa.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "Amazon Web Services"
+    "issuer": "Amazon Web Services",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -75,7 +90,10 @@
     "badge_image": "/assets/images/badges/linux-plus.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "CompTIA"
+    "issuer": "CompTIA",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "certification",
@@ -88,6 +106,9 @@
     "badge_image": "/assets/images/badges/network-plus.png",
     "badge_shape": "round",
     "genre": null,
-    "issuer": "CompTIA"
+    "issuer": "CompTIA",
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   }
 ]

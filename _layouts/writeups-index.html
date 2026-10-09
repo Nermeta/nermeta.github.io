@@ -1,0 +1,873 @@
+---
+layout: default
+---
+
+{% comment %} Group writeups by platform {% endcomment %}
+{% assign all_writeups = site.writeups | sort: 'date' | reverse %}
+{% assign platforms = "" | split: "" %}
+{% for doc in all_writeups %}
+  {% unless doc.public == false %}
+    {% assign p = doc.platform | default: "Field Notes" %}
+    {% unless platforms contains p %}
+      {% assign platforms = platforms | push: p %}
+    {% endunless %}
+  {% endunless %}
+{% endfor %}
+
+<main class="fn-index" id="main-content">
+
+  <header class="fn-index-header">
+    <h1 class="fn-index-title">Field Notes</h1>
+    <p class="fn-index-sub">CTF walkthroughs &amp; machine writeups</p>
+  </header>
+
+  <div class="fn-desk">
+    {% for platform in platforms %}
+      {% assign platform_writeups = all_writeups | where: "platform", platform %}
+      {% if platform_writeups.size == 0 %}
+        {% assign platform_writeups = all_writeups | where_exp: "doc", "doc.platform == nil" %}
+      {% endif %}
+      {% assign count = platform_writeups.size %}
+
+      <button
+        class="fn-notebook"
+        data-platform="{{ platform | slugify }}"
+        aria-label="Open {{ platform }} notebook, {{ count }} {% if count == 1 %}entry{% else %}entries{% endif %}"
+        style="--fan-angle: {{ forloop.index | times: 3 | minus: 4 }}deg; --fan-offset: {{ forloop.index | times: 4 | minus: 4 }}px"
+      >
+        <!-- stacked pages peek behind cover -->
+        <div class="fn-pages-stack">
+          <div class="fn-page-peek fn-page-peek--3"></div>
+          <div class="fn-page-peek fn-page-peek--2"></div>
+          <div class="fn-page-peek fn-page-peek--1"></div>
+        </div>
+
+        <!-- wire binding left edge -->
+        <div class="fn-binding" aria-hidden="true">
+          {% for i in (1..11) %}<span class="fn-ring"></span>{% endfor %}
+        </div>
+
+        <!-- cover face -->
+        <div class="fn-cover-face fn-cover-face--{{ platform | slugify }}">
+          <div class="fn-cover-brand">Field Notes®</div>
+          <div class="fn-cover-title">{{ platform }}</div>
+          <div class="fn-cover-meta">
+            {{ count }} {% if count == 1 %}entry{% else %}entries{% endif %}
+            &nbsp;/&nbsp;
+            {% assign latest = platform_writeups | first %}
+            {{ latest.date | date: "%Y" }}
+          </div>
+          <div class="fn-cover-open-hint">Open →</div>
+        </div>
+      </button>
+    {% endfor %}
+  </div>
+
+  {% if platforms.size == 0 %}
+  <p class="fn-empty">No field notes yet — check back soon.</p>
+  {% endif %}
+
+</main>
+
+<!-- Notebook popup -->
+<div class="fn-popup-overlay" id="fn-popup" role="dialog" aria-modal="true" aria-label="Notebook" hidden>
+  <div class="fn-popup-notebook">
+
+    <!-- popup binding -->
+    <div class="fn-popup-binding" aria-hidden="true">
+      {% for i in (1..14) %}<span class="fn-popup-ring"></span>{% endfor %}
+    </div>
+
+    <div class="fn-popup-body">
+
+      <!-- popup header bar -->
+      <div class="fn-popup-bar">
+        <span class="fn-popup-platform" id="fn-popup-platform"></span>
+        <span class="fn-popup-counter" id="fn-popup-counter"></span>
+        <button class="fn-popup-close" id="fn-popup-close" aria-label="Close notebook">✕</button>
+      </div>
+
+      <!-- pages track -->
+      <div class="fn-pages-track" id="fn-pages-track">
+        <!-- cover page (always first) -->
+        <div class="fn-page fn-page--cover" id="fn-page-cover">
+          <div class="fn-page-cover-brand">Field Notes®</div>
+          <div class="fn-page-cover-title" id="fn-page-cover-title"></div>
+          <div class="fn-page-cover-count" id="fn-page-cover-count"></div>
+          <div class="fn-page-cover-prompt">Flip to read →</div>
+        </div>
+        <!-- entry pages injected by JS -->
+      </div>
+
+      <!-- nav arrows -->
+      <div class="fn-popup-nav">
+        <button class="fn-nav-btn" id="fn-prev" aria-label="Previous page" disabled>←</button>
+        <button class="fn-nav-btn" id="fn-next" aria-label="Next page">→</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Writeup data for JS -->
+<script type="application/json" id="fn-data">
+[
+  {% for doc in all_writeups %}
+    {% unless doc.public == false %}
+    {
+      "platform": {{ doc.platform | default: "Field Notes" | jsonify }},
+      "title":    {{ doc.title | jsonify }},
+      "url":      {{ doc.url | relative_url | jsonify }},
+      "date":     {{ doc.date | date: "%b %d, %Y" | jsonify }},
+      "difficulty": {{ doc.difficulty | default: "" | jsonify }},
+      "category": {{ doc.category | default: "" | jsonify }},
+      "tools":    {{ doc.tools | jsonify }},
+      "tags":     {{ doc.tags | jsonify }},
+      "summary":  {{ doc.summary | default: "" | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endunless %}
+  {% endfor %}
+]
+</script>
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   FIELD NOTES — Notebook Desk Index
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --fn-kraft:        #2b2015;
+  --fn-kraft-hi:     #352819;
+  --fn-kraft-mid:    #1e1610;
+  --fn-kraft-edge:   #120d08;
+  --fn-ink:          #e8dfc8;
+  --fn-ink-dim:      #a89878;
+  --fn-ink-muted:    #6b5e44;
+  --fn-rule:         rgba(168,152,120,0.13);
+  --fn-ring:         #3a3530;
+  --fn-ring-hi:      #5a534a;
+  --fn-page-cream:   #f5edd8;
+  --fn-page-ruled:   rgba(100,80,50,0.13);
+  --fn-margin-line:  rgba(180,60,40,0.28);
+  --fn-page-ink:     #2a2015;
+  --fn-page-ink-dim: #5a4e38;
+  --fn-page-ink-mut: #8a7a60;
+
+  /* platform cover accent colours */
+  --fn-htb:   #9fef00;
+  --fn-thm:   #ff6b35;
+  --fn-ctf:   #00e5cc;
+  --fn-other: #a89878;
+
+  --fn-diff-easy:   #3a7a1e;
+  --fn-diff-medium: #a05a00;
+  --fn-diff-hard:   #b01818;
+  --fn-diff-insane: #e040fb;
+}
+
+/* ── Index page ─────────────────────────────────────────────── */
+.fn-index {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+.fn-index-header { margin-bottom: 3rem; }
+
+.fn-index-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fn-ink);
+  margin: 0 0 0.2rem;
+}
+
+.fn-index-sub {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  margin: 0;
+}
+
+/* ── Desk — notebook fan ────────────────────────────────────── */
+.fn-desk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem 2.5rem;
+  align-items: flex-end;
+  padding-bottom: 1rem;
+}
+
+/* ── Individual notebook ────────────────────────────────────── */
+.fn-notebook {
+  position: relative;
+  width: 160px;
+  height: 224px;           /* ~4.75×7 ratio */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transform: rotate(var(--fan-angle, 0deg)) translateY(var(--fan-offset, 0px));
+  transform-origin: bottom center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  flex-shrink: 0;
+}
+
+.fn-notebook:hover,
+.fn-notebook:focus-visible {
+  transform: rotate(0deg) translateY(-10px);
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+  z-index: 2;
+  outline: none;
+}
+
+.fn-notebook--pulse {
+  animation: fn-notebook-pulse 0.6s ease-in-out 2;
+}
+
+@keyframes fn-notebook-pulse {
+  0%   { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)); transform: rotate(var(--fan-angle)) translateY(var(--fan-offset)); }
+  50%  { filter: drop-shadow(0 8px 24px rgba(255,220,100,0.5)); transform: rotate(0deg) translateY(-8px); }
+  100% { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)); transform: rotate(var(--fan-angle)) translateY(var(--fan-offset)); }
+}
+
+.fn-notebook:focus-visible {
+  outline: 2px solid var(--aqua);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+/* stacked page peeks behind cover */
+.fn-pages-stack {
+  position: absolute;
+  inset: 0;
+  left: 22px;   /* clear the binding width */
+  pointer-events: none;
+}
+
+.fn-page-peek {
+  position: absolute;
+  inset: 2px 0;
+  background: var(--fn-page-cream);
+  border-radius: 0 4px 4px 0;
+}
+.fn-page-peek--1 { transform: translateX(3px); background: #1a1710; }
+.fn-page-peek--2 { transform: translateX(6px); background: #161410; }
+.fn-page-peek--3 { transform: translateX(9px); background: #121008; }
+
+/* wire binding */
+.fn-binding {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 22px;
+  background: var(--fn-kraft-mid);
+  border-right: 1px solid rgba(0,0,0,0.5);
+  border-radius: 3px 0 0 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 8px 0;
+  z-index: 2;
+}
+
+.fn-ring {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--fn-ring-hi);
+  background: var(--fn-ring);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.7);
+  position: relative;
+}
+
+.fn-ring::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+/* cover face */
+.fn-cover-face {
+  position: absolute;
+  left: 22px; top: 0; right: 0; bottom: 0;
+  background: var(--fn-kraft);
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  z-index: 1;
+  box-shadow: inset -1px 0 0 rgba(0,0,0,0.3);
+}
+
+/* per-platform top border accent */
+.fn-cover-face--hackthebox  { border-top: 3px solid var(--fn-htb); }
+.fn-cover-face--tryhackme   { border-top: 3px solid var(--fn-thm); }
+.fn-cover-face--ctf         { border-top: 3px solid var(--fn-ctf); }
+.fn-cover-face--field-notes { border-top: 3px solid var(--fn-other); }
+
+.fn-cover-brand {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+}
+
+.fn-cover-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fn-ink);
+  line-height: 1.1;
+}
+
+.fn-cover-meta {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--fn-ink-muted);
+  text-transform: uppercase;
+}
+
+.fn-cover-open-hint {
+  position: absolute;
+  bottom: 0.7rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  transition: color 0.15s;
+}
+
+.fn-notebook:hover .fn-cover-open-hint,
+.fn-notebook:focus-visible .fn-cover-open-hint {
+  color: var(--fn-ink);
+}
+
+.fn-empty {
+  color: var(--fn-ink-muted);
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POPUP NOTEBOOK
+   ══════════════════════════════════════════════════════════════ */
+
+.fn-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.fn-popup-overlay[hidden] { display: none; }
+
+.fn-popup-notebook {
+  display: flex;
+  flex-direction: row;
+  width: min(560px, 100%);
+  height: min(400px, 90vh);
+  background: var(--fn-kraft);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow:
+    3px 3px 0 var(--fn-kraft-edge),
+    8px 8px 0 rgba(0,0,0,0.4),
+    0 24px 64px rgba(0,0,0,0.7);
+  overflow: hidden;
+  position: relative;
+}
+
+/* popup binding */
+.fn-popup-binding {
+  width: 28px;
+  flex-shrink: 0;
+  background: var(--fn-kraft-mid);
+  border-right: 1px solid rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.fn-popup-ring {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2.5px solid var(--fn-ring-hi);
+  background: var(--fn-ring);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.7);
+  position: relative;
+}
+
+.fn-popup-ring::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+/* popup body */
+.fn-popup-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* popup top bar */
+.fn-popup-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.fn-popup-platform {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fn-ink);
+  flex: 1;
+}
+
+.fn-popup-counter {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--fn-ink-muted);
+}
+
+.fn-popup-close {
+  background: none;
+  border: none;
+  color: var(--fn-ink-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.fn-popup-close:hover { color: var(--fn-ink); }
+
+/* pages track — slides horizontally */
+.fn-pages-track {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+}
+
+/* individual page */
+.fn-page {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* padding-top must be a multiple of 1.75rem so text snaps to ruled lines */
+  padding: 1.75rem 1.5rem 1.75rem;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1),
+              opacity  0.25s ease;
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  /* ruled lines — background-color must be separate so gradient sits on top */
+  background-color: var(--fn-page-cream);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(1.75rem - 1px),
+      var(--fn-page-ruled) calc(1.75rem - 1px),
+      var(--fn-page-ruled) 1.75rem
+    );
+  background-size: 100% 1.75rem;
+  border-left: 3px solid var(--fn-margin-line);
+  margin-left: 40px;
+  color: var(--fn-page-ink);
+}
+
+.fn-page.is-active {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.fn-page.is-prev {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* gutter left of margin line */
+.fn-pages-track::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 40px;
+  background: rgba(0,0,0,0.12);
+  z-index: 0;
+}
+
+/* cover page */
+.fn-page--cover {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem;
+  background: var(--fn-kraft-hi);
+  border-left: none;
+  margin-left: 0;
+}
+
+.fn-page-cover-brand {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+}
+
+.fn-page-cover-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-ink);
+  line-height: 1.1;
+}
+
+.fn-page-cover-count {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+}
+
+.fn-page-cover-prompt {
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.5rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+}
+
+/* entry page content */
+.fn-entry-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--fn-page-ink);
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+  text-wrap: balance;
+}
+
+.fn-entry-vitals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.fn-entry-vital {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+}
+
+.fn-entry-label {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-page-ink-mut);
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.fn-entry-value {
+  color: var(--fn-page-ink-dim);
+  text-transform: capitalize;
+}
+
+.fn-diff { font-weight: 700; }
+.fn-diff--easy   { color: var(--fn-diff-easy); }
+.fn-diff--medium { color: var(--fn-diff-medium); }
+.fn-diff--hard   { color: var(--fn-diff-hard); }
+.fn-diff--insane { color: var(--fn-diff-insane); }
+
+.fn-entry-summary {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--fn-page-ink-dim);
+  flex: 1;
+  margin: 0;
+}
+
+.fn-entry-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fn-entry-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.fn-entry-tool {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.58rem;
+  color: var(--fn-page-ink-mut);
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 2px;
+  padding: 0.08em 0.38em;
+}
+
+.fn-entry-read {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-page-ink-dim);
+  text-decoration: none;
+  border: 1px solid rgba(80,60,30,0.3);
+  border-radius: 2px;
+  padding: 0.25em 0.7em;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.fn-entry-read:hover {
+  color: var(--fn-page-ink);
+  border-color: rgba(80,60,30,0.6);
+  background: rgba(0,0,0,0.05);
+}
+
+/* nav */
+.fn-popup-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid rgba(0,0,0,0.28);
+  flex-shrink: 0;
+}
+
+.fn-nav-btn {
+  background: none;
+  border: 1px solid rgba(80,60,30,0.25);
+  color: var(--fn-ink-dim);
+  font-size: 1rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  letter-spacing: 0.05em;
+}
+.fn-nav-btn:hover:not(:disabled) {
+  color: var(--fn-ink);
+  border-color: rgba(80,60,30,0.5);
+}
+.fn-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* responsive */
+@media (max-width: 480px) {
+  .fn-desk { gap: 2rem 1.5rem; }
+  .fn-notebook { width: 130px; height: 182px; }
+  .fn-popup-notebook { height: min(440px, 92vh); }
+}
+</style>
+
+<script>
+(function () {
+  const data    = JSON.parse(document.getElementById('fn-data').textContent);
+  const overlay = document.getElementById('fn-popup');
+  const track   = document.getElementById('fn-pages-track');
+  const prevBtn = document.getElementById('fn-prev');
+  const nextBtn = document.getElementById('fn-next');
+  const closeBtn= document.getElementById('fn-popup-close');
+  const platEl  = document.getElementById('fn-popup-platform');
+  const countEl = document.getElementById('fn-popup-counter');
+  const coverTitle = document.getElementById('fn-page-cover-title');
+  const coverCount = document.getElementById('fn-page-cover-count');
+
+  let pages = [];
+  let current = 0;
+
+  function diffClass(d) {
+    if (!d) return '';
+    return 'fn-diff fn-diff--' + d.toLowerCase();
+  }
+
+  function buildEntryPage(entry) {
+    const page = document.createElement('div');
+    page.className = 'fn-page';
+
+    const tools = (entry.tools || []).slice(0, 5)
+      .map(t => `<span class="fn-entry-tool">${t}</span>`).join('');
+
+    page.innerHTML = `
+      <h2 class="fn-entry-title">${entry.title}</h2>
+      <div class="fn-entry-vitals">
+        ${entry.difficulty ? `
+        <div class="fn-entry-vital">
+          <span class="fn-entry-label">Difficulty</span>
+          <span class="fn-entry-value ${diffClass(entry.difficulty)}">${entry.difficulty}</span>
+        </div>` : ''}
+        ${entry.category ? `
+        <div class="fn-entry-vital">
+          <span class="fn-entry-label">Category</span>
+          <span class="fn-entry-value">${entry.category.replace(/-/g,' ')}</span>
+        </div>` : ''}
+        ${entry.date ? `
+        <div class="fn-entry-vital">
+          <span class="fn-entry-label">Date</span>
+          <span class="fn-entry-value">${entry.date}</span>
+        </div>` : ''}
+      </div>
+      ${entry.summary ? `<p class="fn-entry-summary">${entry.summary}</p>` : ''}
+      <div class="fn-entry-footer">
+        <div class="fn-entry-tools">${tools}</div>
+        <a class="fn-entry-read" href="${entry.url}">Read full writeup →</a>
+      </div>
+    `;
+    return page;
+  }
+
+  function goTo(index) {
+    pages.forEach((p, i) => {
+      p.classList.remove('is-active', 'is-prev');
+      if (i === index)      p.classList.add('is-active');
+      else if (i < index)   p.classList.add('is-prev');
+    });
+    current = index;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === pages.length - 1;
+    countEl.textContent = `${current + 1} / ${pages.length}`;
+  }
+
+  function openNotebook(platform) {
+    // clear old entry pages (keep cover)
+    const cover = document.getElementById('fn-page-cover');
+    track.querySelectorAll('.fn-page:not(#fn-page-cover)').forEach(p => p.remove());
+
+    const entries = data.filter(d => d.platform === platform);
+    coverTitle.textContent = platform;
+    coverCount.textContent = entries.length + (entries.length === 1 ? ' entry' : ' entries');
+    platEl.textContent = platform;
+
+    pages = [cover];
+    entries.forEach(entry => {
+      const pg = buildEntryPage(entry);
+      track.appendChild(pg);
+      pages.push(pg);
+    });
+
+    goTo(0);
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  // wire notebook buttons
+  document.querySelectorAll('.fn-notebook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const platform = btn.querySelector('.fn-cover-title').textContent.trim();
+      openNotebook(platform);
+    });
+  });
+
+  prevBtn.addEventListener('click', () => { if (current > 0) goTo(current - 1); });
+  nextBtn.addEventListener('click', () => { if (current < pages.length - 1) goTo(current + 1); });
+  closeBtn.addEventListener('click', close);
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  document.addEventListener('keydown', e => {
+    if (overlay.hidden) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowRight') nextBtn.click();
+    if (e.key === 'ArrowLeft')  prevBtn.click();
+  });
+
+  // ── site:action bridge (chat → filter) ──────────────────────
+  // When the AI returns a filter_writeups action, open the matching notebook
+  // or highlight the matching platform buttons.
+  window.addEventListener('site:action', e => {
+    if (e.detail?.type !== 'filter_writeups') return;
+    const { platform, category, difficulty } = e.detail.params || {};
+
+    // If a specific platform is named, open that notebook directly
+    if (platform) {
+      const normalized = platform.toLowerCase().replace(/\s+/g, '-');
+      const allBtns = document.querySelectorAll('.fn-notebook[data-platform]');
+      for (const b of allBtns) {
+        if (b.dataset.platform === normalized ||
+            b.dataset.platform?.includes(normalized) ||
+            normalized.includes(b.dataset.platform)) {
+          b.click(); return;
+        }
+      }
+    }
+
+    // No specific platform — pulse all notebooks to draw attention
+    document.querySelectorAll('.fn-notebook').forEach(b => {
+      b.classList.add('fn-notebook--pulse');
+      setTimeout(() => b.classList.remove('fn-notebook--pulse'), 1200);
+    });
+  });
+})();
+</script>

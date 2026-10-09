@@ -175,14 +175,14 @@
   },
   {
     "id": "nav-writeups",
-    "patterns": ["\\bwriteups?\\b", "\\bhtb\\b", "hack.?the.?box", "\\bctf\\b", "\\bmachines?\\b", "\\bboxes?\\b"],
+    "patterns": ["\\bwriteups?\\b", "\\bfield.?notes?\\b", "\\bhtb\\b", "hack.?the.?box", "\\bctf\\b", "\\bmachines?\\b", "\\bboxes?\\b"],
     "pages": ["*"],
     "excludePages": ["/writeups/"],
     "action": { "type": "navigate_to", "params": { "url": "/writeups/" } },
-    "home_message": "Here are Wynter's recent [Writeups](/writeups/) — CTF and HackTheBox walkthroughs.",
+    "home_message": "Here are Wynter's recent [Field Notes](/writeups/) — CTF and HackTheBox lab writeups.",
     "collection": "writeups",
     "collection_limit": 4,
-    "chip": "Show recent writeups",
+    "chip": "Show recent Field Notes",
     "image": null
   },
   {
@@ -203,10 +203,122 @@
     "pages": ["*"],
     "excludePages": ["/tutorials/"],
     "action": { "type": "navigate_to", "params": { "url": "/tutorials/" } },
-    "home_message": "Here are Wynter's [Field Notes](/tutorials/) — practical tutorials and hands-on walkthroughs.",
+    "home_message": "Here are Wynter's [Explorations](/tutorials/) — practical tutorials and hands-on walkthroughs.",
     "collection": "tutorials",
     "collection_limit": 4,
-    "chip": "Show recent Field Notes",
+    "chip": "Show recent Explorations",
+    "image": null
+  },
+  {
+    "id": "discoveries-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "all" } },
+    "chip": "Show all scrolls",
+    "image": null
+  },
+  {
+    "id": "discoveries-cybersecurity",
+    "patterns": ["\\bcyber\\b", "\\bsecurity\\b", "\\bhacking\\b", "\\bpentest\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "cybersecurity" } },
+    "chip": "Cybersecurity",
+    "image": null
+  },
+  {
+    "id": "discoveries-networking",
+    "patterns": ["\\bnetwork\\b", "\\bnetworking\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "networking" } },
+    "chip": "Networking",
+    "image": null
+  },
+  {
+    "id": "discoveries-sysadmin",
+    "patterns": ["\\bsysadmin\\b", "\\bwindows\\b", "\\bactive.?directory\\b", "\\bad\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "sysadmin" } },
+    "chip": "Sysadmin",
+    "image": null
+  },
+  {
+    "id": "discoveries-linux",
+    "patterns": ["\\blinux\\b", "\\bbash\\b", "\\bshell\\b"],
+    "pages": ["/deep-dives/"],
+    "action": { "type": "filter_discoveries", "params": { "topic": "linux" } },
+    "chip": "Linux",
+    "image": null
+  },
+  {
+    "id": "tutorials-all",
+    "patterns": ["\\ball\\b", "show all", "reset", "everything"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": {} },
+    "chip": "Show all",
+    "image": null
+  },
+  {
+    "id": "tutorials-novice",
+    "patterns": ["\\bnovice\\b", "\\bbeginner\\b", "\\beasy\\b", "\\bstart\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "novice" } },
+    "chip": "♦ Novice",
+    "image": null
+  },
+  {
+    "id": "tutorials-apprentice",
+    "patterns": ["\\bapprentice\\b", "\\bintermediate\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "apprentice" } },
+    "chip": "♣ Apprentice",
+    "image": null
+  },
+  {
+    "id": "tutorials-journeyman",
+    "patterns": ["\\bjourneyman\\b", "\\badvanced\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "journeyman" } },
+    "chip": "♠ Journeyman",
+    "image": null
+  },
+  {
+    "id": "tutorials-expert",
+    "patterns": ["\\bexpert\\b", "\\bhard\\b", "\\bmaster\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "difficulty": "expert" } },
+    "chip": "♥ Expert",
+    "image": null
+  },
+  {
+    "id": "tutorials-sysadmin",
+    "patterns": ["\\bsysadmin\\b", "\\bsystems? admin\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "sysadmin" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-security",
+    "patterns": ["\\bsecurity\\b", "\\bharden\\b", "\\battack\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "security" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-homelab",
+    "patterns": ["\\bhomelab\\b", "\\bhome.?lab\\b", "\\blab\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "homelab" } },
+    "chip": null,
+    "image": null
+  },
+  {
+    "id": "tutorials-development",
+    "patterns": ["\\bdevelopment\\b", "\\bdev\\b", "\\bpython\\b", "\\bscript\\b"],
+    "pages": ["/tutorials/"],
+    "action": { "type": "filter_cards", "params": { "topic": "development" } },
+    "chip": null,
     "image": null
   },
   {

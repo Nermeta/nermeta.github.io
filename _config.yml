@@ -55,7 +55,7 @@ defaults:
       path: ""
       type: "learning-logs"
     values:
-      layout: post
+      layout: learning-log-detail
       public: true
   - scope:
       path: ""
@@ -73,7 +73,7 @@ defaults:
       path: ""
       type: "deep-dives"
     values:
-      layout: post
+      layout: discovery
       public: true
   - scope:
       path: ""
@@ -85,7 +85,7 @@ defaults:
       path: ""
       type: "writeups"
     values:
-      layout: post
+      layout: writeup
       public: true
   - scope:
       path: ""

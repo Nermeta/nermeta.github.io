@@ -2,6 +2,7 @@
 title: "Python S04: Banner Grabbing"
 date: 2026-09-08
 type: learning-log
+parent: python-for-security
 domain: scripting
 status: in-progress
 requires: [python-session-03]

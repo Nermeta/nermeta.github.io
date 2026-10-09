@@ -10,6 +10,14 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": "intermediate",
+    "tech_stack": [
+      "windows-server",
+      "powershell",
+      "ldap",
+      "kerberos"
+    ],
+    "estimated_read": 18
   }
 ]

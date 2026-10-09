@@ -14,7 +14,10 @@
       "productivity",
       "self-development"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "book-review",
@@ -31,7 +34,10 @@
       "design",
       "psychology"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "book-review",
@@ -48,7 +54,10 @@
       "fantasy",
       "mystery"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "book-review",
@@ -65,7 +74,10 @@
       "programming",
       "career"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "book-review",
@@ -81,7 +93,10 @@
       "fiction",
       "fantasy"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   },
   {
     "type": "book-review",
@@ -98,6 +113,9 @@
       "productivity",
       "career"
     ],
-    "issuer": null
+    "issuer": null,
+    "difficulty": null,
+    "tech_stack": null,
+    "estimated_read": null
   }
 ]

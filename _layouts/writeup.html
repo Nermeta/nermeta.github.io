@@ -1,0 +1,459 @@
+---
+layout: default
+---
+<main class="fn-post" id="main-content">
+
+  <!-- open notebook wrapper -->
+  <div class="fn-notebook">
+
+    <!-- left-edge wire binding -->
+    <div class="fn-post-binding" aria-hidden="true">
+      {% for i in (1..16) %}<span class="fn-post-ring"></span>{% endfor %}
+    </div>
+
+    <div class="fn-post-pages">
+
+      <!-- cover / header page -->
+      <header class="fn-post-cover">
+        <a class="fn-back" href="{{ '/writeups/' | relative_url }}">← Field Notes</a>
+
+        {% if page.platform %}
+        <span class="fn-stamp fn-stamp--{{ page.platform | downcase | replace: ' ', '-' }}">
+          {{ page.platform }}
+        </span>
+        {% endif %}
+
+        <h1 class="fn-post-title">{{ page.title }}</h1>
+
+        <div class="fn-post-vitals">
+          {% if page.difficulty %}
+          <div class="fn-vital">
+            <span class="fn-vital-label">Difficulty</span>
+            <span class="fn-difficulty fn-difficulty--{{ page.difficulty | downcase }}">{{ page.difficulty | capitalize }}</span>
+          </div>
+          {% endif %}
+          {% if page.category %}
+          <div class="fn-vital">
+            <span class="fn-vital-label">Category</span>
+            <span class="fn-vital-value">{{ page.category | replace: '-', ' ' }}</span>
+          </div>
+          {% endif %}
+          {% if page.date %}
+          <div class="fn-vital">
+            <span class="fn-vital-label">Completed</span>
+            <span class="fn-vital-value">{{ page.date | date: "%b %d, %Y" }}</span>
+          </div>
+          {% endif %}
+          {% if page.outcome %}
+          <div class="fn-vital">
+            <span class="fn-vital-label">Outcome</span>
+            <span class="fn-vital-value fn-vital-value--{{ page.outcome }}">{{ page.outcome | capitalize }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if page.tools %}
+        <div class="fn-post-tools">
+          <span class="fn-vital-label">Tools</span>
+          <div class="fn-tools-list">
+            {% for tool in page.tools %}
+            <span class="fn-tool">{{ tool }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if page.tags %}
+        <div class="fn-post-tags">
+          {% for tag in page.tags %}
+          <span class="fn-tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </header>
+
+      <!-- ruled content page -->
+      <div class="fn-post-ruled">
+        <div class="fn-post-body">
+          {{ content }}
+        </div>
+      </div>
+
+    </div><!-- /.fn-post-pages -->
+  </div><!-- /.fn-notebook -->
+
+</main>
+
+<style>
+/* ── Field Notes — Individual Writeup Page ─────────────────── */
+
+:root {
+  --fn-kraft:       #2a2218;
+  --fn-kraft-mid:   #1e1a12;
+  --fn-kraft-edge:  #150f08;
+  --fn-ink:         #e8dfc8;
+  --fn-ink-dim:     #a89878;
+  --fn-ink-muted:   #6b5e44;
+  --fn-rule:        rgba(100, 80, 50, 0.14);
+  --fn-rule-margin: rgba(180, 60, 40, 0.3);    /* red margin line */
+  --fn-ring:        #3a3530;
+  --fn-ring-hi:     #5a534a;
+  --fn-stamp-htb:   #9fef00;
+  --fn-stamp-thm:   #ff6b35;
+  --fn-stamp-ctf:   #00e5cc;
+  --fn-diff-easy:   #3a7a1e;
+  --fn-diff-medium: #a05a00;
+  --fn-diff-hard:   #b01818;
+  --fn-diff-insane: #7b1fa2;
+}
+
+.fn-post {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Notebook wrapper */
+.fn-notebook {
+  display: flex;
+  flex-direction: row;
+  background: var(--fn-kraft);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow:
+    3px 3px 0 var(--fn-kraft-edge),
+    6px 6px 0 rgba(0,0,0,0.3),
+    0 16px 48px rgba(0,0,0,0.6);
+  min-height: 80vh;
+  overflow: hidden;
+}
+
+/* Wire binding — left edge */
+.fn-post-binding {
+  width: 28px;
+  flex-shrink: 0;
+  background: var(--fn-kraft-mid);
+  border-right: 1px solid rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.fn-post-ring {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid var(--fn-ring-hi);
+  background: var(--fn-ring);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.7);
+  position: relative;
+}
+
+.fn-post-ring::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+/* Pages area */
+.fn-post-pages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Cover / header */
+.fn-post-cover {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 2px solid rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fn-back {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  text-decoration: none;
+  align-self: flex-start;
+  transition: color 0.15s;
+}
+.fn-back:hover { color: var(--fn-ink); }
+
+.fn-stamp {
+  display: inline-block;
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  align-self: flex-start;
+  color: var(--fn-stamp-ctf);
+}
+.fn-stamp--hackthebox { color: var(--fn-stamp-htb); }
+.fn-stamp--tryhackme  { color: var(--fn-stamp-thm); }
+
+.fn-post-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  letter-spacing: 0.03em;
+  color: var(--fn-ink);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Vitals grid */
+.fn-post-vitals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.fn-vital {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.fn-vital-label {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+}
+
+.fn-vital-value {
+  font-size: 0.8rem;
+  color: var(--fn-ink-dim);
+  text-transform: capitalize;
+}
+
+.fn-vital-value--completed { color: var(--fn-diff-easy); }
+
+.fn-difficulty {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.fn-difficulty--easy   { color: var(--fn-diff-easy); }
+.fn-difficulty--medium { color: var(--fn-diff-medium); }
+.fn-difficulty--hard   { color: var(--fn-diff-hard); }
+.fn-difficulty--insane { color: var(--fn-diff-insane); }
+
+/* Tools */
+.fn-post-tools {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.fn-tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.fn-tool {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.65rem;
+  color: var(--fn-ink-muted);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 2px;
+  padding: 0.1em 0.45em;
+}
+
+/* Tags */
+.fn-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.fn-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--fn-ink-muted);
+  background: transparent;
+  border: 1px solid rgba(168, 152, 120, 0.2);
+  border-radius: 2px;
+  padding: 0.1em 0.45em;
+  text-transform: lowercase;
+}
+
+/* Ruled page */
+.fn-post-ruled {
+  flex: 1;
+  padding: 0;
+  /* background-color must be set separately so the gradient layer sits on top */
+  background-color: #f5edd8;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(1.75rem - 1px),
+      var(--fn-rule) calc(1.75rem - 1px),
+      var(--fn-rule) 1.75rem
+    );
+  background-size: 100% 1.75rem;
+  border-left: 3px solid var(--fn-rule-margin);
+  margin-left: 45px;
+  position: relative;
+  color: #2a2015;
+}
+
+.fn-post-ruled::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -45px; bottom: 0;
+  width: 45px;
+  background: rgba(0,0,0,0.06);
+  background-color: #ede5cc;
+}
+
+.fn-post-body {
+  /* padding-top must be a multiple of 1.75rem so text sits on the ruled lines */
+  padding: 1.75rem 2rem 3.5rem 1.25rem;
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.75rem; /* snap to ruled lines */
+  color: #2a2015;
+}
+
+/* Markdown content inside ruled page */
+.fn-post-body h2 {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a3a28;
+  margin: 1.75rem 0 0;
+  border-bottom: 1px solid var(--fn-rule);
+  padding-bottom: 0.2rem;
+}
+
+.fn-post-body h3 {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b5a40;
+  margin: 1.75rem 0 0;
+}
+
+.fn-post-body p {
+  margin: 0 0 0;
+}
+
+.fn-post-body ul,
+.fn-post-body ol {
+  padding-left: 1.4rem;
+  margin: 0;
+}
+
+.fn-post-body li { margin: 0; }
+
+.fn-post-body a {
+  color: #5a3e8a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.fn-post-body a:hover { color: #3a2060; }
+
+/* Code blocks */
+.fn-post-body pre {
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 3px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #2a2015;
+}
+
+.fn-post-body code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.8em;
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+  color: #3a5a3a;
+}
+
+.fn-post-body pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #2a2015;
+  font-size: 1em;
+}
+
+/* Tables */
+.fn-post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.fn-post-body th {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b5a40;
+  text-align: left;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--fn-rule);
+}
+
+.fn-post-body td {
+  padding: 0.35rem 0.6rem;
+  color: #4a3a28;
+  border-bottom: 1px solid rgba(100,80,50,0.1);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .fn-notebook {
+    border-radius: 2px 4px 4px 2px;
+  }
+  .fn-post-binding {
+    width: 20px;
+  }
+  .fn-post-ring {
+    width: 12px;
+    height: 12px;
+  }
+  .fn-post-cover {
+    padding: 1.25rem 1rem 1rem;
+  }
+  .fn-post-ruled {
+    margin-left: 32px;
+  }
+  .fn-post-body {
+    padding: 1rem 1rem 1.5rem 0.75rem;
+    font-size: 0.88rem;
+  }
+}
+</style>

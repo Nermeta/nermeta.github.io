@@ -173,6 +173,12 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
+  // Worker flagged the message as off-topic — treat same as client guard
+  if (data.off_topic) {
+    appendOffTopicResponse(container, source);
+    return;
+  }
+
   // navigate_to: drawer navigates, home chat never does (shows cards inline instead)
   if (data.action?.type === 'navigate_to') {
     if (source === 'drawer') {
@@ -213,16 +219,30 @@ function appendAiResponse(container, data, source) {
     data.cards.forEach(card => {
       const cardEl = document.createElement('div');
       cardEl.className = 'result-card';
-      const dateHtml = card.date
-        ? `<span>${escapeHtml(card.date)}</span>` : '';
+
       const badge   = resolveBadge(card);
       const imgHtml = badge
         ? `<div class="result-card-badge badge-${escapeHtml(badge.shape)}"><img src="${escapeHtml(badge.src)}" alt="" loading="lazy"></div>` : '';
+
+      // Build meta line — varies by card type
+      const metaParts = [];
+      if (card.type === 'tutorial' || card.type === 'deep-dive') {
+        const SUIT = { novice: '♦', apprentice: '♣', journeyman: '♠', expert: '♥' };
+        const diff = (card.difficulty || '').toLowerCase();
+        if (diff && SUIT[diff]) {
+          metaParts.push(`<span class="rc-difficulty rc-diff-${escapeHtml(diff)}">${SUIT[diff]} ${escapeHtml(card.difficulty)}</span>`);
+        }
+        if (card.estimated_read) metaParts.push(`<span>${escapeHtml(String(card.estimated_read))} min</span>`);
+      } else {
+        if (card.date) metaParts.push(`<span>${escapeHtml(card.date)}</span>`);
+      }
+      const metaHtml = metaParts.length ? metaParts.join('') : '';
+
       cardEl.innerHTML = `
         ${imgHtml}
         <div class="result-card-body">
           <a href="${escapeHtml(card.url || '#')}">${escapeHtml(card.title || 'Untitled')}</a>
-          <div class="result-card-meta">${dateHtml}</div>
+          <div class="result-card-meta">${metaHtml}</div>
         </div>`;
       cardsDiv.appendChild(cardEl);
     });
@@ -340,6 +360,186 @@ function filterCollection(cards, filter) {
 }
 
 /**
+ * sanitizeInput — strips HTML tags and control characters from user input.
+ * Defense against injected markup before it ever reaches the DOM or the worker.
+ */
+function sanitizeInput(str) {
+  return str
+    // Strip all HTML tags
+    .replace(/<[^>]*>/g, '')
+    // Remove null bytes and control chars (except normal whitespace)
+    .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '')
+    // Collapse to reasonable length (worker has its own limit, but clip here too)
+    .slice(0, 2000)
+    .trim();
+}
+
+/**
+ * isOffTopic — returns true when a message is clearly unrelated to the site.
+ * Catches weather, sports, recipes, math homework, celebrity gossip, etc.
+ * NOT exhaustive — the worker's system prompt adds a second layer.
+ */
+/**
+ * offTopicScore — fuzzy off-topic scorer.
+ *
+ * Each bucket has weighted signals. Phrase matches score higher than single
+ * words. A site-topic anchor (anything Wynter's site is actually about)
+ * subtracts from the total, so "how do I cook up a Python script" doesn't
+ * trip the food bucket because "python script" pulls it back.
+ *
+ * Returns a numeric score; caller decides the threshold.
+ */
+const OFF_TOPIC_BUCKETS = [
+  {
+    name: 'weather',
+    signals: [
+      { re: /\b(?:weather forecast|what.s the weather|will it rain|chance of (?:rain|snow))\b/i, w: 10 },
+      { re: /\b(?:is it (?:sunny|raining|snowing|cold|hot) (?:today|outside|right now))\b/i,    w: 10 },
+      { re: /\b(?:weather|forecast|humidity|wind chill|dew point)\b/i,                          w:  3 },
+    ],
+  },
+  {
+    name: 'sports',
+    signals: [
+      { re: /\b(?:nfl|nba|mlb|nhl|fifa|super bowl|world series|stanley cup|march madness)\b/i,  w: 10 },
+      { re: /\b(?:who (?:won|is winning|did win) (?:the )?(?:game|match|series))\b/i,           w: 10 },
+      { re: /\b(?:soccer|basketball|baseball|american football|nascar race)\b/i,                w:  5 },
+      { re: /\b(?:game score|sports score|final score)\b/i,                                     w:  8 },
+    ],
+  },
+  {
+    name: 'food',
+    signals: [
+      { re: /\b(?:what.s a good recipe|give me a recipe|how (?:do i |to )?(?:bake|cook) \w+ (?:cake|bread|soup|pasta|sauce|pie))\b/i, w: 10 },
+      { re: /\b(?:best restaurants? (?:in|near)|where (?:should|can) i eat)\b/i,                w: 10 },
+      { re: /\b(?:calories in|nutrition facts for|how many carbs)\b/i,                          w:  8 },
+      { re: /\b(?:recipe|ingredient list|tablespoon|teaspoon|preheat oven)\b/i,                 w:  4 },
+    ],
+  },
+  {
+    name: 'entertainment',
+    signals: [
+      { re: /\b(?:best (?:movies?|shows?|series) to watch|what (?:should|can) i watch|netflix|hulu|disney\+)\b/i, w: 10 },
+      { re: /\b(?:who (?:sings?|sang|wrote|plays? in)|what (?:band|singer|artist))\b/i,        w:  8 },
+      { re: /\b(?:taylor swift|beyoncé?|kanye|drake|ariana grande|billie eilish)\b/i,          w: 10 },
+      { re: /\b(?:music album|new song|chart topping|box office)\b/i,                           w:  6 },
+    ],
+  },
+  {
+    name: 'homework',
+    signals: [
+      { re: /\bwhat(?:'s| is)\s+\d[\d\s]*[+\-×÷*\/]\s*[\d\s]+\b/i,                            w: 10 },
+      { re: /\bsolve (?:for )?[a-z]?\s*(?:=|:)\s*\d/i,                                        w: 10 },
+      { re: /\b(?:what is the capital of|who invented|who discovered)\b/i,                     w:  8 },
+      { re: /\b(?:essay (?:about|on)|write me a (?:poem|essay|story) about)\b/i,               w:  6 },
+    ],
+  },
+  {
+    name: 'medical',
+    signals: [
+      { re: /\b(?:what (?:medication|drug|medicine) should i|can i take \w+ with|drug interaction)\b/i, w: 10 },
+      { re: /\b(?:diagnose me|do i have|symptoms of (?:cancer|diabetes|flu|covid))\b/i,        w: 10 },
+      { re: /\b(?:is \w+ safe to take|dosage for|prescription for)\b/i,                        w:  7 },
+    ],
+  },
+  {
+    name: 'finance',
+    signals: [
+      { re: /\b(?:should i (?:buy|sell|invest in)|stock (?:price|tip|pick))\b/i,               w: 10 },
+      { re: /\b(?:bitcoin|ethereum|crypto|nft)\s+(?:price|worth|invest|buy|sell)\b/i,         w: 10 },
+      { re: /\b(?:will the market|best (?:stocks?|etf|fund) to buy)\b/i,                       w:  8 },
+    ],
+  },
+];
+
+// Signals that indicate the message IS about the site — subtract from score
+const SITE_ANCHORS = [
+  { re: /\bwynter\b/i,                                                                          w: 12 },
+  { re: /\b(?:homelab|home lab|proxmox|truenas|pfsense|pihole)\b/i,                            w: 10 },
+  { re: /\b(?:active directory|kerberos|ldap|powershell|group policy)\b/i,                    w: 10 },
+  { re: /\b(?:ctf|hack ?the ?box|htb|tryhackme|writeup)\b/i,                                  w: 10 },
+  { re: /\b(?:certification|comptia|security\+|network\+|aws|gcp|azure)\b/i,                  w:  8 },
+  { re: /\b(?:tutorial|guide|walkthrough|deep.?dive|learning log|chronicle)\b/i,              w:  6 },
+  { re: /\b(?:python|bash|linux|windows server|docker|kubernetes|ansible)\b/i,                w:  5 },
+  { re: /\b(?:sysadmin|cybersecurity|pentest|red team|blue team|infosec|nmap)\b/i,            w:  8 },
+  { re: /\b(?:this site|your site|her site|the site|your blog|her blog)\b/i,                  w:  8 },
+  { re: /\b(?:book|review|read|library|recommend)\b/i,                                         w:  3 },
+];
+
+const OFF_TOPIC_THRESHOLD = 8;
+
+function offTopicScore(text) {
+  const t = text.trim();
+  let score = 0;
+  for (const bucket of OFF_TOPIC_BUCKETS) {
+    for (const { re, w } of bucket.signals) {
+      if (re.test(t)) score += w;
+    }
+  }
+  for (const { re, w } of SITE_ANCHORS) {
+    if (re.test(t)) score -= w;
+  }
+  return score;
+}
+
+function isOffTopic(text) {
+  if (text.trim().length < 8) return false;
+  return offTopicScore(text) >= OFF_TOPIC_THRESHOLD;
+}
+
+/**
+ * appendOffTopicResponse — Cheshire says "not my domain" + surfaces page chips
+ */
+const CHESHIRE_REDIRECTS = [
+  "Curiouser and curiouser — but that's a bit outside my looking-glass. I'm just a guide to this corner of the web. Maybe one of these will help:",
+  "Oh my, that rabbit hole leads somewhere else entirely. I'm only a guide to Wynter's Wonderland. Try one of these instead:",
+  "That question wandered off the map! I know this site very well, but not much beyond it. Here's what I can help with:",
+  "We've gone a bit through the wrong door. I can only guide you around here — give one of these a try:",
+];
+
+function appendOffTopicResponse(container, source) {
+  const msg = CHESHIRE_REDIRECTS[Math.floor(Math.random() * CHESHIRE_REDIRECTS.length)];
+  const page = window.location.pathname;
+
+  // Gather chips for this page
+  const chipData = _shortcuts
+    ? _shortcuts.filter(s => {
+        const pages    = s.pages || ['*'];
+        const excluded = s.excludePages || [];
+        return s.chip &&
+          (pages.includes('*') || pages.includes(page)) &&
+          !excluded.includes(page);
+      }).map(s => s.chip).slice(0, 6)
+    : [];
+
+  const chipsHtml = chipData.length
+    ? `<div class="msg-chips">${chipData.map(c => `<button class="chip">${escapeHtml(c)}</button>`).join('')}</div>`
+    : '';
+
+  const div = document.createElement('div');
+  div.className = 'msg-ai';
+  div.innerHTML = `
+    <div class="msg-ai-avatar" aria-hidden="true">🐱</div>
+    <div class="msg-bubble">${escapeHtml(msg)}${chipsHtml}</div>`;
+
+  // Wire chip clicks — insert text into whichever input is in use
+  const inputId = source === 'home' ? 'homeChatInput' : 'drawerInput';
+  div.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const inp = document.getElementById(inputId);
+      if (inp) {
+        inp.value = chip.textContent.trim();
+        inp.dispatchEvent(new Event('input'));
+        inp.focus();
+      }
+    });
+  });
+
+  container.appendChild(div);
+  scrollToBottom(container);
+}
+
+/**
  * resolveShortcut — async, returns response envelope or null (fall through to worker).
  * For nav shortcuts on home: fetches collection data and returns real result cards.
  */
@@ -448,14 +648,25 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const text = input.value.trim();
+    const raw  = input.value.trim();
+    const text = sanitizeInput(raw);
     if (!text) return;
 
     input.value = '';
     input.style.height = 'auto';
 
-    // Client-side shortcuts — handle common queries locally, no AI call needed
+    // Client-side off-topic guard — catch obvious nonsense before burning tokens
     appendUserBubble(messages, text);
+    if (isOffTopic(text)) {
+      const typing = appendTyping(messages);
+      setTimeout(() => {
+        typing.remove();
+        appendOffTopicResponse(messages, source);
+      }, 700 + Math.random() * 400);
+      return;
+    }
+
+    // Client-side shortcuts — handle common queries locally, no AI call needed
     const shortcut = await resolveShortcut(text);
     if (shortcut) {
       const typing = appendTyping(messages);

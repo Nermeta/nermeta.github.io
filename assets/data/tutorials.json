@@ -1,6 +1,88 @@
 [
   {
     "type": "tutorial",
+    "title": "Kerberos Delegation Attacks and Defenses",
+    "url": "/tutorials/kerberos-delegation-attacks/",
+    "date": "2026-06-20",
+    "status": null,
+    "topic": "security",
+    "rating": null,
+    "badge_image": null,
+    "badge_shape": null,
+    "genre": null,
+    "issuer": null,
+    "difficulty": "expert",
+    "tech_stack": [
+      "active-directory",
+      "kerberos",
+      "windows-server",
+      "powershell"
+    ],
+    "estimated_read": 22
+  },
+  {
+    "type": "tutorial",
+    "title": "Hardening Active Directory: Tiered Admin Model",
+    "url": "/tutorials/active-directory-hardening/",
+    "date": "2026-05-10",
+    "status": null,
+    "topic": "sysadmin",
+    "rating": null,
+    "badge_image": null,
+    "badge_shape": null,
+    "genre": null,
+    "issuer": null,
+    "difficulty": "journeyman",
+    "tech_stack": [
+      "active-directory",
+      "windows-server",
+      "powershell",
+      "group-policy"
+    ],
+    "estimated_read": 18
+  },
+  {
+    "type": "tutorial",
+    "title": "Automating API Workflows with Python and Requests",
+    "url": "/tutorials/python-api-automation/",
+    "date": "2026-04-02",
+    "status": null,
+    "topic": "development",
+    "rating": null,
+    "badge_image": null,
+    "badge_shape": null,
+    "genre": null,
+    "issuer": null,
+    "difficulty": "apprentice",
+    "tech_stack": [
+      "python",
+      "rest-api",
+      "json"
+    ],
+    "estimated_read": 10
+  },
+  {
+    "type": "tutorial",
+    "title": "Setting Up Your First Home Lab with Proxmox",
+    "url": "/tutorials/setting-up-a-home-lab/",
+    "date": "2026-03-15",
+    "status": null,
+    "topic": "homelab",
+    "rating": null,
+    "badge_image": null,
+    "badge_shape": null,
+    "genre": null,
+    "issuer": null,
+    "difficulty": "novice",
+    "tech_stack": [
+      "proxmox",
+      "linux",
+      "networking"
+    ],
+    "estimated_read": 8
+  },
+  {
+    "type": "tutorial",
     "title": "Automating Active Directory Reports with PowerShell",
     "url": "/tutorials/10-06-2026-example-tutorial/",
     "date": "2026-03-01",
@@ -10,6 +92,13 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": "apprentice",
+    "tech_stack": [
+      "powershell",
+      "windows-server",
+      "active-directory"
+    ],
+    "estimated_read": 12
   }
 ]

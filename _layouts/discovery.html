@@ -1,0 +1,470 @@
+---
+layout: default
+---
+<main class="cx-post" id="main-content">
+
+  <div class="cx-scroll">
+
+    <!-- scroll header / illuminated title block -->
+    <header class="cx-scroll-header">
+      <a class="cx-back" href="{{ '/deep-dives/' | relative_url }}">← Discoveries</a>
+
+      <div class="cx-illuminated">
+        <div class="cx-drop-cap-wrap">
+          {% assign first_char = content | strip_html | slice: 0 %}
+          <span class="cx-drop-cap" aria-hidden="true">{{ page.title | slice: 0 }}</span>
+        </div>
+
+        <div class="cx-title-block">
+          {% if page.topic %}
+          <span class="cx-tome-topic">{{ page.topic | replace: "-", " " | capitalize }}</span>
+          {% endif %}
+          <h1 class="cx-title">{{ page.title }}</h1>
+          {% if page.summary %}
+          <p class="cx-summary">{{ page.summary }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="cx-divider" aria-hidden="true">
+        <span class="cx-divider-line"></span>
+        <span class="cx-divider-ornament">✦</span>
+        <span class="cx-divider-line"></span>
+      </div>
+    </header>
+
+    <!-- manuscript body with margin annotations -->
+    <div class="cx-manuscript">
+
+      <!-- margin / colophon -->
+      <aside class="cx-margin">
+        {% if page.date %}
+        <div class="cx-margin-item">
+          <span class="cx-margin-label">Dated</span>
+          <span class="cx-margin-value">{{ page.date | date: "%b %d, %Y" }}</span>
+        </div>
+        {% endif %}
+        {% if page.difficulty %}
+        <div class="cx-margin-item">
+          <span class="cx-margin-label">Depth</span>
+          <span class="cx-margin-value cx-difficulty cx-difficulty--{{ page.difficulty }}">{{ page.difficulty | capitalize }}</span>
+        </div>
+        {% endif %}
+        {% if page.estimated_read %}
+        <div class="cx-margin-item">
+          <span class="cx-margin-label">Reading</span>
+          <span class="cx-margin-value">{{ page.estimated_read }} min</span>
+        </div>
+        {% endif %}
+        {% if page.tech_stack %}
+        <div class="cx-margin-item cx-margin-item--stack">
+          <span class="cx-margin-label">Subjects</span>
+          <div class="cx-margin-tags">
+            {% for t in page.tech_stack %}
+            <span class="cx-margin-tag">{{ t | replace: "-", " " }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if page.tags %}
+        <div class="cx-margin-item cx-margin-item--stack">
+          <span class="cx-margin-label">Lore</span>
+          <div class="cx-margin-tags">
+            {% for tag in page.tags %}
+            <span class="cx-margin-tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </aside>
+
+      <!-- main text -->
+      <article class="cx-body">
+        {{ content }}
+      </article>
+
+    </div><!-- /.cx-manuscript -->
+
+    <!-- closing ornament -->
+    <div class="cx-colophon" aria-hidden="true">
+      <span class="cx-divider-line"></span>
+      <span class="cx-divider-ornament">✦ FINIS ✦</span>
+      <span class="cx-divider-line"></span>
+    </div>
+
+  </div><!-- /.cx-scroll -->
+
+</main>
+
+<style>
+/* ── Discoveries — Individual Codex Page ───────────────────── */
+
+:root {
+  --cx-bg:          #0c0a07;
+  --cx-scroll-bg:   #111009;
+  --cx-scroll-edge: #0a0804;
+  --cx-ink:         #d4c9a8;
+  --cx-ink-dim:     #8a7d5a;
+  --cx-ink-muted:   #5a5040;
+  --cx-gold:        #c9a84c;
+  --cx-gold-dim:    #8a6e2a;
+  --cx-vermillion:  #8b2020;
+  --cx-rule:        rgba(201,168,76,0.1);
+  --cx-border:      rgba(201,168,76,0.18);
+  --cx-diff-beginner:    #3a7a3a;
+  --cx-diff-intermediate:#a05a00;
+  --cx-diff-advanced:    #8b2020;
+}
+
+.cx-post {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+/* Scroll wrapper */
+.cx-scroll {
+  background: var(--cx-scroll-bg);
+  border: 1px solid var(--cx-border);
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 4px rgba(201,168,76,0.04),
+    3px 3px 0 var(--cx-scroll-edge),
+    6px 6px 0 rgba(0,0,0,0.3),
+    0 20px 60px rgba(0,0,0,0.5);
+  /* subtle vellum texture via gradient */
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(201,168,76,0.02) 0%, transparent 50%);
+  position: relative;
+}
+
+/* Decorative inner border frame */
+.cx-scroll::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(201,168,76,0.06);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+/* Header / illuminated block */
+.cx-scroll-header {
+  padding: 2rem 2.5rem 1.5rem;
+  border-bottom: 1px solid var(--cx-rule);
+}
+
+.cx-back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cx-ink-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.cx-back:hover { color: var(--cx-gold-dim); }
+
+/* Illuminated title area */
+.cx-illuminated {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+/* Drop cap */
+.cx-drop-cap-wrap {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 40% 35%, rgba(201,168,76,0.15), rgba(201,168,76,0.04));
+  border: 1px solid var(--cx-border);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.cx-drop-cap {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--cx-gold);
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+
+.cx-title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cx-tome-topic {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+}
+
+.cx-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 3.5vw, 1.9rem);
+  color: var(--cx-ink);
+  line-height: 1.25;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.cx-summary {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--cx-ink-dim);
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Section divider */
+.cx-divider,
+.cx-colophon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 2.5rem;
+}
+
+.cx-colophon {
+  padding: 1.5rem 2.5rem 2rem;
+  border-top: 1px solid var(--cx-rule);
+}
+
+.cx-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cx-gold-dim), transparent);
+}
+
+.cx-divider-ornament {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--cx-gold-dim);
+  white-space: nowrap;
+  font-family: 'Cinzel', serif;
+}
+
+/* Manuscript area */
+.cx-manuscript {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0;
+  min-height: 60vh;
+}
+
+/* Margin / colophon sidebar */
+.cx-margin {
+  padding: 2rem 1.25rem 2rem 2.5rem;
+  border-right: 1px solid var(--cx-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cx-margin-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cx-margin-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+}
+
+.cx-margin-value {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--cx-ink-dim);
+}
+
+.cx-difficulty { font-weight: 600; }
+.cx-difficulty--beginner     { color: var(--cx-diff-beginner); }
+.cx-difficulty--intermediate { color: var(--cx-diff-intermediate); }
+.cx-difficulty--advanced     { color: var(--cx-diff-advanced); }
+
+.cx-margin-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.cx-margin-tag {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.6rem;
+  color: var(--cx-ink-muted);
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 2px;
+  padding: 0.1em 0.4em;
+}
+
+/* Main body text */
+.cx-body {
+  padding: 2rem 2.5rem 2rem 2rem;
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--cx-ink);
+}
+
+.cx-body h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-gold);
+  margin: 2rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cx-body h2::before,
+.cx-body h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--cx-gold-dim), transparent);
+}
+.cx-body h2::before { background: linear-gradient(to left, var(--cx-gold-dim), transparent); flex: 0 0 20px; }
+.cx-body h2::after  { background: linear-gradient(to right, var(--cx-gold-dim), transparent); }
+
+.cx-body h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.cx-body p { margin: 0 0 0; }
+
+.cx-body ul,
+.cx-body ol {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.cx-body li { margin: 0; }
+
+.cx-body strong { color: var(--cx-ink); }
+
+.cx-body em { color: var(--cx-ink-dim); }
+
+.cx-body a {
+  color: var(--cx-gold-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cx-body a:hover { color: var(--cx-gold); }
+
+/* Code */
+.cx-body pre {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-left: 3px solid var(--cx-gold-dim);
+  border-radius: 2px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cx-body code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.8em;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+  color: var(--cx-gold-dim);
+}
+
+.cx-body pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cx-ink);
+  font-size: 1em;
+}
+
+/* Tables */
+.cx-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.cx-body th {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+  text-align: left;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--cx-rule);
+}
+
+.cx-body td {
+  padding: 0.35rem 0.6rem;
+  color: var(--cx-ink-dim);
+  border-bottom: 1px solid rgba(201,168,76,0.05);
+}
+
+/* Blockquote as illuminated callout */
+.cx-body blockquote {
+  margin: 0;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-left: 3px solid var(--cx-gold-dim);
+  background: rgba(201,168,76,0.04);
+  font-style: italic;
+  color: var(--cx-ink-dim);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .cx-manuscript {
+    grid-template-columns: 1fr;
+  }
+  .cx-margin {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border-right: none;
+    border-bottom: 1px solid var(--cx-rule);
+  }
+  .cx-margin-item { flex-direction: row; align-items: baseline; gap: 0.5rem; }
+  .cx-scroll-header,
+  .cx-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .cx-illuminated { flex-direction: column; }
+  .cx-drop-cap-wrap { width: 52px; height: 52px; }
+  .cx-drop-cap { font-size: 2.2rem; }
+}
+</style>

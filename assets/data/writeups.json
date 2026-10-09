@@ -10,6 +10,9 @@
     "badge_image": null,
     "badge_shape": null,
     "genre": null,
-    "issuer": null
+    "issuer": null,
+    "difficulty": "medium",
+    "tech_stack": null,
+    "estimated_read": null
   }
 ]

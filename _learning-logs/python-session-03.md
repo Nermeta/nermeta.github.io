@@ -2,6 +2,7 @@
 title: "Python S03: Threading the Scanner"
 date: 2026-09-05
 type: learning-log
+parent: python-for-security
 domain: scripting
 status: completed
 requires: [python-session-02]

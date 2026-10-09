@@ -22,6 +22,91 @@
  */
 
 // ---------------------------------------------------------------------------
+// Off-topic pre-flight — mirrors the client guard as a second layer.
+// If triggered, returns immediately without touching the AI.
+// ---------------------------------------------------------------------------
+// Fuzzy off-topic scorer — mirrors the client-side logic.
+// Buckets + weights; site anchors subtract. Blocks at threshold.
+const OFF_TOPIC_BUCKETS = [
+  { signals: [
+    { re: /\b(?:weather forecast|what.s the weather|will it rain|chance of (?:rain|snow))\b/i, w: 10 },
+    { re: /\b(?:is it (?:sunny|raining|snowing|cold|hot) (?:today|outside|right now))\b/i,    w: 10 },
+    { re: /\b(?:weather|forecast|humidity|wind chill|dew point)\b/i,                          w:  3 },
+  ]},
+  { signals: [
+    { re: /\b(?:nfl|nba|mlb|nhl|fifa|super bowl|world series|stanley cup|march madness)\b/i,  w: 10 },
+    { re: /\b(?:who (?:won|is winning|did win) (?:the )?(?:game|match|series))\b/i,           w: 10 },
+    { re: /\b(?:soccer|basketball|baseball|american football|nascar race)\b/i,                w:  5 },
+    { re: /\b(?:game score|sports score|final score)\b/i,                                     w:  8 },
+  ]},
+  { signals: [
+    { re: /\b(?:what.s a good recipe|give me a recipe|how (?:do i |to )?(?:bake|cook) \w+ (?:cake|bread|soup|pasta|sauce|pie))\b/i, w: 10 },
+    { re: /\b(?:best restaurants? (?:in|near)|where (?:should|can) i eat)\b/i,                w: 10 },
+    { re: /\b(?:calories in|nutrition facts for|how many carbs)\b/i,                          w:  8 },
+    { re: /\b(?:recipe|ingredient list|tablespoon|teaspoon|preheat oven)\b/i,                 w:  4 },
+  ]},
+  { signals: [
+    { re: /\b(?:best (?:movies?|shows?|series) to watch|what (?:should|can) i watch|netflix|hulu|disney\+)\b/i, w: 10 },
+    { re: /\b(?:who (?:sings?|sang|wrote|plays? in)|what (?:band|singer|artist))\b/i,        w:  8 },
+    { re: /\b(?:taylor swift|beyoncé?|kanye|drake|ariana grande|billie eilish)\b/i,          w: 10 },
+    { re: /\b(?:music album|new song|chart topping|box office)\b/i,                           w:  6 },
+  ]},
+  { signals: [
+    { re: /\bwhat(?:'s| is)\s+\d[\d\s]*[+\-×÷*\/]\s*[\d\s]+\b/i,                            w: 10 },
+    { re: /\bsolve (?:for )?[a-z]?\s*(?:=|:)\s*\d/i,                                        w: 10 },
+    { re: /\b(?:what is the capital of|who invented|who discovered)\b/i,                     w:  8 },
+    { re: /\b(?:essay (?:about|on)|write me a (?:poem|essay|story) about)\b/i,               w:  6 },
+  ]},
+  { signals: [
+    { re: /\b(?:what (?:medication|drug|medicine) should i|can i take \w+ with|drug interaction)\b/i, w: 10 },
+    { re: /\b(?:diagnose me|do i have|symptoms of (?:cancer|diabetes|flu|covid))\b/i,        w: 10 },
+    { re: /\b(?:is \w+ safe to take|dosage for|prescription for)\b/i,                        w:  7 },
+  ]},
+  { signals: [
+    { re: /\b(?:should i (?:buy|sell|invest in)|stock (?:price|tip|pick))\b/i,               w: 10 },
+    { re: /\b(?:bitcoin|ethereum|crypto|nft)\s+(?:price|worth|invest|buy|sell)\b/i,         w: 10 },
+    { re: /\b(?:will the market|best (?:stocks?|etf|fund) to buy)\b/i,                       w:  8 },
+  ]},
+];
+
+const SITE_ANCHORS = [
+  { re: /\bwynter\b/i,                                                                          w: 12 },
+  { re: /\b(?:homelab|home lab|proxmox|truenas|pfsense|pihole)\b/i,                            w: 10 },
+  { re: /\b(?:active directory|kerberos|ldap|powershell|group policy)\b/i,                    w: 10 },
+  { re: /\b(?:ctf|hack ?the ?box|htb|tryhackme|writeup)\b/i,                                  w: 10 },
+  { re: /\b(?:certification|comptia|security\+|network\+|aws|gcp|azure)\b/i,                  w:  8 },
+  { re: /\b(?:tutorial|guide|walkthrough|deep.?dive|learning log|chronicle)\b/i,              w:  6 },
+  { re: /\b(?:python|bash|linux|windows server|docker|kubernetes|ansible)\b/i,                w:  5 },
+  { re: /\b(?:sysadmin|cybersecurity|pentest|red team|blue team|infosec|nmap)\b/i,            w:  8 },
+  { re: /\b(?:this site|your site|her site|the site|your blog|her blog)\b/i,                  w:  8 },
+  { re: /\b(?:book|review|read|library|recommend)\b/i,                                         w:  3 },
+];
+
+const OFF_TOPIC_THRESHOLD = 8;
+
+const CHESHIRE_MSGS = [
+  "Curiouser and curiouser — but that's a bit outside my looking-glass. I'm only a guide to Wynter's Wonderland.",
+  "Oh my, that rabbit hole leads somewhere else entirely. I'm just a guide to this corner of the web.",
+  "That question wandered off the map! I know this site very well, but not much beyond it.",
+  "We've gone through the wrong door! I can only guide you around Wynter's Wonderland.",
+];
+
+function workerIsOffTopic(text) {
+  const t = (text || '').trim();
+  if (t.length < 8) return false;
+  let score = 0;
+  for (const bucket of OFF_TOPIC_BUCKETS) {
+    for (const { re, w } of bucket.signals) {
+      if (re.test(t)) score += w;
+    }
+  }
+  for (const { re, w } of SITE_ANCHORS) {
+    if (re.test(t)) score -= w;
+  }
+  return score >= OFF_TOPIC_THRESHOLD;
+}
+
+// ---------------------------------------------------------------------------
 // Rate limiting — per IP, stored in Cloudflare's built-in Workers KV or
 // simple in-memory map (resets per isolate — fine for basic abuse prevention)
 // ---------------------------------------------------------------------------
@@ -143,7 +228,8 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - "filter_tree"      — params: { status: "completed"|"in-progress"|"not-started"|"all", domain?: "domain name" } → Chronicles skill tree filter. Use ONLY when visitor is already on /learning-logs/. Optionally pass the domain name (e.g. "scripting") to switch to that canvas.
 - "filter_shelf"     — params: { genres: ["genre", ...] }                   → Bookshelf
 - "focus_cert"       — params: { title: "cert title" }                      → Display case
-- "filter_workbench" — params: { tech_stack: ["tech", ...] }                → Tutorials workbench
+- "filter_cards"     — params: { difficulty?: "novice"|"apprentice"|"journeyman"|"expert", topic?: "sysadmin"|"security"|"homelab"|"development" } → Tutorials workbench. Use ONLY when visitor is already on /tutorials/.
+- "filter_discoveries" — params: { topic?: "cybersecurity"|"networking"|"sysadmin"|"linux"|"all" } → Discoveries scroll shelf. Use ONLY when visitor is already on /deep-dives/. Pass "all" to show all topics.
 - "filter_archive"   — params: { topic: "topic name" }                      → Deep dive archive
 - "filter_writeups"  — params: { platform: "HTB", category: "ad", difficulty: "medium" } → Writeups board
 - "navigate_to"      — params: { url: "/path/to/page/" }                    → Browser navigation
@@ -163,6 +249,18 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - If the visitor is NOT on /book-reviews/ and asks about books: use "navigate_to" with url "/book-reviews/" and include genre/rating params if relevant (e.g. "fiction books" → { url: "/book-reviews/", genre: "fiction" }, "5-star books" → { url: "/book-reviews/", rating: "5" }). Populate cards with matching books.
 - "filter_emblems" is ONLY for /certifications/. Never use it for book questions.
 
+## Field Notes reply rules
+- If the visitor is on /writeups/ and asks to filter by platform (HTB, HackTheBox, THM, TryHackMe, CTF): use "filter_writeups" with the matching platform slug (hackthebox, tryhackme, ctf), NO message, NO cards — just trigger the action.
+- If the visitor is on /writeups/ and asks a general question about writeups: reply normally with a short message.
+- If the visitor is NOT on /writeups/ and asks about writeups or Field Notes: use "navigate_to" with url "/writeups/".
+
+## Discoveries reply rules
+- If the visitor is on /deep-dives/ and asks to filter by topic (cybersecurity, security, networking, sysadmin, linux, etc.): use "filter_discoveries" with the matching topic slug, NO message (set "message" to ""), NO cards — just trigger the action silently. The shelf updates itself.
+- If the visitor is on /deep-dives/ and asks to show all or reset: use "filter_discoveries" with topic "all", NO message, NO cards.
+- If the visitor is on /deep-dives/ and asks a general question about Discoveries: reply normally with a short message, no action.
+- If the visitor is NOT on /deep-dives/ and asks about Discoveries or deep dives: use "navigate_to" with url "/deep-dives/". Include a topic param if they specified one.
+- Never use "navigate_to" with url "/deep-dives/" if the visitor is already there — use "filter_discoveries" instead.
+
 ## Chronicles reply rules
 - If the visitor is on /learning-logs/ and asks to filter by status (completed, in progress, not started, all): use "filter_tree" with the matching status and the domain that has the most matching logs if you can infer it, NO message (set "message" to ""), NO cards — just trigger the action silently. The tree updates itself.
 - If the visitor is on /learning-logs/ and asks what's completed, in progress, or not started: use "filter_tree" with the matching status and domain if inferable, NO message, NO cards.
@@ -172,6 +270,10 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 
 ## Privacy
 Only discuss content that appears in the Site Content Index below. Do not speculate about Wynter's personal life beyond what she has published. If asked something you don't have data for, say so warmly and suggest what you do have. Do not mention the context index in your reponses.
+
+## Off-topic questions
+If a visitor asks something that has absolutely nothing to do with Wynter, her site, her work, or the topics she covers (sysadmin, security, homelab, development, learning, books), set "off_topic": true in your JSON response alongside a brief, friendly Cheshire-style redirect. Example: a question about the weather, sports scores, recipes, math homework, celebrity gossip, or political news.
+When you set off_topic: true, keep message short (1 sentence), cards empty, action null.
 ## Section name mapping
 The site uses these display names in navigation — use them when talking to visitors:
 - "Chronicles" = learning-log entries (study logs, ongoing learning)
@@ -243,6 +345,24 @@ export default {
         status: 400,
         headers: { 'Content-Type': 'application/json', ...corsHeaders(allowedOrigin) },
       });
+    }
+
+    // Off-topic pre-flight — check the last user message before calling AI
+    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || '';
+    if (workerIsOffTopic(lastUserMsg)) {
+      const msg = CHESHIRE_MSGS[Math.floor(Math.random() * CHESHIRE_MSGS.length)];
+      return new Response(
+        JSON.stringify({
+          message: msg,
+          cards: [],
+          action: { type: null, params: {} },
+          off_topic: true,
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(allowedOrigin) },
+        }
+      );
     }
 
     // Build system prompt (fetches context.json)

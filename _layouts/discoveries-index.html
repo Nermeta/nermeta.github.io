@@ -1,0 +1,644 @@
+---
+layout: default
+---
+
+{% assign all_discoveries = site.deep-dives | where: "public", true | sort: "date" | reverse %}
+{% assign topics = "" | split: "" %}
+{% for d in all_discoveries %}
+  {% unless topics contains d.topic %}
+    {% assign topics = topics | push: d.topic %}
+  {% endunless %}
+{% endfor %}
+
+<main class="codex-main" id="main-content">
+
+  <header class="codex-header">
+    <div class="codex-header-ornament" aria-hidden="true">✦</div>
+    <h1 class="codex-title">{{ page.title | default: "Discoveries" }}</h1>
+    <p class="codex-subtitle">A compendium of technical lore — gathered, annotated, and bound.</p>
+    <div class="codex-header-ornament" aria-hidden="true">✦</div>
+  </header>
+
+  <!-- Filter chips -->
+  {% if topics.size > 1 %}
+  <nav class="codex-filters" id="discoveries-filters" aria-label="Filter by topic">
+    <button class="codex-filter-chip codex-filter-chip--active" data-filter="all">All Scrolls</button>
+    {% for topic in topics %}
+    <button class="codex-filter-chip" data-filter="{{ topic | slugify }}">{{ topic | replace: "-", " " | capitalize }}</button>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  <div class="codex-shelf" id="discoveries-shelf">
+    {% for topic in topics %}
+      {% assign topic_entries = all_discoveries | where: "topic", topic %}
+
+      <section class="codex-section" data-section-topic="{{ topic | slugify }}">
+        <h2 class="codex-section-title">
+          <span class="codex-section-rule" aria-hidden="true"></span>
+          <span class="codex-section-label">{{ topic | replace: "-", " " | capitalize }}</span>
+          <span class="codex-section-rule" aria-hidden="true"></span>
+        </h2>
+
+        <div class="scroll-rack">
+          {% for entry in topic_entries %}
+          <a class="scroll" href="{{ entry.url | relative_url }}"
+             data-topic="{{ entry.topic | slugify }}">
+
+            <!-- aged-paper tooltip -->
+            <div class="scroll-peek" aria-hidden="true">
+              <div class="scroll-peek-inner">
+                <p class="scroll-peek-topic">{{ entry.topic | replace: "-", " " }}</p>
+                <p class="scroll-peek-title">{{ entry.title }}</p>
+                {% if entry.summary %}
+                <p class="scroll-peek-summary">{{ entry.summary }}</p>
+                {% endif %}
+                {% if entry.estimated_read %}
+                <p class="scroll-peek-meta">{{ entry.estimated_read }} min read</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- top rolled cap -->
+            <div class="scroll-cap scroll-cap--top" aria-hidden="true">
+              <div class="scroll-cap-face"></div>
+            </div>
+
+            <!-- parchment body -->
+            <div class="scroll-body">
+              <!-- wax seal on the tie band -->
+              <div class="scroll-band" aria-hidden="true">
+                <div class="scroll-seal">
+                  <span class="scroll-seal-glyph">{{ entry.topic | upcase | truncate: 2, "" }}</span>
+                </div>
+              </div>
+
+              <!-- vertical title -->
+              <div class="scroll-text">
+                <h3 class="scroll-title">{{ entry.title }}</h3>
+                {% if entry.estimated_read %}
+                <span class="scroll-meta">{{ entry.estimated_read }} min</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- bottom rolled cap -->
+            <div class="scroll-cap scroll-cap--bottom" aria-hidden="true">
+              <div class="scroll-cap-face"></div>
+            </div>
+
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+
+    {% if all_discoveries.size == 0 %}
+    <p class="codex-empty">The shelves await their first scrolls.</p>
+    {% endif %}
+  </div>
+
+</main>
+
+<style>
+/* ── Discoveries — Scroll Index ─────────────────────────────── */
+
+:root {
+  --cx-bg:           #0c0a07;
+  --cx-ink:          #d4c9a8;
+  --cx-ink-dim:      #8a7d5a;
+  --cx-ink-muted:    #4a4030;
+  --cx-gold:         #c9a84c;
+  --cx-gold-dim:     #8a6e2a;
+  --cx-gold-glow:    rgba(201,168,76,0.18);
+  --cx-rule:         rgba(201,168,76,0.15);
+
+  /* parchment scroll colours */
+  --sc-parch:        #1e1a10;
+  --sc-parch-mid:    #241f13;
+  --sc-parch-edge:   #141008;
+  --sc-cap:          #2a2416;
+  --sc-cap-dark:     #0e0b06;
+  --sc-cap-light:    #3a3220;
+
+  /* seal colours by topic */
+  --seal-cyber:      #8b2020;
+  --seal-cyber-hi:   #c43030;
+  --seal-net:        #1a4a6b;
+  --seal-net-hi:     #2a6a9b;
+  --seal-sys:        #2a5a2a;
+  --seal-sys-hi:     #3a7a3a;
+}
+
+.codex-main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+/* ── Header ── */
+.codex-header {
+  text-align: center;
+  padding: 2rem 0 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.codex-header-ornament {
+  color: var(--cx-gold);
+  font-size: 1rem;
+  letter-spacing: 0.5em;
+  opacity: 0.7;
+}
+
+.codex-title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--cx-gold);
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-shadow: 0 0 40px rgba(201,168,76,0.2);
+}
+
+.codex-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cx-ink-dim);
+  margin: 0;
+}
+
+/* ── Section heading ── */
+.codex-section { margin-bottom: 3.5rem; }
+
+.codex-section-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 2rem;
+}
+
+.codex-section-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cx-gold-dim), transparent);
+}
+
+.codex-section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+  white-space: nowrap;
+}
+
+/* ── Scroll rack (row of scrolls) ── */
+.scroll-rack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 1.75rem;
+  align-items: flex-end;          /* scrolls rest on a common baseline */
+}
+
+/* ── Individual scroll ── */
+.scroll {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 88px;
+  text-decoration: none;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter    0.25s ease;
+  filter: drop-shadow(2px 6px 12px rgba(0,0,0,0.6));
+  overflow: visible;
+}
+
+.scroll:hover {
+  transform: translateY(-10px);
+  filter:
+    drop-shadow(0 16px 28px rgba(0,0,0,0.7))
+    drop-shadow(0 0 12px rgba(201,168,76,0.12));
+}
+
+/* ── Rolled caps ── */
+.scroll-cap {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  z-index: 2;
+}
+
+/* The cap is an ellipse — wide cylinder end-on */
+.scroll-cap-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* lit from above: bright strip across the top, dark underneath */
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 30%,
+    var(--sc-cap-light) 0%,
+    var(--sc-cap) 45%,
+    var(--sc-cap-dark) 100%
+  );
+  /* subtle rim */
+  box-shadow:
+    inset 0 1px 0 rgba(255,230,150,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+
+/* top cap sits slightly above body, bottom slightly below */
+.scroll-cap--top  { margin-bottom: -4px; }
+.scroll-cap--bottom { margin-top: -4px; }
+
+/* thin decorative ring where cap meets body */
+.scroll-cap--top::after,
+.scroll-cap--bottom::before {
+  content: '';
+  position: absolute;
+  left: 4px; right: 4px;
+  height: 2px;
+  background: linear-gradient(to right,
+    transparent,
+    rgba(201,168,76,0.3) 30%,
+    rgba(201,168,76,0.3) 70%,
+    transparent
+  );
+}
+.scroll-cap--top::after    { bottom: 2px; }
+.scroll-cap--bottom::before { top: 2px; }
+
+/* ── Parchment body ── */
+.scroll-body {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  /* aged parchment: centre strip lighter, edges darker like curling paper */
+  background:
+    linear-gradient(to right,
+      var(--sc-parch-edge) 0%,
+      var(--sc-parch-mid)  18%,
+      var(--sc-parch)      38%,
+      var(--sc-parch)      62%,
+      var(--sc-parch-mid)  82%,
+      var(--sc-parch-edge) 100%
+    );
+  /* very faint horizontal line texture */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 11px,
+      rgba(0,0,0,0.06) 11px,
+      rgba(0,0,0,0.06) 12px
+    ),
+    linear-gradient(to right,
+      var(--sc-parch-edge) 0%,
+      var(--sc-parch-mid)  18%,
+      var(--sc-parch)      38%,
+      var(--sc-parch)      62%,
+      var(--sc-parch-mid)  82%,
+      var(--sc-parch-edge) 100%
+    );
+  border-left:  1px solid rgba(0,0,0,0.3);
+  border-right: 1px solid rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Ribbon / tie band ── */
+.scroll-band {
+  width: 100%;
+  height: 28px;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0.35),
+    rgba(0,0,0,0.25) 40%,
+    rgba(0,0,0,0.35)
+  );
+  border-top:    1px solid rgba(201,168,76,0.12);
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── Wax seal ── */
+.scroll-seal {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-cyber-hi),
+    var(--seal-cyber)  55%,
+    #3a0808
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.7),
+    inset 0 1px 1px rgba(255,160,160,0.18);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.scroll[data-topic="networking"] .scroll-seal {
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-net-hi), var(--seal-net) 55%, #060f1a);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(100,180,255,0.15);
+}
+.scroll[data-topic="sysadmin"] .scroll-seal,
+.scroll[data-topic="linux"]    .scroll-seal {
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-sys-hi), var(--seal-sys) 55%, #071007);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(100,220,100,0.15);
+}
+
+.scroll-seal-glyph {
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: rgba(255,235,210,0.9);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* ── Vertical text ── */
+.scroll-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 8px;   /* clear of band; band is ~28px + some margin */
+  gap: 8px;
+  pointer-events: none;
+}
+
+.scroll-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--cx-ink);
+  line-height: 1.4;
+  margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);    /* read bottom-to-top */
+  white-space: nowrap;
+  max-height: calc(100% - 72px);
+  overflow: hidden;
+}
+
+.scroll-meta {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.44rem;
+  color: var(--cx-ink-muted);
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+/* ── Peek tooltip ── */
+.scroll-peek {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  width: 180px;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  z-index: 20;
+}
+
+.scroll:hover .scroll-peek {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.scroll-peek-inner {
+  background:
+    radial-gradient(ellipse at 60% 20%, rgba(255,240,190,0.06) 0%, transparent 60%),
+    linear-gradient(160deg, #2a2416 0%, #1e1a10 50%, #18140d 100%);
+  border: 1px solid rgba(201,168,76,0.22);
+  border-radius: 2px;
+  padding: 0.85rem 0.9rem 0.75rem;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.7),
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,230,150,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  /* subtle page-curl at bottom-right corner */
+  position: relative;
+  overflow: hidden;
+}
+
+/* inner ruled lines — very faint */
+.scroll-peek-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 17px,
+    rgba(201,168,76,0.04) 17px,
+    rgba(201,168,76,0.04) 18px
+  );
+  pointer-events: none;
+}
+
+/* folded corner */
+.scroll-peek-inner::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 14px; height: 14px;
+  background: linear-gradient(225deg,
+    #0c0a07 50%,
+    rgba(201,168,76,0.15) 50%
+  );
+  pointer-events: none;
+}
+
+/* small downward arrow connecting peek to scroll */
+.scroll-peek::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(201,168,76,0.22);
+}
+
+.scroll-peek-topic {
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cx-gold-dim);
+  margin: 0;
+  position: relative;
+}
+
+.scroll-peek-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--cx-ink);
+  line-height: 1.4;
+  margin: 0;
+  position: relative;
+}
+
+.scroll-peek-summary {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.68rem;
+  color: var(--cx-ink-dim);
+  line-height: 1.55;
+  margin: 0;
+  font-style: italic;
+  position: relative;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  padding-top: 0.35rem;
+  margin-top: 0.1rem;
+}
+
+.scroll-peek-meta {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.58rem;
+  color: var(--cx-ink-muted);
+  letter-spacing: 0.06em;
+  margin: 0;
+  position: relative;
+}
+
+/* ── Empty state ── */
+.codex-empty {
+  font-family: 'Cinzel', serif;
+  color: var(--cx-ink-muted);
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  padding: 4rem 0;
+}
+
+/* ── Filter chips ── */
+.codex-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0 0 2.5rem;
+}
+
+.codex-filter-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cx-ink-dim);
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 2px;
+  padding: 0.35em 0.9em;
+  cursor: pointer;
+  transition:
+    color       0.15s ease,
+    background  0.15s ease,
+    border-color 0.15s ease;
+}
+
+.codex-filter-chip:hover {
+  color: var(--cx-gold-dim);
+  border-color: rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.05);
+}
+
+.codex-filter-chip--active {
+  color: var(--cx-gold);
+  border-color: rgba(201,168,76,0.5);
+  background: rgba(201,168,76,0.08);
+}
+
+/* section hide/show */
+.codex-section[hidden] { display: none; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .scroll { width: 72px; }
+  .scroll-body { min-height: 200px; }
+  .scroll-title { font-size: 0.56rem; }
+  .scroll-rack { gap: 1.5rem 1.25rem; }
+}
+</style>
+
+<script>
+(function () {
+  // ── Filter chips ────────────────────────────────────────────
+  const filters = document.getElementById('discoveries-filters');
+  const shelf   = document.getElementById('discoveries-shelf');
+
+  function applyFilter(topic) {
+    if (!shelf) return;
+    const sections = shelf.querySelectorAll('.codex-section[data-section-topic]');
+    sections.forEach(sec => {
+      sec.hidden = topic !== 'all' && sec.dataset.sectionTopic !== topic;
+    });
+    if (filters) {
+      filters.querySelectorAll('.codex-filter-chip').forEach(btn => {
+        btn.classList.toggle('codex-filter-chip--active', btn.dataset.filter === topic);
+      });
+    }
+  }
+
+  if (filters) {
+    filters.addEventListener('click', e => {
+      const btn = e.target.closest('.codex-filter-chip');
+      if (btn) applyFilter(btn.dataset.filter);
+    });
+  }
+
+  // ── Chat action listener ─────────────────────────────────────
+  // Responds to site:action events dispatched by the chat widget.
+  // Action type: filter_discoveries
+  // Params: { topic?: string }  — topic matches the slugified topic name
+  document.addEventListener('site:action', e => {
+    const { type, params } = e.detail || {};
+    if (type !== 'filter_discoveries') return;
+    const topic = (params && params.topic) ? params.topic : 'all';
+    applyFilter(topic);
+    // Scroll the shelf into view smoothly
+    if (shelf) {
+      shelf.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+})();
+</script>
