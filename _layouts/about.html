@@ -1,0 +1,244 @@
+---
+layout: default
+---
+<main class="letter-main" id="main-content">
+
+  <article class="letter">
+
+    <!-- paper texture / decorative frame -->
+    <div class="letter-paper">
+
+      <!-- header: date + address block -->
+      <header class="letter-head">
+        <span class="letter-date">{{ site.time | date: "%B %Y" }}</span>
+        <div class="letter-divider" aria-hidden="true">
+          <span class="letter-rule"></span>
+          <span class="letter-ornament">✦</span>
+          <span class="letter-rule"></span>
+        </div>
+      </header>
+
+      <!-- salutation -->
+      <p class="letter-salutation">To whoever finds their way here,</p>
+
+      <!-- body -->
+      <div class="letter-body">
+        {{ content }}
+      </div>
+
+      <!-- closing -->
+      <footer class="letter-closing">
+        <div class="letter-divider letter-divider--closing" aria-hidden="true">
+          <span class="letter-rule"></span>
+          <span class="letter-ornament">✦</span>
+          <span class="letter-rule"></span>
+        </div>
+        <div class="letter-sign-block">
+          <p class="letter-valediction">With curiosity,</p>
+          <p class="letter-signature">Wynter</p>
+          <p class="letter-postscript">P.S. — The Cheshire Cat in the corner can help you find your way around if you'd rather just ask.</p>
+        </div>
+      </footer>
+
+    </div><!-- /.letter-paper -->
+
+  </article>
+
+</main>
+
+<style>
+/* ── About — Letter Layout ──────────────────────────────────── */
+
+:root {
+  --lt-bg:          #0c0a07;
+  --lt-paper:       #111009;
+  --lt-paper-edge:  #0a0804;
+  --lt-ink:         #d4c9a8;
+  --lt-ink-dim:     #8a7d5a;
+  --lt-ink-muted:   #5a5040;
+  --lt-gold:        #c9a84c;
+  --lt-gold-dim:    #8a6e2a;
+  --lt-rule:        rgba(201,168,76,0.12);
+  --lt-border:      rgba(201,168,76,0.18);
+}
+
+.letter-main {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.5rem 6rem;
+}
+
+/* ── Letter card ── */
+.letter {
+  width: 100%;
+  max-width: 640px;
+}
+
+.letter-paper {
+  background: var(--lt-paper);
+  border: 1px solid var(--lt-border);
+  border-radius: 2px;
+  padding: 3rem 3.5rem 3rem;
+  box-shadow:
+    0 0 0 4px rgba(201,168,76,0.03),
+    3px 3px 0 var(--lt-paper-edge),
+    6px 6px 0 rgba(0,0,0,0.25),
+    0 24px 64px rgba(0,0,0,0.5);
+  /* subtle vellum glow */
+  background-image:
+    radial-gradient(ellipse at 25% 8%,  rgba(201,168,76,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 92%, rgba(201,168,76,0.02) 0%, transparent 55%);
+  position: relative;
+}
+
+/* inner decorative frame */
+.letter-paper::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(201,168,76,0.05);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* ── Header ── */
+.letter-head {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.letter-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lt-ink-muted);
+  display: block;
+}
+
+/* ── Ornamental divider ── */
+.letter-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.letter-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--lt-gold-dim), transparent);
+}
+
+.letter-ornament {
+  font-size: 0.55rem;
+  color: var(--lt-gold-dim);
+  letter-spacing: 0.3em;
+  font-family: 'Cinzel', serif;
+}
+
+/* ── Salutation ── */
+.letter-salutation {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--lt-ink-dim);
+  margin: 0 0 2rem;
+  font-style: italic;
+}
+
+/* ── Body ── */
+.letter-body {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--lt-ink);
+}
+
+.letter-body p {
+  margin: 0 0 1.4em;
+}
+
+.letter-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Drop cap on the very first paragraph */
+.letter-body > p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.4em;
+  font-weight: 700;
+  color: var(--lt-gold);
+  float: left;
+  line-height: 0.78;
+  margin: 0.06em 0.1em 0 0;
+  text-shadow: 0 0 24px rgba(201,168,76,0.25);
+}
+
+.letter-body a {
+  color: var(--lt-gold-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.letter-body a:hover { color: var(--lt-gold); }
+
+/* ── Closing ── */
+.letter-closing {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.letter-divider--closing .letter-rule {
+  background: linear-gradient(to right, transparent, var(--lt-gold-dim), transparent);
+  opacity: 0.6;
+}
+
+.letter-sign-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-left: 0.25rem;
+}
+
+.letter-valediction {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--lt-ink-dim);
+  margin: 0;
+  font-style: italic;
+}
+
+.letter-signature {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--lt-gold);
+  margin: 0.2em 0 0;
+  text-shadow: 0 0 20px rgba(201,168,76,0.2);
+  line-height: 1.2;
+}
+
+.letter-postscript {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--lt-ink-muted);
+  line-height: 1.65;
+  margin: 1rem 0 0;
+  font-style: italic;
+  border-top: 1px solid var(--lt-rule);
+  padding-top: 0.85rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .letter-paper {
+    padding: 2rem 1.75rem 2rem;
+  }
+  .letter-signature { font-size: 1.3rem; }
+}
+</style>
