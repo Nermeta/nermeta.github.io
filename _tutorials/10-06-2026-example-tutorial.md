@@ -4,7 +4,7 @@ date: 2026-03-01
 type: tutorial
 topic: sysadmin
 tags: [powershell, active-directory, automation, scripting]
-difficulty: intermediate
+difficulty: apprentice
 tech_stack: [powershell, windows-server, active-directory]
 estimated_read: 12
 audience: [tech]
