@@ -11,7 +11,7 @@ layout: default
   Session entries → have `parent` — show session body + back-link to parent skill
 {% endcomment %}
 
-{% assign page_slug = page.path | split: "/" | last | replace: ".md", "" %}
+{% assign page_slug = page.slug | default: page.path | split: "/" | last | replace: ".md", "" %}
 
 {% if page.parent %}
   {% comment %} ── Session entry view ────────────────────────────── {% endcomment %}

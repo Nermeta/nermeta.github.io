@@ -1,4 +1,5 @@
 ---
+layout: learning-log-detail
 title: "Python for Security"
 date: 2026-03-01
 type: learning-log
