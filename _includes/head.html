@@ -13,5 +13,20 @@
 <link rel="icon" type="image/png" sizes="512x512" href="{{ '/assets/images/favicon-512.png' | relative_url }}">
 <link rel="apple-touch-icon" href="{{ '/assets/images/favicon-512.png' | relative_url }}">
 
+<!-- Page transition -->
+<script>
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target === '_blank') return;
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http')) return;
+    e.preventDefault();
+    document.body.classList.add('is-leaving');
+    setTimeout(function() { window.location = a.href; }, 120);
+  });
+</script>
+
 <!-- Feed -->
 <link type="application/atom+xml" rel="alternate" href="{{ '/feed.xml' | relative_url }}" title="{{ site.title | escape }}">
