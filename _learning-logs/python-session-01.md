@@ -2,6 +2,7 @@
 title: "Python S01: Environment Setup"
 date: 2026-09-01
 type: learning-log
+parent: python-for-security
 domain: scripting
 status: completed
 requires: [python-for-security]

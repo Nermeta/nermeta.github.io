@@ -8,7 +8,7 @@ layout: default
 {% endcomment %}
 {% assign all_logs = "" | split: "" %}
 {% for log in site.learning-logs %}
-  {% unless log.public == false %}
+  {% unless log.public == false or log.parent %}
     {% assign all_logs = all_logs | push: log %}
   {% endunless %}
 {% endfor %}

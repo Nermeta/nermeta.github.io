@@ -2,6 +2,7 @@
 title: "Python S02: Sockets Basics"
 date: 2026-09-03
 type: learning-log
+parent: python-for-security
 domain: scripting
 status: completed
 requires: [python-session-01]

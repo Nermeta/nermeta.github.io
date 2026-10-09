@@ -55,7 +55,7 @@ defaults:
       path: ""
       type: "learning-logs"
     values:
-      layout: post
+      layout: learning-log-detail
       public: true
   - scope:
       path: ""
