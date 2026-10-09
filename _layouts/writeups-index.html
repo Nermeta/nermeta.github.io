@@ -484,7 +484,8 @@ layout: default
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.5rem 1rem;
+  /* padding-top must be a multiple of 1.75rem so text snaps to ruled lines */
+  padding: 1.75rem 1.5rem 1.75rem;
   transition: transform 0.3s cubic-bezier(0.4,0,0.2,1),
               opacity  0.25s ease;
   position: absolute;
@@ -492,8 +493,9 @@ layout: default
   transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
-  /* ruled lines */
-  background:
+  /* ruled lines — background-color must be separate so gradient sits on top */
+  background-color: var(--fn-page-cream);
+  background-image:
     repeating-linear-gradient(
       to bottom,
       transparent,
@@ -501,7 +503,7 @@ layout: default
       var(--fn-page-ruled) calc(1.75rem - 1px),
       var(--fn-page-ruled) 1.75rem
     );
-  background-color: var(--fn-page-cream);
+  background-size: 100% 1.75rem;
   border-left: 3px solid var(--fn-margin-line);
   margin-left: 40px;
   color: var(--fn-page-ink);

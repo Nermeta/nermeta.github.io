@@ -300,7 +300,9 @@ layout: default
 .fn-post-ruled {
   flex: 1;
   padding: 0;
-  background:
+  /* background-color must be set separately so the gradient layer sits on top */
+  background-color: #f5edd8;
+  background-image:
     repeating-linear-gradient(
       to bottom,
       transparent,
@@ -308,7 +310,6 @@ layout: default
       var(--fn-rule) calc(1.75rem - 1px),
       var(--fn-rule) 1.75rem
     );
-  background-color: #f5edd8;
   background-size: 100% 1.75rem;
   border-left: 3px solid var(--fn-rule-margin);
   margin-left: 45px;
@@ -326,7 +327,8 @@ layout: default
 }
 
 .fn-post-body {
-  padding: 1.25rem 2rem 2rem 1.25rem;
+  /* padding-top must be a multiple of 1.75rem so text sits on the ruled lines */
+  padding: 1.75rem 2rem 3.5rem 1.25rem;
   font-family: 'Raleway', system-ui, sans-serif;
   font-size: 0.92rem;
   line-height: 1.75rem; /* snap to ruled lines */
@@ -369,11 +371,11 @@ layout: default
 .fn-post-body li { margin: 0; }
 
 .fn-post-body a {
-  color: var(--aqua-dim);
+  color: #5a3e8a;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.fn-post-body a:hover { color: var(--aqua); }
+.fn-post-body a:hover { color: #3a2060; }
 
 /* Code blocks */
 .fn-post-body pre {
