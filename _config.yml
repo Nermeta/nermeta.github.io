@@ -73,7 +73,7 @@ defaults:
       path: ""
       type: "deep-dives"
     values:
-      layout: post
+      layout: discovery
       public: true
   - scope:
       path: ""
