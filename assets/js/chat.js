@@ -379,31 +379,112 @@ function sanitizeInput(str) {
  * Catches weather, sports, recipes, math homework, celebrity gossip, etc.
  * NOT exhaustive — the worker's system prompt adds a second layer.
  */
-const OFF_TOPIC_PATTERNS = [
-  // Weather (unambiguous — no IT meaning)
-  /\b(?:weather forecast|what.s the weather|will it rain|is it sunny|is it cold outside)\b/i,
-  // Sports leagues / teams (never a tech context)
-  /\b(?:nfl|nba|mlb|nhl|fifa)\b/i,
-  /\b(?:super bowl|world series|stanley cup|march madness)\b/i,
-  // Food / recipes (tightly scoped — avoid "cooking" which can appear in tech docs)
-  /\bhow (?:do i |to )?(?:bake|cook|make)\s+\w+\s*(?:recipe|cake|bread|sauce|soup|pasta)\b/i,
-  /\bwhat.s a good recipe\b/i,
-  // Celebrity / entertainment (tightly scoped)
-  /\b(?:who is|tell me about)\s+(?:taylor swift|beyonce|kanye|drake|ariana|celebrity)\b/i,
-  /\b(?:best movies? to watch|what should i watch|netflix recommendation)\b/i,
-  // Pure arithmetic homework
-  /\bwhat(?:'s| is)\s+\d+\s*[+\-×÷]\s*\d+\b/i,
-  /\bsolve\s+\d/i,
-  // Hard geography trivia
-  /\bwhat\s+is\s+the\s+capital\s+of\b/i,
-  // Medical advice (not diagnosis)
-  /\b(?:what medication|should i take|is this (?:drug|medicine)|can i take \w+ with)\b/i,
+/**
+ * offTopicScore — fuzzy off-topic scorer.
+ *
+ * Each bucket has weighted signals. Phrase matches score higher than single
+ * words. A site-topic anchor (anything Wynter's site is actually about)
+ * subtracts from the total, so "how do I cook up a Python script" doesn't
+ * trip the food bucket because "python script" pulls it back.
+ *
+ * Returns a numeric score; caller decides the threshold.
+ */
+const OFF_TOPIC_BUCKETS = [
+  {
+    name: 'weather',
+    signals: [
+      { re: /\b(?:weather forecast|what.s the weather|will it rain|chance of (?:rain|snow))\b/i, w: 10 },
+      { re: /\b(?:is it (?:sunny|raining|snowing|cold|hot) (?:today|outside|right now))\b/i,    w: 10 },
+      { re: /\b(?:weather|forecast|humidity|wind chill|dew point)\b/i,                          w:  3 },
+    ],
+  },
+  {
+    name: 'sports',
+    signals: [
+      { re: /\b(?:nfl|nba|mlb|nhl|fifa|super bowl|world series|stanley cup|march madness)\b/i,  w: 10 },
+      { re: /\b(?:who (?:won|is winning|did win) (?:the )?(?:game|match|series))\b/i,           w: 10 },
+      { re: /\b(?:soccer|basketball|baseball|american football|nascar race)\b/i,                w:  5 },
+      { re: /\b(?:game score|sports score|final score)\b/i,                                     w:  8 },
+    ],
+  },
+  {
+    name: 'food',
+    signals: [
+      { re: /\b(?:what.s a good recipe|give me a recipe|how (?:do i |to )?(?:bake|cook) \w+ (?:cake|bread|soup|pasta|sauce|pie))\b/i, w: 10 },
+      { re: /\b(?:best restaurants? (?:in|near)|where (?:should|can) i eat)\b/i,                w: 10 },
+      { re: /\b(?:calories in|nutrition facts for|how many carbs)\b/i,                          w:  8 },
+      { re: /\b(?:recipe|ingredient list|tablespoon|teaspoon|preheat oven)\b/i,                 w:  4 },
+    ],
+  },
+  {
+    name: 'entertainment',
+    signals: [
+      { re: /\b(?:best (?:movies?|shows?|series) to watch|what (?:should|can) i watch|netflix|hulu|disney\+)\b/i, w: 10 },
+      { re: /\b(?:who (?:sings?|sang|wrote|plays? in)|what (?:band|singer|artist))\b/i,        w:  8 },
+      { re: /\b(?:taylor swift|beyoncé?|kanye|drake|ariana grande|billie eilish)\b/i,          w: 10 },
+      { re: /\b(?:music album|new song|chart topping|box office)\b/i,                           w:  6 },
+    ],
+  },
+  {
+    name: 'homework',
+    signals: [
+      { re: /\bwhat(?:'s| is)\s+\d[\d\s]*[+\-×÷*\/]\s*[\d\s]+\b/i,                            w: 10 },
+      { re: /\bsolve (?:for )?[a-z]?\s*(?:=|:)\s*\d/i,                                        w: 10 },
+      { re: /\b(?:what is the capital of|who invented|who discovered)\b/i,                     w:  8 },
+      { re: /\b(?:essay (?:about|on)|write me a (?:poem|essay|story) about)\b/i,               w:  6 },
+    ],
+  },
+  {
+    name: 'medical',
+    signals: [
+      { re: /\b(?:what (?:medication|drug|medicine) should i|can i take \w+ with|drug interaction)\b/i, w: 10 },
+      { re: /\b(?:diagnose me|do i have|symptoms of (?:cancer|diabetes|flu|covid))\b/i,        w: 10 },
+      { re: /\b(?:is \w+ safe to take|dosage for|prescription for)\b/i,                        w:  7 },
+    ],
+  },
+  {
+    name: 'finance',
+    signals: [
+      { re: /\b(?:should i (?:buy|sell|invest in)|stock (?:price|tip|pick))\b/i,               w: 10 },
+      { re: /\b(?:bitcoin|ethereum|crypto|nft)\s+(?:price|worth|invest|buy|sell)\b/i,         w: 10 },
+      { re: /\b(?:will the market|best (?:stocks?|etf|fund) to buy)\b/i,                       w:  8 },
+    ],
+  },
 ];
 
-function isOffTopic(text) {
+// Signals that indicate the message IS about the site — subtract from score
+const SITE_ANCHORS = [
+  { re: /\bwynter\b/i,                                                                          w: 12 },
+  { re: /\b(?:homelab|home lab|proxmox|truenas|pfsense|pihole)\b/i,                            w: 10 },
+  { re: /\b(?:active directory|kerberos|ldap|powershell|group policy)\b/i,                    w: 10 },
+  { re: /\b(?:ctf|hack ?the ?box|htb|tryhackme|writeup)\b/i,                                  w: 10 },
+  { re: /\b(?:certification|comptia|security\+|network\+|aws|gcp|azure)\b/i,                  w:  8 },
+  { re: /\b(?:tutorial|guide|walkthrough|deep.?dive|learning log|chronicle)\b/i,              w:  6 },
+  { re: /\b(?:python|bash|linux|windows server|docker|kubernetes|ansible)\b/i,                w:  5 },
+  { re: /\b(?:sysadmin|cybersecurity|pentest|red team|blue team|infosec|nmap)\b/i,            w:  8 },
+  { re: /\b(?:this site|your site|her site|the site|your blog|her blog)\b/i,                  w:  8 },
+  { re: /\b(?:book|review|read|library|recommend)\b/i,                                         w:  3 },
+];
+
+const OFF_TOPIC_THRESHOLD = 8;
+
+function offTopicScore(text) {
   const t = text.trim();
-  if (t.length < 8) return false;
-  return OFF_TOPIC_PATTERNS.some(p => p.test(t));
+  let score = 0;
+  for (const bucket of OFF_TOPIC_BUCKETS) {
+    for (const { re, w } of bucket.signals) {
+      if (re.test(t)) score += w;
+    }
+  }
+  for (const { re, w } of SITE_ANCHORS) {
+    if (re.test(t)) score -= w;
+  }
+  return score;
+}
+
+function isOffTopic(text) {
+  if (text.trim().length < 8) return false;
+  return offTopicScore(text) >= OFF_TOPIC_THRESHOLD;
 }
 
 /**

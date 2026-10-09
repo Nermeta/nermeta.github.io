@@ -25,19 +25,64 @@
 // Off-topic pre-flight — mirrors the client guard as a second layer.
 // If triggered, returns immediately without touching the AI.
 // ---------------------------------------------------------------------------
-const OFF_TOPIC_RE = [
-  /\b(?:weather forecast|what.s the weather|will it rain|is it sunny|is it cold outside)\b/i,
-  /\b(?:nfl|nba|mlb|nhl|fifa)\b/i,
-  /\b(?:super bowl|world series|stanley cup|march madness)\b/i,
-  /\bhow (?:do i |to )?(?:bake|cook|make)\s+\w+\s*(?:recipe|cake|bread|sauce|soup|pasta)\b/i,
-  /\bwhat.s a good recipe\b/i,
-  /\b(?:who is|tell me about)\s+(?:taylor swift|beyonce|kanye|drake|ariana|celebrity)\b/i,
-  /\b(?:best movies? to watch|what should i watch|netflix recommendation)\b/i,
-  /\bwhat(?:'s| is)\s+\d+\s*[+\-×÷]\s*\d+\b/i,
-  /\bsolve\s+\d/i,
-  /\bwhat\s+is\s+the\s+capital\s+of\b/i,
-  /\b(?:what medication|should i take|is this (?:drug|medicine)|can i take \w+ with)\b/i,
+// Fuzzy off-topic scorer — mirrors the client-side logic.
+// Buckets + weights; site anchors subtract. Blocks at threshold.
+const OFF_TOPIC_BUCKETS = [
+  { signals: [
+    { re: /\b(?:weather forecast|what.s the weather|will it rain|chance of (?:rain|snow))\b/i, w: 10 },
+    { re: /\b(?:is it (?:sunny|raining|snowing|cold|hot) (?:today|outside|right now))\b/i,    w: 10 },
+    { re: /\b(?:weather|forecast|humidity|wind chill|dew point)\b/i,                          w:  3 },
+  ]},
+  { signals: [
+    { re: /\b(?:nfl|nba|mlb|nhl|fifa|super bowl|world series|stanley cup|march madness)\b/i,  w: 10 },
+    { re: /\b(?:who (?:won|is winning|did win) (?:the )?(?:game|match|series))\b/i,           w: 10 },
+    { re: /\b(?:soccer|basketball|baseball|american football|nascar race)\b/i,                w:  5 },
+    { re: /\b(?:game score|sports score|final score)\b/i,                                     w:  8 },
+  ]},
+  { signals: [
+    { re: /\b(?:what.s a good recipe|give me a recipe|how (?:do i |to )?(?:bake|cook) \w+ (?:cake|bread|soup|pasta|sauce|pie))\b/i, w: 10 },
+    { re: /\b(?:best restaurants? (?:in|near)|where (?:should|can) i eat)\b/i,                w: 10 },
+    { re: /\b(?:calories in|nutrition facts for|how many carbs)\b/i,                          w:  8 },
+    { re: /\b(?:recipe|ingredient list|tablespoon|teaspoon|preheat oven)\b/i,                 w:  4 },
+  ]},
+  { signals: [
+    { re: /\b(?:best (?:movies?|shows?|series) to watch|what (?:should|can) i watch|netflix|hulu|disney\+)\b/i, w: 10 },
+    { re: /\b(?:who (?:sings?|sang|wrote|plays? in)|what (?:band|singer|artist))\b/i,        w:  8 },
+    { re: /\b(?:taylor swift|beyoncé?|kanye|drake|ariana grande|billie eilish)\b/i,          w: 10 },
+    { re: /\b(?:music album|new song|chart topping|box office)\b/i,                           w:  6 },
+  ]},
+  { signals: [
+    { re: /\bwhat(?:'s| is)\s+\d[\d\s]*[+\-×÷*\/]\s*[\d\s]+\b/i,                            w: 10 },
+    { re: /\bsolve (?:for )?[a-z]?\s*(?:=|:)\s*\d/i,                                        w: 10 },
+    { re: /\b(?:what is the capital of|who invented|who discovered)\b/i,                     w:  8 },
+    { re: /\b(?:essay (?:about|on)|write me a (?:poem|essay|story) about)\b/i,               w:  6 },
+  ]},
+  { signals: [
+    { re: /\b(?:what (?:medication|drug|medicine) should i|can i take \w+ with|drug interaction)\b/i, w: 10 },
+    { re: /\b(?:diagnose me|do i have|symptoms of (?:cancer|diabetes|flu|covid))\b/i,        w: 10 },
+    { re: /\b(?:is \w+ safe to take|dosage for|prescription for)\b/i,                        w:  7 },
+  ]},
+  { signals: [
+    { re: /\b(?:should i (?:buy|sell|invest in)|stock (?:price|tip|pick))\b/i,               w: 10 },
+    { re: /\b(?:bitcoin|ethereum|crypto|nft)\s+(?:price|worth|invest|buy|sell)\b/i,         w: 10 },
+    { re: /\b(?:will the market|best (?:stocks?|etf|fund) to buy)\b/i,                       w:  8 },
+  ]},
 ];
+
+const SITE_ANCHORS = [
+  { re: /\bwynter\b/i,                                                                          w: 12 },
+  { re: /\b(?:homelab|home lab|proxmox|truenas|pfsense|pihole)\b/i,                            w: 10 },
+  { re: /\b(?:active directory|kerberos|ldap|powershell|group policy)\b/i,                    w: 10 },
+  { re: /\b(?:ctf|hack ?the ?box|htb|tryhackme|writeup)\b/i,                                  w: 10 },
+  { re: /\b(?:certification|comptia|security\+|network\+|aws|gcp|azure)\b/i,                  w:  8 },
+  { re: /\b(?:tutorial|guide|walkthrough|deep.?dive|learning log|chronicle)\b/i,              w:  6 },
+  { re: /\b(?:python|bash|linux|windows server|docker|kubernetes|ansible)\b/i,                w:  5 },
+  { re: /\b(?:sysadmin|cybersecurity|pentest|red team|blue team|infosec|nmap)\b/i,            w:  8 },
+  { re: /\b(?:this site|your site|her site|the site|your blog|her blog)\b/i,                  w:  8 },
+  { re: /\b(?:book|review|read|library|recommend)\b/i,                                         w:  3 },
+];
+
+const OFF_TOPIC_THRESHOLD = 8;
 
 const CHESHIRE_MSGS = [
   "Curiouser and curiouser — but that's a bit outside my looking-glass. I'm only a guide to Wynter's Wonderland.",
@@ -48,8 +93,17 @@ const CHESHIRE_MSGS = [
 
 function workerIsOffTopic(text) {
   const t = (text || '').trim();
-  if (t.length < 6) return false;
-  return OFF_TOPIC_RE.some(p => p.test(t));
+  if (t.length < 8) return false;
+  let score = 0;
+  for (const bucket of OFF_TOPIC_BUCKETS) {
+    for (const { re, w } of bucket.signals) {
+      if (re.test(t)) score += w;
+    }
+  }
+  for (const { re, w } of SITE_ANCHORS) {
+    if (re.test(t)) score -= w;
+  }
+  return score >= OFF_TOPIC_THRESHOLD;
 }
 
 // ---------------------------------------------------------------------------
