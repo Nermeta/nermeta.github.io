@@ -179,10 +179,10 @@
     "pages": ["*"],
     "excludePages": ["/writeups/"],
     "action": { "type": "navigate_to", "params": { "url": "/writeups/" } },
-    "home_message": "Here are Wynter's recent [Writeups](/writeups/) — CTF and HackTheBox walkthroughs.",
+    "home_message": "Here are Wynter's recent [Field Notes](/writeups/) — CTF and HackTheBox lab writeups.",
     "collection": "writeups",
     "collection_limit": 4,
-    "chip": "Show recent writeups",
+    "chip": "Show recent Field Notes",
     "image": null
   },
   {
@@ -203,10 +203,10 @@
     "pages": ["*"],
     "excludePages": ["/tutorials/"],
     "action": { "type": "navigate_to", "params": { "url": "/tutorials/" } },
-    "home_message": "Here are Wynter's [Field Notes](/tutorials/) — practical tutorials and hands-on walkthroughs.",
+    "home_message": "Here are Wynter's [Explorations](/tutorials/) — practical tutorials and hands-on walkthroughs.",
     "collection": "tutorials",
     "collection_limit": 4,
-    "chip": "Show recent Field Notes",
+    "chip": "Show recent Explorations",
     "image": null
   },
   {
