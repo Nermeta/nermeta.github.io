@@ -133,6 +133,8 @@ layout: default
     {% endif %}
 
     <!-- ── Skills ── -->
+    {% assign cert_topics = site.certifications | where_exp: "item", "item.category != 'education'" | map: "topic" | compact | uniq | sort %}
+    {% assign active_logs = site.learning-logs | where: "status", "in-progress" %}
     <section class="cv-section">
       <h2 class="cv-section-heading">
         <span class="cv-section-rule"></span>
@@ -141,43 +143,37 @@ layout: default
       </h2>
 
       <div class="cv-skills-grid">
+        {% for topic in cert_topics %}
+          {% assign topic_certs = site.certifications | where: "topic", topic | where_exp: "item", "item.category != 'education'" %}
+          {% assign topic_skills = "" | split: "" %}
+          {% for cert in topic_certs %}
+            {% if cert.skills %}
+              {% assign topic_skills = topic_skills | concat: cert.skills %}
+            {% endif %}
+          {% endfor %}
+          {% assign topic_skills = topic_skills | uniq %}
+          {% if topic_skills.size > 0 %}
         <div class="cv-skill-group">
-          <h3 class="cv-skill-heading">Systems &amp; Infrastructure</h3>
+          <h3 class="cv-skill-heading">{{ topic | capitalize }}</h3>
           <ul class="cv-skill-list">
-            <li>Active Directory &amp; Group Policy</li>
-            <li>Windows Server</li>
-            <li>PowerShell</li>
-            <li>MDM &amp; hardware administration</li>
-            <li>Linux</li>
+            {% for skill in topic_skills %}
+            <li>{{ skill }}</li>
+            {% endfor %}
           </ul>
         </div>
-        <div class="cv-skill-group">
-          <h3 class="cv-skill-heading">Security</h3>
+          {% endif %}
+        {% endfor %}
+
+        {% if active_logs.size > 0 %}
+        <div class="cv-skill-group cv-skill-group--learning">
+          <h3 class="cv-skill-heading">Currently Learning</h3>
           <ul class="cv-skill-list">
-            <li>Network security fundamentals</li>
-            <li>CTF &amp; HackTheBox labs</li>
-            <li>Vulnerability assessment</li>
-            <li>Security+, Network+ (in progress)</li>
+            {% for log in active_logs %}
+            <li>{{ log.subject | default: log.title }}</li>
+            {% endfor %}
           </ul>
         </div>
-        <div class="cv-skill-group">
-          <h3 class="cv-skill-heading">Development &amp; Data</h3>
-          <ul class="cv-skill-list">
-            <li>Python &amp; API integrations</li>
-            <li>SQL scripting</li>
-            <li>Bash / shell scripting</li>
-            <li>Git</li>
-          </ul>
-        </div>
-        <div class="cv-skill-group">
-          <h3 class="cv-skill-heading">Tools &amp; Platforms</h3>
-          <ul class="cv-skill-list">
-            <li>Calabrio WFM</li>
-            <li>AWS / GCP / Azure (fundamentals)</li>
-            <li>Docker basics</li>
-            <li>Proxmox / TrueNAS homelab</li>
-          </ul>
-        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -459,6 +455,19 @@ layout: default
   font-size: 0.8rem;
   color: var(--cv-ink-dim);
   line-height: 1.5;
+}
+
+.cv-skill-group--learning .cv-skill-heading {
+  color: var(--cv-ink-muted);
+  font-style: italic;
+}
+
+.cv-skill-group--learning .cv-skill-list li {
+  color: var(--cv-ink-muted);
+}
+.cv-skill-group--learning .cv-skill-list li::marker {
+  color: var(--cv-gold-dim);
+  opacity: 0.4;
 }
 
 /* ── Earlier experience ── */
