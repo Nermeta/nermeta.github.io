@@ -677,7 +677,7 @@ body {
     <div class="filter-group">
       <span class="filter-label">Domain</span>
       <button class="filter-btn active" data-filter="topic" data-value="all">All</button>
-      {% assign topics = site.certifications | map: "topic" | uniq | sort %}
+      {% assign topics = site.certifications | map: "topic" | compact | uniq | sort %}
       {% for topic in topics %}
       <button class="filter-btn" data-filter="topic" data-value="{{ topic }}">{{ topic | capitalize }}</button>
       {% endfor %}
@@ -699,7 +699,7 @@ body {
 
       <div class="shadowbox-grid" id="caseGrid">
 
-        {% assign certs = site.certifications | sort: "date" | reverse %}
+        {% assign certs = site.certifications | where_exp: "item", "item.category != 'education'" | sort: "date" | reverse %}
         {% for cert in certs %}
         <div class="shadowbox" data-topic="{{ cert.topic }}" data-status="{{ cert.status }}" data-id="{{ cert.slug }}" data-title="{{ cert.title }}" data-date="{{ cert.date | date: '%b %Y' }}" data-issuer="{{ cert.issuer }}" data-description="{{ cert.description }}" data-skills="{{ cert.skills | join: '|' }}" data-cert-url="{{ cert.cert_url }}" data-status-label="{% if cert.status == 'earned' %}{{ cert.date | date: '%b %Y' }}{% else %}In Progress{% endif %}" role="button" tabindex="0" aria-label="View details for {{ cert.title }}">
           <div class="shadowbox-recess">
