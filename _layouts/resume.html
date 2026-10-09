@@ -10,9 +10,9 @@ layout: default
     <div class="cv-contact-row">
       <a class="cv-contact-link" href="mailto:wynter@davaga.net">wynter@davaga.net</a>
       <span class="cv-contact-sep" aria-hidden="true">·</span>
-      <a class="cv-contact-link" href="https://github.com/Nermeta" target="_blank" rel="noopener">github.com/Nermeta</a>
+      <a class="cv-contact-link" href="https://github.com/Nermeta" target="_blank" rel="noopener noreferrer">github.com/Nermeta</a>
       <span class="cv-contact-sep" aria-hidden="true">·</span>
-      <a class="cv-contact-link" href="https://www.linkedin.com/in/wynter-gailey-7389b0b8" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="cv-contact-link" href="https://www.linkedin.com/in/wynter-gailey-7389b0b8" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     </div>
     <div class="cv-header-ornament" aria-hidden="true">✦</div>
   </header>
@@ -170,7 +170,7 @@ layout: default
               {% endfor %}
             <li>
               {% if skill_cert %}
-                <a class="cv-skill-link" href="{{ skill_cert }}" target="_blank" rel="noopener">{{ skill }}</a>
+                <a class="cv-skill-link" href="{{ skill_cert }}" target="_blank" rel="noopener noreferrer">{{ skill }}</a>
               {% else %}
                 {{ skill }}
               {% endif %}
@@ -236,7 +236,7 @@ layout: default
 .cv-main {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
+  padding: calc(var(--nav-height) + 2.5rem) 1.5rem 5rem;
 }
 
 /* ── Header ── */
