@@ -380,35 +380,29 @@ function sanitizeInput(str) {
  * NOT exhaustive — the worker's system prompt adds a second layer.
  */
 const OFF_TOPIC_PATTERNS = [
-  // Weather
-  /\bweather\b/i, /\bforecast\b/i, /\btemperature\b/i, /\b(?:rain|snow|sunny|cloudy|humidity)\b/i,
-  // Sports
-  /\b(?:nfl|nba|mlb|nhl|fifa|soccer|football|basketball|baseball|hockey|tennis|golf|olympics)\b/i,
-  /\bscore(?:s|board)?\b.*\b(?:game|match|today)\b/i,
-  // Food / recipes
-  /\b(?:recipe|ingredient|bake|baking|cook(?:ing)?|cuisine|restaurant|meal)\b/i,
-  // Movies / TV / music / celebrity
-  /\b(?:movie|film|actor|actress|celebrity|pop star|singer|album|concert|netflix|disney|hulu)\b/i,
-  // Math homework
-  /\bsolve\s+(?:for\s+)?[0-9x]/i,
-  /\b(?:calculus|algebra|geometry|equation|derivative|integral|quadratic)\b/i,
-  /\bwhat\s+is\s+\d+\s*[+\-*/^]\s*\d+/i,
-  // General trivia / general knowledge off-site
-  /\bwho\s+(?:invented|discovered|wrote|created)\b(?!.{0,60}wynter)/i,
+  // Weather (unambiguous — no IT meaning)
+  /\b(?:weather forecast|what.s the weather|will it rain|is it sunny|is it cold outside)\b/i,
+  // Sports leagues / teams (never a tech context)
+  /\b(?:nfl|nba|mlb|nhl|fifa)\b/i,
+  /\b(?:super bowl|world series|stanley cup|march madness)\b/i,
+  // Food / recipes (tightly scoped — avoid "cooking" which can appear in tech docs)
+  /\bhow (?:do i |to )?(?:bake|cook|make)\s+\w+\s*(?:recipe|cake|bread|sauce|soup|pasta)\b/i,
+  /\bwhat.s a good recipe\b/i,
+  // Celebrity / entertainment (tightly scoped)
+  /\b(?:who is|tell me about)\s+(?:taylor swift|beyonce|kanye|drake|ariana|celebrity)\b/i,
+  /\b(?:best movies? to watch|what should i watch|netflix recommendation)\b/i,
+  // Pure arithmetic homework
+  /\bwhat(?:'s| is)\s+\d+\s*[+\-×÷]\s*\d+\b/i,
+  /\bsolve\s+\d/i,
+  // Hard geography trivia
   /\bwhat\s+is\s+the\s+capital\s+of\b/i,
-  /\btranslate\s+(?:this|to|from)\b/i,
-  // Politics
-  /\b(?:president|congress|senate|democrat|republican|politics|election|vote|ballot)\b/i,
-  // Medical / legal advice
-  /\b(?:diagnose|diagnosis|prescription|lawsuit|attorney|legal advice)\b/i,
-  // Cryptocurrency off-topic speculation
-  /\b(?:buy|sell|invest|price|crypto|bitcoin|ethereum|nft)\b.*\b(?:worth|value|moon|crash)\b/i,
+  // Medical advice (not diagnosis)
+  /\b(?:what medication|should i take|is this (?:drug|medicine)|can i take \w+ with)\b/i,
 ];
 
 function isOffTopic(text) {
   const t = text.trim();
-  // Very short inputs pass through (could be a typo or a partial question)
-  if (t.length < 6) return false;
+  if (t.length < 8) return false;
   return OFF_TOPIC_PATTERNS.some(p => p.test(t));
 }
 

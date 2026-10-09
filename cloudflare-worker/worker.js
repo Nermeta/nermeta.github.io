@@ -26,17 +26,17 @@
 // If triggered, returns immediately without touching the AI.
 // ---------------------------------------------------------------------------
 const OFF_TOPIC_RE = [
-  /\bweather\b/i, /\bforecast\b/i, /\b(?:rain|snow|sunny|cloudy|humidity)\b/i,
-  /\b(?:nfl|nba|mlb|nhl|fifa|soccer|football|basketball|baseball|hockey|tennis|golf|olympics)\b/i,
-  /\b(?:recipe|ingredient|bake|baking|cooking|cuisine|restaurant)\b/i,
-  /\b(?:movie|film|actor|actress|celebrity|pop star|singer|album|concert|netflix|disney|hulu)\b/i,
-  /\bsolve\s+(?:for\s+)?[0-9x]/i,
-  /\b(?:calculus|algebra|geometry|equation|derivative|integral|quadratic)\b/i,
-  /\bwhat\s+is\s+\d+\s*[+\-*/^]\s*\d+/i,
+  /\b(?:weather forecast|what.s the weather|will it rain|is it sunny|is it cold outside)\b/i,
+  /\b(?:nfl|nba|mlb|nhl|fifa)\b/i,
+  /\b(?:super bowl|world series|stanley cup|march madness)\b/i,
+  /\bhow (?:do i |to )?(?:bake|cook|make)\s+\w+\s*(?:recipe|cake|bread|sauce|soup|pasta)\b/i,
+  /\bwhat.s a good recipe\b/i,
+  /\b(?:who is|tell me about)\s+(?:taylor swift|beyonce|kanye|drake|ariana|celebrity)\b/i,
+  /\b(?:best movies? to watch|what should i watch|netflix recommendation)\b/i,
+  /\bwhat(?:'s| is)\s+\d+\s*[+\-×÷]\s*\d+\b/i,
+  /\bsolve\s+\d/i,
   /\bwhat\s+is\s+the\s+capital\s+of\b/i,
-  /\btranslate\s+(?:this|to|from)\b/i,
-  /\b(?:president|congress|senate|democrat|republican|politics|election|vote|ballot)\b/i,
-  /\b(?:diagnose|diagnosis|prescription|lawsuit|attorney|legal advice)\b/i,
+  /\b(?:what medication|should i take|is this (?:drug|medicine)|can i take \w+ with)\b/i,
 ];
 
 const CHESHIRE_MSGS = [
