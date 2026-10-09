@@ -24,9 +24,6 @@ layout: default
   <div class="fn-desk">
     {% for platform in platforms %}
       {% assign platform_writeups = all_writeups | where: "platform", platform %}
-      {% if platform_writeups.size == 0 %}
-        {% assign platform_writeups = all_writeups | where_exp: "doc", "doc.platform == nil" %}
-      {% endif %}
       {% assign count = platform_writeups.size %}
 
       <button
@@ -169,7 +166,7 @@ layout: default
 .fn-index {
   max-width: 900px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
+  padding: calc(var(--nav-height) + 2.5rem) 1.5rem 5rem;
 }
 
 .fn-index-header { margin-bottom: 3rem; }

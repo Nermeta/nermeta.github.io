@@ -79,7 +79,7 @@ defaults:
       path: ""
       type: "tutorials"
     values:
-      layout: post
+      layout: tutorial
       public: true
   - scope:
       path: ""

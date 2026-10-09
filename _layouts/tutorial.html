@@ -1,0 +1,349 @@
+---
+layout: default
+---
+<main class="tut-post" id="main-content">
+
+  <div class="tut-card">
+
+    <header class="tut-header">
+      <a class="tut-back" href="{{ '/tutorials/' | relative_url }}">← Tutorials</a>
+
+      {% if page.topic %}
+      <span class="tut-topic">{{ page.topic | replace: "-", " " | capitalize }}</span>
+      {% endif %}
+
+      <h1 class="tut-title">{{ page.title }}</h1>
+
+      {% if page.summary %}
+      <p class="tut-summary">{{ page.summary }}</p>
+      {% endif %}
+
+      <div class="tut-meta-row">
+        {% if page.difficulty %}
+        <div class="tut-meta-item">
+          <span class="tut-meta-label">Difficulty</span>
+          <span class="tut-difficulty tut-difficulty--{{ page.difficulty | downcase }}">{{ page.difficulty | capitalize }}</span>
+        </div>
+        {% endif %}
+        {% if page.estimated_read %}
+        <div class="tut-meta-item">
+          <span class="tut-meta-label">Read</span>
+          <span class="tut-meta-value">{{ page.estimated_read }} min</span>
+        </div>
+        {% endif %}
+        {% if page.date %}
+        <div class="tut-meta-item">
+          <span class="tut-meta-label">Published</span>
+          <span class="tut-meta-value">{{ page.date | date: "%b %d, %Y" }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if page.tech_stack %}
+      <div class="tut-stack">
+        <span class="tut-meta-label">Stack</span>
+        <div class="tut-stack-tags">
+          {% for t in page.tech_stack %}
+          <span class="tut-tag tut-tag--tech">{{ t | replace: "-", " " }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if page.tags %}
+      <div class="tut-tags-row">
+        {% for tag in page.tags %}
+        <span class="tut-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </header>
+
+    <div class="tut-divider" aria-hidden="true">
+      <span class="tut-divider-line"></span>
+      <span class="tut-divider-pip">●</span>
+      <span class="tut-divider-line"></span>
+    </div>
+
+    <article class="tut-body">
+      {{ content }}
+    </article>
+
+  </div><!-- /.tut-card -->
+
+</main>
+
+<style>
+/* ── Tutorial Detail Page ───────────────────────────────────── */
+
+.tut-post {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 2rem) 1.5rem 5rem;
+}
+
+.tut-card {
+  background: var(--bg-surface, #0d0b18);
+  border: 1px solid rgba(0, 229, 204, 0.12);
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px rgba(0,229,204,0.04),
+    0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Header */
+.tut-header {
+  padding: 2rem 2.5rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 229, 204, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tut-back {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted, #6a5e88);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.tut-back:hover { color: var(--aqua, #00e5cc); }
+
+.tut-topic {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--aqua-dim, #00b8a4);
+}
+
+.tut-title {
+  font-family: var(--font-display, 'Cinzel Decorative', serif);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  color: var(--fg, #ede5ff);
+  margin: 0;
+  text-wrap: balance;
+  line-height: 1.3;
+}
+
+.tut-summary {
+  font-size: 0.88rem;
+  color: var(--fg-muted, #6a5e88);
+  line-height: 1.65;
+  margin: 0;
+  font-style: italic;
+}
+
+.tut-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-top: 0.4rem;
+}
+
+.tut-meta-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.tut-meta-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted, #6a5e88);
+}
+
+.tut-meta-value {
+  font-size: 0.78rem;
+  color: var(--fg, #ede5ff);
+  opacity: 0.7;
+}
+
+.tut-difficulty {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.tut-difficulty--apprentice { color: #3a9a3a; }
+.tut-difficulty--journeyman  { color: #c87a00; }
+.tut-difficulty--expert      { color: #c83030; }
+.tut-difficulty--easy        { color: #3a9a3a; }
+.tut-difficulty--medium      { color: #c87a00; }
+.tut-difficulty--hard        { color: #c83030; }
+
+.tut-stack {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tut-stack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tut-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tut-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted, #6a5e88);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  padding: 0.12em 0.5em;
+}
+
+.tut-tag--tech {
+  color: var(--aqua-dim, #00b8a4);
+  background: rgba(0,229,204,0.05);
+  border-color: rgba(0,229,204,0.12);
+}
+
+.tut-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 2.5rem;
+  margin: 0;
+}
+
+.tut-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,229,204,0.15), transparent);
+}
+
+.tut-divider-pip {
+  font-size: 0.4rem;
+  color: rgba(0,229,204,0.25);
+}
+
+/* Body */
+.tut-body {
+  padding: 2rem 2.5rem 2.5rem;
+  font-family: var(--font-body, 'Raleway', system-ui, sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--fg, #ede5ff);
+}
+
+.tut-body h2 {
+  font-family: var(--font-display, 'Cinzel Decorative', serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--aqua, #00e5cc);
+  letter-spacing: 0.06em;
+  margin: 2.5rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(0,229,204,0.1);
+}
+
+.tut-body h3 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--fg, #ede5ff);
+  opacity: 0.8;
+  margin: 1.5rem 0 0.4rem;
+}
+
+.tut-body p { margin: 0 0 1rem; }
+
+.tut-body ul,
+.tut-body ol {
+  padding-left: 1.4rem;
+  margin: 0 0 1rem;
+}
+
+.tut-body li { margin: 0.25rem 0; }
+
+.tut-body a {
+  color: var(--aqua, #00e5cc);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.85;
+}
+.tut-body a:hover { opacity: 1; }
+
+.tut-body strong { color: var(--fg, #ede5ff); }
+
+.tut-body pre {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,229,204,0.1);
+  border-left: 3px solid var(--aqua-dim, #00b8a4);
+  border-radius: 3px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.tut-body code {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 0.82em;
+  background: rgba(0,229,204,0.06);
+  border: 1px solid rgba(0,229,204,0.1);
+  border-radius: 2px;
+  padding: 0.1em 0.4em;
+  color: var(--aqua-dim, #00b8a4);
+}
+
+.tut-body pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--fg, #ede5ff);
+  font-size: 1em;
+}
+
+.tut-body blockquote {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-left: 3px solid rgba(0,229,204,0.3);
+  background: rgba(0,229,204,0.04);
+  color: var(--fg-muted, #6a5e88);
+  font-style: italic;
+}
+
+.tut-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0 0 1rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.tut-body th {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--aqua-dim, #00b8a4);
+  text-align: left;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid rgba(0,229,204,0.12);
+}
+
+.tut-body td {
+  padding: 0.35rem 0.6rem;
+  color: var(--fg, #ede5ff);
+  opacity: 0.75;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .tut-header,
+  .tut-body { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .tut-divider { padding: 0 1.25rem; }
+  .tut-title { font-size: 1.1rem; }
+}
+</style>

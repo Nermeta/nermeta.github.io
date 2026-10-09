@@ -1,18 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title }} — {{ site.title }}</title>
-  <link rel="stylesheet" href="{{ '/assets/css/wonderland.css' | relative_url }}">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap">
-
-  <style>
+---
+layout: default
+---
+<style>
 /* Override wonderland.css body styles so emblems keeps its own look */
 body {
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%) !important;
-  padding-inline: 1rem !important;
-  padding-block: calc(64px + 2.5rem) 5rem !important;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%);
 }
 
 :root {
@@ -41,18 +33,10 @@ body {
   --ease: 0.28s ease;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
 
-body {
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%);
-  color: var(--fg);
-  font-family: var(--font-body);
-  margin: 0;
-  padding-inline: 1rem;
-  padding-block: 3rem 5rem;
-}
 
-.emblems-page { max-width: 900px; margin: 0 auto; }
+
+.emblems-page { max-width: 900px; margin: 0 auto; padding: calc(var(--nav-height) + 2.5rem) 1rem 5rem; }
 
 /* ── HEADER ── */
 .emblems-header { text-align: center; margin-bottom: 1rem; }
@@ -648,11 +632,6 @@ body {
 }
 .modal-verify-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
   </style>
-</head>
-<body>
-
-{% include nav.html %}
-
 <main class="emblems-page">
 
   <header class="emblems-header">
@@ -747,7 +726,7 @@ body {
     <div class="modal-divider"></div>
     <p class="modal-description" id="modalDescription"></p>
     <div class="modal-skills" id="modalSkills"></div>
-    <a class="modal-verify-btn" id="modalVerifyBtn" href="#" target="_blank" rel="noopener">
+    <a class="modal-verify-btn" id="modalVerifyBtn" href="#" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V7M8 1h3m0 0v3m0-3L5 7"/>
       </svg>
@@ -894,7 +873,3 @@ body {
 })();
 </script>
 
-{% include floating-chat.html %}
-
-</body>
-</html>

@@ -7,3 +7,5 @@ context.json
 wrangler.jsonc
 node_modules
 *.tar.gz
+package-lock.json
+
