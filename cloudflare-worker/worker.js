@@ -228,7 +228,7 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - "filter_tree"      — params: { status: "completed"|"in-progress"|"not-started"|"all", domain?: "domain name" } → Chronicles skill tree filter. Use ONLY when visitor is already on /learning-logs/. Optionally pass the domain name (e.g. "scripting") to switch to that canvas.
 - "filter_shelf"     — params: { genres: ["genre", ...] }                   → Bookshelf
 - "focus_cert"       — params: { title: "cert title" }                      → Display case
-- "filter_workbench" — params: { tech_stack: ["tech", ...] }                → Tutorials workbench
+- "filter_cards"     — params: { difficulty?: "novice"|"apprentice"|"journeyman"|"expert", topic?: "sysadmin"|"security"|"homelab"|"development" } → Tutorials workbench. Use ONLY when visitor is already on /tutorials/.
 - "filter_archive"   — params: { topic: "topic name" }                      → Deep dive archive
 - "filter_writeups"  — params: { platform: "HTB", category: "ad", difficulty: "medium" } → Writeups board
 - "navigate_to"      — params: { url: "/path/to/page/" }                    → Browser navigation
@@ -247,6 +247,11 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 - If the visitor is on /book-reviews/ and asks a general question about the books (not a filter request): reply normally with a short message and cards, no action.
 - If the visitor is NOT on /book-reviews/ and asks about books: use "navigate_to" with url "/book-reviews/" and include genre/rating params if relevant (e.g. "fiction books" → { url: "/book-reviews/", genre: "fiction" }, "5-star books" → { url: "/book-reviews/", rating: "5" }). Populate cards with matching books.
 - "filter_emblems" is ONLY for /certifications/. Never use it for book questions.
+
+## Field Notes reply rules
+- If the visitor is on /writeups/ and asks to filter by platform (HTB, HackTheBox, THM, TryHackMe, CTF): use "filter_writeups" with the matching platform slug (hackthebox, tryhackme, ctf), NO message, NO cards — just trigger the action.
+- If the visitor is on /writeups/ and asks a general question about writeups: reply normally with a short message.
+- If the visitor is NOT on /writeups/ and asks about writeups or Field Notes: use "navigate_to" with url "/writeups/".
 
 ## Chronicles reply rules
 - If the visitor is on /learning-logs/ and asks to filter by status (completed, in progress, not started, all): use "filter_tree" with the matching status and the domain that has the most matching logs if you can infer it, NO message (set "message" to ""), NO cards — just trigger the action silently. The tree updates itself.
