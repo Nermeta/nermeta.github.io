@@ -186,7 +186,7 @@ layout: default
           <h3 class="cv-skill-heading">Currently Learning</h3>
           <ul class="cv-skill-list">
             {% for log in active_logs %}
-            <li>{{ log.subject | default: log.title }}</li>
+            <li><a class="cv-skill-link" href="{{ log.url | relative_url }}">{{ log.subject | default: log.title }}</a></li>
             {% endfor %}
           </ul>
         </div>
