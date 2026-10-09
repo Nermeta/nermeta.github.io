@@ -173,6 +173,12 @@ function appendTyping(container) {
  * appendAiResponse — adds the AI message + optional result cards
  */
 function appendAiResponse(container, data, source) {
+  // Worker flagged the message as off-topic — treat same as client guard
+  if (data.off_topic) {
+    appendOffTopicResponse(container, source);
+    return;
+  }
+
   // navigate_to: drawer navigates, home chat never does (shows cards inline instead)
   if (data.action?.type === 'navigate_to') {
     if (source === 'drawer') {
@@ -354,6 +360,111 @@ function filterCollection(cards, filter) {
 }
 
 /**
+ * sanitizeInput — strips HTML tags and control characters from user input.
+ * Defense against injected markup before it ever reaches the DOM or the worker.
+ */
+function sanitizeInput(str) {
+  return str
+    // Strip all HTML tags
+    .replace(/<[^>]*>/g, '')
+    // Remove null bytes and control chars (except normal whitespace)
+    .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '')
+    // Collapse to reasonable length (worker has its own limit, but clip here too)
+    .slice(0, 2000)
+    .trim();
+}
+
+/**
+ * isOffTopic — returns true when a message is clearly unrelated to the site.
+ * Catches weather, sports, recipes, math homework, celebrity gossip, etc.
+ * NOT exhaustive — the worker's system prompt adds a second layer.
+ */
+const OFF_TOPIC_PATTERNS = [
+  // Weather
+  /\bweather\b/i, /\bforecast\b/i, /\btemperature\b/i, /\b(?:rain|snow|sunny|cloudy|humidity)\b/i,
+  // Sports
+  /\b(?:nfl|nba|mlb|nhl|fifa|soccer|football|basketball|baseball|hockey|tennis|golf|olympics)\b/i,
+  /\bscore(?:s|board)?\b.*\b(?:game|match|today)\b/i,
+  // Food / recipes
+  /\b(?:recipe|ingredient|bake|baking|cook(?:ing)?|cuisine|restaurant|meal)\b/i,
+  // Movies / TV / music / celebrity
+  /\b(?:movie|film|actor|actress|celebrity|pop star|singer|album|concert|netflix|disney|hulu)\b/i,
+  // Math homework
+  /\bsolve\s+(?:for\s+)?[0-9x]/i,
+  /\b(?:calculus|algebra|geometry|equation|derivative|integral|quadratic)\b/i,
+  /\bwhat\s+is\s+\d+\s*[+\-*/^]\s*\d+/i,
+  // General trivia / general knowledge off-site
+  /\bwho\s+(?:invented|discovered|wrote|created)\b(?!.{0,60}wynter)/i,
+  /\bwhat\s+is\s+the\s+capital\s+of\b/i,
+  /\btranslate\s+(?:this|to|from)\b/i,
+  // Politics
+  /\b(?:president|congress|senate|democrat|republican|politics|election|vote|ballot)\b/i,
+  // Medical / legal advice
+  /\b(?:diagnose|diagnosis|prescription|lawsuit|attorney|legal advice)\b/i,
+  // Cryptocurrency off-topic speculation
+  /\b(?:buy|sell|invest|price|crypto|bitcoin|ethereum|nft)\b.*\b(?:worth|value|moon|crash)\b/i,
+];
+
+function isOffTopic(text) {
+  const t = text.trim();
+  // Very short inputs pass through (could be a typo or a partial question)
+  if (t.length < 6) return false;
+  return OFF_TOPIC_PATTERNS.some(p => p.test(t));
+}
+
+/**
+ * appendOffTopicResponse — Cheshire says "not my domain" + surfaces page chips
+ */
+const CHESHIRE_REDIRECTS = [
+  'Curiouser and curiouser — but that's a bit outside my looking-glass. I'm just a guide to this corner of the web. Maybe one of these will help:',
+  'Oh my, that rabbit hole leads somewhere else entirely. I'm only a guide to Wynter's Wonderland. Try one of these instead:',
+  'That question wandered off the map! I know this site very well, but not much beyond it. Here's what I *can* help with:',
+  'We've gone a bit through the wrong door. I can only guide you around here — give one of these a try:',
+];
+
+function appendOffTopicResponse(container, source) {
+  const msg = CHESHIRE_REDIRECTS[Math.floor(Math.random() * CHESHIRE_REDIRECTS.length)];
+  const page = window.location.pathname;
+
+  // Gather chips for this page
+  const chipData = _shortcuts
+    ? _shortcuts.filter(s => {
+        const pages    = s.pages || ['*'];
+        const excluded = s.excludePages || [];
+        return s.chip &&
+          (pages.includes('*') || pages.includes(page)) &&
+          !excluded.includes(page);
+      }).map(s => s.chip).slice(0, 6)
+    : [];
+
+  const chipsHtml = chipData.length
+    ? `<div class="msg-chips">${chipData.map(c => `<button class="chip">${escapeHtml(c)}</button>`).join('')}</div>`
+    : '';
+
+  const div = document.createElement('div');
+  div.className = 'msg-ai';
+  div.innerHTML = `
+    <div class="msg-ai-avatar" aria-hidden="true">🐱</div>
+    <div class="msg-bubble">${escapeHtml(msg)}${chipsHtml}</div>`;
+
+  // Wire chip clicks — insert text into whichever input is in use
+  const inputId = source === 'home' ? 'homeChatInput' : 'drawerInput';
+  div.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const inp = document.getElementById(inputId);
+      if (inp) {
+        inp.value = chip.textContent.trim();
+        inp.dispatchEvent(new Event('input'));
+        inp.focus();
+      }
+    });
+  });
+
+  container.appendChild(div);
+  scrollToBottom(container);
+}
+
+/**
  * resolveShortcut — async, returns response envelope or null (fall through to worker).
  * For nav shortcuts on home: fetches collection data and returns real result cards.
  */
@@ -462,14 +573,25 @@ function wireChat(formId, inputId, messagesId, chipsId, source) {
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const text = input.value.trim();
+    const raw  = input.value.trim();
+    const text = sanitizeInput(raw);
     if (!text) return;
 
     input.value = '';
     input.style.height = 'auto';
 
-    // Client-side shortcuts — handle common queries locally, no AI call needed
+    // Client-side off-topic guard — catch obvious nonsense before burning tokens
     appendUserBubble(messages, text);
+    if (isOffTopic(text)) {
+      const typing = appendTyping(messages);
+      setTimeout(() => {
+        typing.remove();
+        appendOffTopicResponse(messages, source);
+      }, 700 + Math.random() * 400);
+      return;
+    }
+
+    // Client-side shortcuts — handle common queries locally, no AI call needed
     const shortcut = await resolveShortcut(text);
     if (shortcut) {
       const typing = appendTyping(messages);

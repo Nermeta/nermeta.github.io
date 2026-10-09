@@ -22,6 +22,37 @@
  */
 
 // ---------------------------------------------------------------------------
+// Off-topic pre-flight — mirrors the client guard as a second layer.
+// If triggered, returns immediately without touching the AI.
+// ---------------------------------------------------------------------------
+const OFF_TOPIC_RE = [
+  /\bweather\b/i, /\bforecast\b/i, /\b(?:rain|snow|sunny|cloudy|humidity)\b/i,
+  /\b(?:nfl|nba|mlb|nhl|fifa|soccer|football|basketball|baseball|hockey|tennis|golf|olympics)\b/i,
+  /\b(?:recipe|ingredient|bake|baking|cooking|cuisine|restaurant)\b/i,
+  /\b(?:movie|film|actor|actress|celebrity|pop star|singer|album|concert|netflix|disney|hulu)\b/i,
+  /\bsolve\s+(?:for\s+)?[0-9x]/i,
+  /\b(?:calculus|algebra|geometry|equation|derivative|integral|quadratic)\b/i,
+  /\bwhat\s+is\s+\d+\s*[+\-*/^]\s*\d+/i,
+  /\bwhat\s+is\s+the\s+capital\s+of\b/i,
+  /\btranslate\s+(?:this|to|from)\b/i,
+  /\b(?:president|congress|senate|democrat|republican|politics|election|vote|ballot)\b/i,
+  /\b(?:diagnose|diagnosis|prescription|lawsuit|attorney|legal advice)\b/i,
+];
+
+const CHESHIRE_MSGS = [
+  "Curiouser and curiouser — but that's a bit outside my looking-glass. I'm only a guide to Wynter's Wonderland.",
+  "Oh my, that rabbit hole leads somewhere else entirely. I'm just a guide to this corner of the web.",
+  "That question wandered off the map! I know this site very well, but not much beyond it.",
+  "We've gone through the wrong door! I can only guide you around Wynter's Wonderland.",
+];
+
+function workerIsOffTopic(text) {
+  const t = (text || '').trim();
+  if (t.length < 6) return false;
+  return OFF_TOPIC_RE.some(p => p.test(t));
+}
+
+// ---------------------------------------------------------------------------
 // Rate limiting — per IP, stored in Cloudflare's built-in Workers KV or
 // simple in-memory map (resets per isolate — fine for basic abuse prevention)
 // ---------------------------------------------------------------------------
@@ -172,6 +203,10 @@ Action types you can trigger (set "type" to one of these, or null if no UI actio
 
 ## Privacy
 Only discuss content that appears in the Site Content Index below. Do not speculate about Wynter's personal life beyond what she has published. If asked something you don't have data for, say so warmly and suggest what you do have. Do not mention the context index in your reponses.
+
+## Off-topic questions
+If a visitor asks something that has absolutely nothing to do with Wynter, her site, her work, or the topics she covers (sysadmin, security, homelab, development, learning, books), set "off_topic": true in your JSON response alongside a brief, friendly Cheshire-style redirect. Example: a question about the weather, sports scores, recipes, math homework, celebrity gossip, or political news.
+When you set off_topic: true, keep message short (1 sentence), cards empty, action null.
 ## Section name mapping
 The site uses these display names in navigation — use them when talking to visitors:
 - "Chronicles" = learning-log entries (study logs, ongoing learning)
@@ -243,6 +278,24 @@ export default {
         status: 400,
         headers: { 'Content-Type': 'application/json', ...corsHeaders(allowedOrigin) },
       });
+    }
+
+    // Off-topic pre-flight — check the last user message before calling AI
+    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || '';
+    if (workerIsOffTopic(lastUserMsg)) {
+      const msg = CHESHIRE_MSGS[Math.floor(Math.random() * CHESHIRE_MSGS.length)];
+      return new Response(
+        JSON.stringify({
+          message: msg,
+          cards: [],
+          action: { type: null, params: {} },
+          off_topic: true,
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(allowedOrigin) },
+        }
+      );
     }
 
     // Build system prompt (fetches context.json)
