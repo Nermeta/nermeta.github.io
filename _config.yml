@@ -67,7 +67,7 @@ defaults:
       path: ""
       type: "book-reviews"
     values:
-      layout: post
+      layout: book-review
       public: true
   - scope:
       path: ""
