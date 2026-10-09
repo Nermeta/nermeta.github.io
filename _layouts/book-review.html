@@ -22,10 +22,9 @@ layout: default
 
           {% if page.rating %}
           <div class="br-stars" aria-label="Rating: {{ page.rating }} out of 5">
-            {% assign full = page.rating | floor %}
+            {% assign full  = page.rating | floor %}
             {% assign empty = 5 | minus: full %}
-            {% for i in (1..full) %}<span class="br-star br-star--full" aria-hidden="true">★</span>{% endfor %}
-            {% for i in (1..empty) %}<span class="br-star br-star--empty" aria-hidden="true">★</span>{% endfor %}
+            {% for i in (1..5) %}{% if i <= full %}<span class="br-star br-star--full" aria-hidden="true">★</span>{% else %}<span class="br-star br-star--empty" aria-hidden="true">★</span>{% endif %}{% endfor %}
             <span class="br-rating-num">{{ page.rating }}/5</span>
           </div>
           {% endif %}
