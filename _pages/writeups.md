@@ -1,6 +1,5 @@
 ---
-layout: collection
+layout: writeups-index
 title: Field Notes
 permalink: /writeups/
-collection_name: writeups
 ---

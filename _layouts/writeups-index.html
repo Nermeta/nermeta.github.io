@@ -1,0 +1,343 @@
+---
+layout: default
+---
+<main class="fn-index" id="main-content">
+
+  <header class="fn-index-header">
+    <h1 class="fn-index-title">Field Notes</h1>
+    <p class="fn-index-sub">CTF walkthroughs &amp; machine writeups</p>
+  </header>
+
+  {% assign writeups = site.writeups | sort: 'date' | reverse %}
+
+  <div class="fn-grid">
+    {% for doc in writeups %}
+      {% unless doc.public == false %}
+      <a class="fn-card" href="{{ doc.url | relative_url }}" aria-label="{{ doc.title }}">
+
+        <!-- wire binding — left edge -->
+        <div class="fn-binding" aria-hidden="true">
+          {% for i in (1..9) %}<span class="fn-ring"></span>{% endfor %}
+        </div>
+
+        <div class="fn-card-body">
+
+          <!-- platform stamp -->
+          {% if doc.platform %}
+          <span class="fn-stamp fn-stamp--{{ doc.platform | downcase | replace: ' ', '-' }}">
+            {{ doc.platform }}
+          </span>
+          {% endif %}
+
+          <h2 class="fn-card-title">{{ doc.title }}</h2>
+
+          <ul class="fn-card-meta">
+            {% if doc.difficulty %}
+            <li class="fn-meta-line">
+              <span class="fn-meta-label">Difficulty</span>
+              <span class="fn-difficulty fn-difficulty--{{ doc.difficulty | downcase }}">{{ doc.difficulty | capitalize }}</span>
+            </li>
+            {% endif %}
+            {% if doc.category %}
+            <li class="fn-meta-line">
+              <span class="fn-meta-label">Category</span>
+              <span class="fn-meta-value">{{ doc.category | replace: '-', ' ' }}</span>
+            </li>
+            {% endif %}
+            {% if doc.date %}
+            <li class="fn-meta-line">
+              <span class="fn-meta-label">Date</span>
+              <span class="fn-meta-value">{{ doc.date | date: "%b %Y" }}</span>
+            </li>
+            {% endif %}
+          </ul>
+
+          {% if doc.tools %}
+          <div class="fn-tools">
+            {% for tool in doc.tools limit:4 %}
+            <span class="fn-tool">{{ tool }}</span>
+            {% endfor %}
+            {% if doc.tools.size > 4 %}
+            <span class="fn-tool fn-tool--more">+{{ doc.tools.size | minus: 4 }}</span>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="fn-card-footer">
+            <span class="fn-open-hint">Open →</span>
+          </div>
+
+        </div>
+      </a>
+      {% endunless %}
+    {% endfor %}
+  </div>
+
+  {% if writeups.size == 0 %}
+  <p class="fn-empty">No field notes yet — check back soon.</p>
+  {% endif %}
+
+</main>
+
+<style>
+/* ── Field Notes Index ─────────────────────────────────────── */
+
+/* kraft palette — warm dark tones that echo the brand */
+:root {
+  --fn-kraft:       #2a2218;
+  --fn-kraft-mid:   #1e1a12;
+  --fn-kraft-edge:  #150f08;  /* spine shadow */
+  --fn-ink:         #e8dfc8;
+  --fn-ink-dim:     #a89878;
+  --fn-ink-muted:   #6b5e44;
+  --fn-ring:        #3a3530;
+  --fn-ring-hi:     #5a534a;
+  --fn-stamp-htb:   #9fef00;   /* HTB green */
+  --fn-stamp-thm:   #ff6b35;   /* THM orange */
+  --fn-stamp-ctf:   #00e5cc;   /* default aqua */
+  --fn-diff-easy:   #9fef00;
+  --fn-diff-medium: #ffb347;
+  --fn-diff-hard:   #ff4e4e;
+  --fn-diff-insane: #e040fb;
+}
+
+.fn-index {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* Header */
+.fn-index-header {
+  margin-bottom: 2.5rem;
+}
+
+.fn-index-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fn-ink);
+  margin: 0 0 0.2rem;
+}
+
+.fn-index-sub {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  margin: 0;
+}
+
+/* Grid */
+.fn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.75rem;
+}
+
+/* Card */
+.fn-card {
+  display: flex;
+  flex-direction: row;
+  background: var(--fn-kraft);
+  border-radius: 4px 6px 6px 4px;
+  text-decoration: none;
+  color: var(--fn-ink);
+  position: relative;
+  box-shadow:
+    2px 2px 0 var(--fn-kraft-edge),
+    4px 4px 0 rgba(0,0,0,0.3),
+    0 8px 24px rgba(0,0,0,0.5);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.fn-card:hover {
+  transform: translate(-2px, -3px) rotate(-0.5deg);
+  box-shadow:
+    2px 2px 0 var(--fn-kraft-edge),
+    6px 8px 0 rgba(0,0,0,0.35),
+    0 16px 36px rgba(0,0,0,0.55);
+}
+
+.fn-card:focus-visible {
+  outline: 2px solid var(--aqua);
+  outline-offset: 3px;
+}
+
+/* Wire binding — left edge */
+.fn-binding {
+  width: 22px;
+  flex-shrink: 0;
+  background: var(--fn-kraft-mid);
+  border-right: 1px solid rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 12px 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.fn-ring {
+  display: block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--fn-ring-hi);
+  background: var(--fn-ring);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+.fn-ring::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+
+/* Card body */
+.fn-card-body {
+  flex: 1;
+  padding: 1rem 1rem 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* Platform stamp */
+.fn-stamp {
+  display: inline-block;
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.15em 0.5em;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  align-self: flex-start;
+  color: var(--fn-stamp-ctf);
+}
+
+.fn-stamp--hackthebox { color: var(--fn-stamp-htb); }
+.fn-stamp--tryhackme  { color: var(--fn-stamp-thm); }
+
+/* Title */
+.fn-card-title {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: var(--fn-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Meta list */
+.fn-card-meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.fn-meta-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+}
+
+.fn-meta-label {
+  font-family: 'Barlow Condensed', 'Raleway', system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.fn-meta-value {
+  color: var(--fn-ink-dim);
+  text-transform: capitalize;
+}
+
+.fn-difficulty {
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+.fn-difficulty--easy   { color: var(--fn-diff-easy); }
+.fn-difficulty--medium { color: var(--fn-diff-medium); }
+.fn-difficulty--hard   { color: var(--fn-diff-hard); }
+.fn-difficulty--insane { color: var(--fn-diff-insane); }
+
+/* Tools row */
+.fn-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.1rem;
+}
+
+.fn-tool {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.62rem;
+  color: var(--fn-ink-muted);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px;
+  padding: 0.1em 0.4em;
+}
+
+.fn-tool--more {
+  color: var(--fn-ink-muted);
+  font-family: 'Raleway', system-ui, sans-serif;
+}
+
+/* Footer */
+.fn-card-footer {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.fn-open-hint {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fn-ink-muted);
+  transition: color 0.15s;
+}
+
+.fn-card:hover .fn-open-hint {
+  color: var(--fn-ink);
+}
+
+/* Empty state */
+.fn-empty {
+  color: var(--fg-muted);
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .fn-grid {
+    grid-template-columns: 1fr;
+  }
+  .fn-card {
+    min-height: 180px;
+  }
+}
+</style>

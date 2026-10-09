@@ -85,7 +85,7 @@ defaults:
       path: ""
       type: "writeups"
     values:
-      layout: post
+      layout: writeup
       public: true
   - scope:
       path: ""
