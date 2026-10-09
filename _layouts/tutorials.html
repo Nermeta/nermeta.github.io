@@ -100,7 +100,6 @@ layout: default
       <!-- Corner pips — top-left -->
       <span class="card-corner card-corner-tl" aria-hidden="true">
         <span class="corner-suit">{{ suit }}</span>
-        <span class="corner-label">{{ doc.difficulty | capitalize }}</span>
       </span>
 
       <!-- Card body -->
@@ -129,7 +128,6 @@ layout: default
       <!-- Corner pips — bottom-right (rotated) -->
       <span class="card-corner card-corner-br" aria-hidden="true">
         <span class="corner-suit">{{ suit }}</span>
-        <span class="corner-label">{{ doc.difficulty | capitalize }}</span>
       </span>
 
     </a>
@@ -216,29 +214,39 @@ layout: default
 .tut-chip.chip-journeyman.active { border-color: var(--journeyman); color: var(--journeyman); background: rgba(224,64,251,0.1); }
 .tut-chip.chip-expert.active     { border-color: var(--expert); color: var(--expert); background: rgba(255,107,107,0.1); }
 
-/* ─── Card deck ──────────────────────────────────────── */
+/* ─── Card deck — fan hand container ────────────────── */
 .tut-deck {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
-  padding-bottom: 3rem;
+  position: relative;
+  /* Height is set by JS based on card count */
+  min-height: 320px;
+  margin-bottom: 5rem;
 }
 
 /* ─── Deal animation ─────────────────────────────────── */
 @keyframes card-deal {
   from {
     opacity: 0;
-    transform: translateY(32px) rotate(calc(var(--deal-rot, 0deg))) scale(0.92);
+    transform:
+      translateX(var(--fan-tx, 0px))
+      translateY(calc(var(--fan-ty, 0px) + 40px))
+      rotate(var(--fan-rot, 0deg))
+      scale(0.88);
   }
   to {
     opacity: 1;
-    transform: translateY(0) rotate(var(--deal-rot, 0deg)) scale(1);
+    transform:
+      translateX(var(--fan-tx, 0px))
+      translateY(var(--fan-ty, 0px))
+      rotate(var(--fan-rot, 0deg))
+      scale(1);
   }
 }
 
 /* ─── Individual card ────────────────────────────────── */
 .tut-card {
-  position: relative;
+  position: absolute;
+  width: 240px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   border-radius: 12px;
@@ -248,20 +256,38 @@ layout: default
   text-decoration: none;
   color: var(--fg);
   overflow: hidden;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transform-origin: bottom center;
+  cursor: pointer;
 
-  /* Staggered deal */
+  /* Fan position set by JS via --fan-tx/ty/rot */
+  transform:
+    translateX(var(--fan-tx, 0px))
+    translateY(var(--fan-ty, 0px))
+    rotate(var(--fan-rot, 0deg));
+
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease,
+    z-index 0s;
+
   animation: card-deal 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--deal-i) * 80ms);
-  /* Subtle random-ish rotation using index */
-  --deal-rot: calc((var(--deal-i, 0) * 137deg) mod 7deg - 3.5deg);
+  animation-delay: calc(var(--deal-i, 0) * 90ms);
 }
 
-/* Hover: straighten + lift */
-.tut-card:hover {
-  transform: translateY(-6px) rotate(0deg) scale(1.015);
+/* Hover: pull card up from fan, straighten */
+.tut-card:hover,
+.tut-card:focus-visible {
+  transform:
+    translateX(var(--fan-tx, 0px))
+    translateY(calc(var(--fan-ty, 0px) - 48px))
+    rotate(0deg)
+    scale(1.04);
+  z-index: 20;
   border-color: var(--card-accent, var(--aqua-border-hi));
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--card-accent, var(--aqua-border-hi));
+  box-shadow:
+    0 20px 48px rgba(0,0,0,0.55),
+    0 0 0 1px var(--card-accent, var(--aqua-border-hi));
   text-decoration: none;
 }
 
@@ -288,12 +314,8 @@ layout: default
 /* ─── Corner pips ────────────────────────────────────── */
 .card-corner {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.1;
-  gap: 1px;
   color: var(--card-accent, var(--fg-muted));
+  line-height: 1;
 }
 
 .card-corner-tl {
@@ -308,16 +330,9 @@ layout: default
 }
 
 .corner-suit {
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1;
-}
-
-.corner-label {
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.8;
+  display: block;
 }
 
 /* ─── Card body ──────────────────────────────────────── */
@@ -407,43 +422,97 @@ layout: default
 
 <script>
 (function () {
-  const deck   = document.getElementById('tut-deck');
-  const empty  = document.getElementById('tut-empty');
+  const deck  = document.getElementById('tut-deck');
+  const empty = document.getElementById('tut-empty');
   if (!deck) return;
 
-  const cards  = Array.from(deck.querySelectorAll('.tut-card'));
-  const state  = { difficulty: 'all', topic: 'all', tech: 'all' };
+  const allCards = Array.from(deck.querySelectorAll('.tut-card'));
+  const state    = { difficulty: 'all', topic: 'all', tech: 'all' };
 
+  /* ── Fan layout ──────────────────────────────────────── */
+  const CARD_W      = 240;   // matches CSS width
+  const SPREAD_DEG  = 6;     // degrees between cards
+  const OVERLAP     = 0.55;  // how much cards overlap (0 = full gap, 1 = fully stacked)
+
+  function layoutFan(visible) {
+    if (!visible.length) {
+      deck.style.minHeight = '320px';
+      return;
+    }
+
+    const n     = visible.length;
+    const total = SPREAD_DEG * (n - 1);          // total arc
+    const step  = n > 1 ? total / (n - 1) : 0;  // deg per card
+    const startDeg = -total / 2;
+
+    // Effective horizontal width used
+    const horizStep = CARD_W * (1 - OVERLAP);
+    const fanWidth  = horizStep * (n - 1) + CARD_W;
+    const startX    = -fanWidth / 2 + CARD_W / 2;
+
+    let maxDown = 0;
+
+    visible.forEach((card, i) => {
+      const rot = startDeg + step * i;       // rotation angle
+      const tx  = startX + horizStep * i;   // horizontal position
+      // Cards at the edges drop slightly (arc effect)
+      const normI = n > 1 ? (i / (n - 1)) - 0.5 : 0;  // -0.5..0.5
+      const ty    = normI * normI * 30;                  // parabola, px down
+
+      card.style.setProperty('--fan-rot', `${rot.toFixed(2)}deg`);
+      card.style.setProperty('--fan-tx',  `${tx.toFixed(1)}px`);
+      card.style.setProperty('--fan-ty',  `${ty.toFixed(1)}px`);
+      card.style.zIndex = i + 1;
+
+      // Track how tall the fan is
+      const bottom = ty + 300 + Math.abs(rot) * 4; // rough card bottom
+      if (bottom > maxDown) maxDown = bottom;
+    });
+
+    // Centre the fan horizontally in the deck container
+    deck.style.display = 'flex';
+    deck.style.justifyContent = 'center';
+
+    // Give the container enough height
+    deck.style.minHeight = (maxDown + 60) + 'px';
+  }
+
+  /* ── Filter + re-fan ─────────────────────────────────── */
   function applyFilters() {
-    let visible = 0;
-    cards.forEach(card => {
+    const visible = [];
+    allCards.forEach(card => {
       const diff  = card.dataset.difficulty || '';
       const topic = card.dataset.topic      || '';
       const tech  = (card.dataset.tech      || '').split(',');
 
-      const okDiff  = state.difficulty === 'all' || diff  === state.difficulty;
-      const okTopic = state.topic      === 'all' || topic === state.topic;
-      const okTech  = state.tech       === 'all' || tech.includes(state.tech);
+      const ok =
+        (state.difficulty === 'all' || diff  === state.difficulty) &&
+        (state.topic      === 'all' || topic === state.topic)      &&
+        (state.tech       === 'all' || tech.includes(state.tech));
 
-      const show = okDiff && okTopic && okTech;
-      card.hidden = !show;
-      if (show) visible++;
+      card.hidden = !ok;
+      if (ok) visible.push(card);
     });
-    empty.hidden = visible > 0;
+
+    empty.hidden = visible.length > 0;
+
+    // Re-index deal animation
+    visible.forEach((card, i) => card.style.setProperty('--deal-i', i));
+
+    layoutFan(visible);
   }
 
+  /* ── Chip clicks ─────────────────────────────────────── */
   document.querySelectorAll('.tut-chip').forEach(btn => {
     btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter;
-      const value  = btn.dataset.value;
-      state[filter] = value;
-
-      // Update active state within this group
+      state[btn.dataset.filter] = btn.dataset.value;
       const group = btn.closest('.tut-chips');
       group.querySelectorAll('.tut-chip').forEach(b => b.classList.toggle('active', b === btn));
-
       applyFilters();
     });
   });
+
+  /* ── Initial layout ──────────────────────────────────── */
+  applyFilters();
 })();
 </script>
