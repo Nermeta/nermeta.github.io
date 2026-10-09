@@ -378,12 +378,9 @@ layout: default
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);    /* read bottom-to-top */
-  white-space: normal;          /* allow wrapping */
-  word-break: break-word;
-  /* constrain to the available height so it can't overflow */
+  white-space: nowrap;
   max-height: calc(100% - 72px);
   overflow: hidden;
-  text-align: center;
 }
 
 .scroll-meta {
