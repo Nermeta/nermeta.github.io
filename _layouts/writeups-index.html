@@ -146,9 +146,12 @@ layout: default
   --fn-rule:         rgba(168,152,120,0.13);
   --fn-ring:         #3a3530;
   --fn-ring-hi:      #5a534a;
-  --fn-page-cream:   #1f1c14;
-  --fn-page-ruled:   rgba(168,152,120,0.10);
-  --fn-margin-line:  rgba(180,80,60,0.22);
+  --fn-page-cream:   #f5edd8;
+  --fn-page-ruled:   rgba(100,80,50,0.13);
+  --fn-margin-line:  rgba(180,60,40,0.28);
+  --fn-page-ink:     #2a2015;
+  --fn-page-ink-dim: #5a4e38;
+  --fn-page-ink-mut: #8a7a60;
 
   /* platform cover accent colours */
   --fn-htb:   #9fef00;
@@ -501,6 +504,7 @@ layout: default
   background-color: var(--fn-page-cream);
   border-left: 3px solid var(--fn-margin-line);
   margin-left: 40px;
+  color: var(--fn-page-ink);
 }
 
 .fn-page.is-active {
@@ -578,7 +582,7 @@ layout: default
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--fn-ink);
+  color: var(--fn-page-ink);
   line-height: 1.2;
   margin: 0 0 0.75rem;
   text-wrap: balance;
@@ -603,13 +607,13 @@ layout: default
   font-size: 0.62rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--fn-ink-muted);
+  color: var(--fn-page-ink-mut);
   width: 64px;
   flex-shrink: 0;
 }
 
 .fn-entry-value {
-  color: var(--fn-ink-dim);
+  color: var(--fn-page-ink-dim);
   text-transform: capitalize;
 }
 
@@ -622,7 +626,7 @@ layout: default
 .fn-entry-summary {
   font-size: 0.78rem;
   line-height: 1.6;
-  color: var(--fn-ink-dim);
+  color: var(--fn-page-ink-dim);
   flex: 1;
   margin: 0;
 }
@@ -644,9 +648,9 @@ layout: default
 .fn-entry-tool {
   font-family: 'Fira Code', monospace;
   font-size: 0.58rem;
-  color: var(--fn-ink-muted);
-  background: rgba(0,0,0,0.28);
-  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--fn-page-ink-mut);
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.12);
   border-radius: 2px;
   padding: 0.08em 0.38em;
 }
@@ -657,17 +661,18 @@ layout: default
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fn-ink-dim);
+  color: var(--fn-page-ink-dim);
   text-decoration: none;
-  border: 1px solid rgba(168,152,120,0.3);
+  border: 1px solid rgba(80,60,30,0.3);
   border-radius: 2px;
   padding: 0.25em 0.7em;
   flex-shrink: 0;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 .fn-entry-read:hover {
-  color: var(--fn-ink);
-  border-color: rgba(168,152,120,0.6);
+  color: var(--fn-page-ink);
+  border-color: rgba(80,60,30,0.6);
+  background: rgba(0,0,0,0.05);
 }
 
 /* nav */
@@ -682,7 +687,7 @@ layout: default
 
 .fn-nav-btn {
   background: none;
-  border: 1px solid rgba(168,152,120,0.22);
+  border: 1px solid rgba(80,60,30,0.25);
   color: var(--fn-ink-dim);
   font-size: 1rem;
   padding: 0.2rem 0.8rem;
@@ -694,7 +699,7 @@ layout: default
 }
 .fn-nav-btn:hover:not(:disabled) {
   color: var(--fn-ink);
-  border-color: rgba(168,152,120,0.5);
+  border-color: rgba(80,60,30,0.5);
 }
 .fn-nav-btn:disabled {
   opacity: 0.3;

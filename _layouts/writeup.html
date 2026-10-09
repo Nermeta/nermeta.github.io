@@ -94,8 +94,8 @@ layout: default
   --fn-ink:         #e8dfc8;
   --fn-ink-dim:     #a89878;
   --fn-ink-muted:   #6b5e44;
-  --fn-rule:        rgba(168, 152, 120, 0.12);
-  --fn-rule-margin: rgba(168, 100, 80, 0.18);  /* red margin line */
+  --fn-rule:        rgba(100, 80, 50, 0.14);
+  --fn-rule-margin: rgba(180, 60, 40, 0.3);    /* red margin line */
   --fn-ring:        #3a3530;
   --fn-ring-hi:     #5a534a;
   --fn-stamp-htb:   #9fef00;
@@ -300,7 +300,6 @@ layout: default
 .fn-post-ruled {
   flex: 1;
   padding: 0;
-  /* horizontal ruled lines via repeating gradient */
   background:
     repeating-linear-gradient(
       to bottom,
@@ -309,20 +308,21 @@ layout: default
       var(--fn-rule) calc(1.75rem - 1px),
       var(--fn-rule) 1.75rem
     );
+  background-color: #f5edd8;
   background-size: 100% 1.75rem;
-  /* red margin line ~48px from left */
   border-left: 3px solid var(--fn-rule-margin);
   margin-left: 45px;
   position: relative;
+  color: #2a2015;
 }
 
 .fn-post-ruled::before {
-  /* margin gutter to the left of the red line */
   content: '';
   position: absolute;
   top: 0; left: -45px; bottom: 0;
   width: 45px;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.06);
+  background-color: #ede5cc;
 }
 
 .fn-post-body {
@@ -330,7 +330,7 @@ layout: default
   font-family: 'Raleway', system-ui, sans-serif;
   font-size: 0.92rem;
   line-height: 1.75rem; /* snap to ruled lines */
-  color: var(--fn-ink);
+  color: #2a2015;
 }
 
 /* Markdown content inside ruled page */
@@ -340,7 +340,7 @@ layout: default
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fn-ink-dim);
+  color: #4a3a28;
   margin: 1.75rem 0 0;
   border-bottom: 1px solid var(--fn-rule);
   padding-bottom: 0.2rem;
@@ -352,7 +352,7 @@ layout: default
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fn-ink-muted);
+  color: #6b5a40;
   margin: 1.75rem 0 0;
 }
 
@@ -377,30 +377,32 @@ layout: default
 
 /* Code blocks */
 .fn-post-body pre {
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.12);
   border-radius: 3px;
   padding: 0.75rem 1rem;
   overflow-x: auto;
   font-size: 0.78rem;
   line-height: 1.5;
   margin: 0;
-  /* break out of ruled-line rhythm gracefully */
+  color: #2a2015;
 }
 
 .fn-post-body code {
   font-family: 'Fira Code', monospace;
   font-size: 0.8em;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.1);
   border-radius: 2px;
   padding: 0.1em 0.35em;
-  color: var(--aqua-dim);
+  color: #3a5a3a;
 }
 
 .fn-post-body pre code {
   background: none;
+  border: none;
   padding: 0;
-  color: var(--fn-ink);
+  color: #2a2015;
   font-size: 1em;
 }
 
@@ -417,7 +419,7 @@ layout: default
   font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fn-ink-muted);
+  color: #6b5a40;
   text-align: left;
   padding: 0.35rem 0.6rem;
   border-bottom: 1px solid var(--fn-rule);
@@ -425,8 +427,8 @@ layout: default
 
 .fn-post-body td {
   padding: 0.35rem 0.6rem;
-  color: var(--fn-ink-dim);
-  border-bottom: 1px solid rgba(168,152,120,0.07);
+  color: #4a3a28;
+  border-bottom: 1px solid rgba(100,80,50,0.1);
 }
 
 /* Responsive */
