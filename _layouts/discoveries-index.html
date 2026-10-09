@@ -30,34 +30,38 @@ layout: default
           <span class="codex-section-rule" aria-hidden="true"></span>
         </h2>
 
-        <div class="codex-tomes">
+        <div class="scroll-rack">
           {% for entry in topic_entries %}
-          <a class="codex-tome" href="{{ entry.url | relative_url }}"
-             data-topic="{{ entry.topic | slugify }}"
-             data-difficulty="{{ entry.difficulty | default: 'intermediate' }}">
+          <a class="scroll" href="{{ entry.url | relative_url }}"
+             data-topic="{{ entry.topic | slugify }}">
 
-            <!-- wax seal -->
-            <div class="codex-seal" aria-hidden="true">
-              <span class="codex-seal-inner">{{ entry.topic | upcase | truncate: 2, "" }}</span>
+            <!-- top rolled cap -->
+            <div class="scroll-cap scroll-cap--top" aria-hidden="true">
+              <div class="scroll-cap-face"></div>
             </div>
 
-            <!-- spine -->
-            <div class="codex-spine" aria-hidden="true"></div>
+            <!-- parchment body -->
+            <div class="scroll-body">
+              <!-- wax seal on the tie band -->
+              <div class="scroll-band" aria-hidden="true">
+                <div class="scroll-seal">
+                  <span class="scroll-seal-glyph">{{ entry.topic | upcase | truncate: 2, "" }}</span>
+                </div>
+              </div>
 
-            <!-- cover face -->
-            <div class="codex-face">
-              <div class="codex-face-inner">
-                <p class="codex-tome-topic">{{ entry.topic | replace: "-", " " }}</p>
-                <h3 class="codex-tome-title">{{ entry.title }}</h3>
+              <!-- vertical title -->
+              <div class="scroll-text">
+                <span class="scroll-topic">{{ entry.topic | replace: "-", " " }}</span>
+                <h3 class="scroll-title">{{ entry.title }}</h3>
                 {% if entry.estimated_read %}
-                <p class="codex-tome-meta">{{ entry.estimated_read }} min read</p>
+                <span class="scroll-meta">{{ entry.estimated_read }} min</span>
                 {% endif %}
               </div>
             </div>
 
-            <!-- decorative binding lines -->
-            <div class="codex-binding" aria-hidden="true">
-              <span></span><span></span><span></span>
+            <!-- bottom rolled cap -->
+            <div class="scroll-cap scroll-cap--bottom" aria-hidden="true">
+              <div class="scroll-cap-face"></div>
             </div>
 
           </a>
@@ -67,43 +71,49 @@ layout: default
     {% endfor %}
 
     {% if all_discoveries.size == 0 %}
-    <p class="codex-empty">The shelves await their first volumes.</p>
+    <p class="codex-empty">The shelves await their first scrolls.</p>
     {% endif %}
   </div>
 
 </main>
 
 <style>
-/* ── Discoveries — Codex Index ─────────────────────────────── */
+/* ── Discoveries — Scroll Index ─────────────────────────────── */
 
 :root {
-  --cx-bg:          #0c0a07;
-  --cx-shelf:       #131009;
-  --cx-ink:         #d4c9a8;
-  --cx-ink-dim:     #8a7d5a;
-  --cx-ink-muted:   #5a5040;
-  --cx-gold:        #c9a84c;
-  --cx-gold-dim:    #8a6e2a;
-  --cx-vermillion:  #8b2020;
-  --cx-seal-cyber:  #8b2020;
-  --cx-seal-networking: #1a4a6b;
-  --cx-seal-sysadmin:   #2a5a2a;
-  --cx-seal-default:    #4a3a1a;
-  --cx-tome-bg:     #1a1510;
-  --cx-tome-edge:   #0f0c08;
-  --cx-tome-hover:  #221c12;
-  --cx-spine:       #100d08;
-  --cx-rule:        rgba(201,168,76,0.15);
-  --cx-border:      rgba(201,168,76,0.2);
+  --cx-bg:           #0c0a07;
+  --cx-ink:          #d4c9a8;
+  --cx-ink-dim:      #8a7d5a;
+  --cx-ink-muted:    #4a4030;
+  --cx-gold:         #c9a84c;
+  --cx-gold-dim:     #8a6e2a;
+  --cx-gold-glow:    rgba(201,168,76,0.18);
+  --cx-rule:         rgba(201,168,76,0.15);
+
+  /* parchment scroll colours */
+  --sc-parch:        #1e1a10;
+  --sc-parch-mid:    #241f13;
+  --sc-parch-edge:   #141008;
+  --sc-cap:          #2a2416;
+  --sc-cap-dark:     #0e0b06;
+  --sc-cap-light:    #3a3220;
+
+  /* seal colours by topic */
+  --seal-cyber:      #8b2020;
+  --seal-cyber-hi:   #c43030;
+  --seal-net:        #1a4a6b;
+  --seal-net-hi:     #2a6a9b;
+  --seal-sys:        #2a5a2a;
+  --seal-sys-hi:     #3a7a3a;
 }
 
 .codex-main {
-  max-width: 960px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1.5rem 5rem;
 }
 
-/* Header */
+/* ── Header ── */
 .codex-header {
   text-align: center;
   padding: 2rem 0 3rem;
@@ -139,16 +149,14 @@ layout: default
   margin: 0;
 }
 
-/* Section heading */
-.codex-section {
-  margin-bottom: 3rem;
-}
+/* ── Section heading ── */
+.codex-section { margin-bottom: 3.5rem; }
 
 .codex-section-title {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: 0 0 1.5rem;
+  margin: 0 0 2rem;
 }
 
 .codex-section-rule {
@@ -167,168 +175,249 @@ layout: default
   white-space: nowrap;
 }
 
-/* Tome grid */
-.codex-tomes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem 1rem;
+/* ── Scroll rack (row of scrolls) ── */
+.scroll-rack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 1.75rem;
+  align-items: flex-end;          /* scrolls rest on a common baseline */
 }
 
-/* Individual tome */
-.codex-tome {
+/* ── Individual scroll ── */
+.scroll {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 240px;
-  border-radius: 2px 6px 6px 2px;
-  background: var(--cx-tome-bg);
-  box-shadow:
-    -4px 0 0 var(--cx-spine),
-    3px 3px 0 var(--cx-tome-edge),
-    6px 6px 0 rgba(0,0,0,0.3),
-    0 12px 32px rgba(0,0,0,0.5);
+  width: 88px;
   text-decoration: none;
   transition:
-    transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
-    box-shadow 0.2s ease;
-  overflow: visible;
-  border: 1px solid rgba(201,168,76,0.1);
-  border-left: none;
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter    0.25s ease;
+  filter: drop-shadow(2px 6px 12px rgba(0,0,0,0.6));
 }
 
-.codex-tome:hover {
-  transform: translateY(-8px) rotate(-1deg);
-  box-shadow:
-    -4px 0 0 var(--cx-spine),
-    4px 8px 0 var(--cx-tome-edge),
-    8px 14px 0 rgba(0,0,0,0.3),
-    0 24px 48px rgba(0,0,0,0.6);
-  background: var(--cx-tome-hover);
+.scroll:hover {
+  transform: translateY(-10px);
+  filter:
+    drop-shadow(0 16px 28px rgba(0,0,0,0.7))
+    drop-shadow(0 0 12px rgba(201,168,76,0.12));
 }
 
-/* Spine (left edge) */
-.codex-spine {
-  position: absolute;
-  left: -6px;
-  top: 0; bottom: 0;
-  width: 6px;
-  background: linear-gradient(to right, #080604, #1a1510);
-  border-radius: 2px 0 0 2px;
-}
-
-/* Binding lines on spine */
-.codex-binding {
-  position: absolute;
-  left: -5px;
-  top: 0; bottom: 0;
-  width: 4px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: 20px 0;
-  pointer-events: none;
-}
-
-.codex-binding span {
-  display: block;
+/* ── Rolled caps ── */
+.scroll-cap {
+  position: relative;
   width: 100%;
-  height: 1px;
-  background: rgba(201,168,76,0.25);
+  height: 18px;
+  z-index: 2;
 }
 
-/* Wax seal */
-.codex-seal {
+/* The cap is an ellipse — wide cylinder end-on */
+.scroll-cap-face {
   position: absolute;
-  top: -10px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
+  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #c43030, var(--cx-seal-cyber) 60%, #5a0f0f);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,180,180,0.15);
-  z-index: 3;
+  /* lit from above: bright strip across the top, dark underneath */
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 30%,
+    var(--sc-cap-light) 0%,
+    var(--sc-cap) 45%,
+    var(--sc-cap-dark) 100%
+  );
+  /* subtle rim */
+  box-shadow:
+    inset 0 1px 0 rgba(255,230,150,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
 }
 
-.codex-tome[data-topic="networking"] .codex-seal {
-  background: radial-gradient(circle at 40% 35%, #2a6a9b, var(--cx-seal-networking) 60%, #0a2a40);
-}
-.codex-tome[data-topic="sysadmin"] .codex-seal,
-.codex-tome[data-topic="linux"] .codex-seal {
-  background: radial-gradient(circle at 40% 35%, #3a7a3a, var(--cx-seal-sysadmin) 60%, #0f2a0f);
-}
+/* top cap sits slightly above body, bottom slightly below */
+.scroll-cap--top  { margin-bottom: -4px; }
+.scroll-cap--bottom { margin-top: -4px; }
 
-.codex-seal-inner {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: rgba(255,230,200,0.85);
-  letter-spacing: 0.05em;
-}
-
-/* Cover face */
-.codex-face {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 0.85rem 0.85rem;
-  /* decorative border inset */
-  background-image:
-    linear-gradient(var(--cx-rule) 1px, transparent 1px),
-    linear-gradient(90deg, var(--cx-rule) 1px, transparent 1px);
-  background-size: 100% 100%;
-  /* inner frame lines */
-  box-shadow: inset 0 0 0 6px rgba(201,168,76,0.06),
-              inset 0 0 0 8px transparent;
-}
-
-.codex-face::before {
+/* thin decorative ring where cap meets body */
+.scroll-cap--top::after,
+.scroll-cap--bottom::before {
   content: '';
   position: absolute;
-  inset: 8px;
-  border: 1px solid rgba(201,168,76,0.08);
-  pointer-events: none;
-  border-radius: 1px;
+  left: 4px; right: 4px;
+  height: 2px;
+  background: linear-gradient(to right,
+    transparent,
+    rgba(201,168,76,0.3) 30%,
+    rgba(201,168,76,0.3) 70%,
+    transparent
+  );
 }
+.scroll-cap--top::after    { bottom: 2px; }
+.scroll-cap--bottom::before { top: 2px; }
 
-.codex-face-inner {
+/* ── Parchment body ── */
+.scroll-body {
+  position: relative;
   flex: 1;
+  min-height: 240px;
+  /* aged parchment: centre strip lighter, edges darker like curling paper */
+  background:
+    linear-gradient(to right,
+      var(--sc-parch-edge) 0%,
+      var(--sc-parch-mid)  18%,
+      var(--sc-parch)      38%,
+      var(--sc-parch)      62%,
+      var(--sc-parch-mid)  82%,
+      var(--sc-parch-edge) 100%
+    );
+  /* very faint horizontal line texture */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 11px,
+      rgba(0,0,0,0.06) 11px,
+      rgba(0,0,0,0.06) 12px
+    ),
+    linear-gradient(to right,
+      var(--sc-parch-edge) 0%,
+      var(--sc-parch-mid)  18%,
+      var(--sc-parch)      38%,
+      var(--sc-parch)      62%,
+      var(--sc-parch-mid)  82%,
+      var(--sc-parch-edge) 100%
+    );
+  border-left:  1px solid rgba(0,0,0,0.3);
+  border-right: 1px solid rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.4rem;
+  align-items: center;
 }
 
-.codex-tome-topic {
+/* ── Ribbon / tie band ── */
+.scroll-band {
+  width: 100%;
+  height: 28px;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0.35),
+    rgba(0,0,0,0.25) 40%,
+    rgba(0,0,0,0.35)
+  );
+  border-top:    1px solid rgba(201,168,76,0.12);
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── Wax seal ── */
+.scroll-seal {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-cyber-hi),
+    var(--seal-cyber)  55%,
+    #3a0808
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.7),
+    inset 0 1px 1px rgba(255,160,160,0.18);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.scroll[data-topic="networking"] .scroll-seal {
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-net-hi), var(--seal-net) 55%, #060f1a);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(100,180,255,0.15);
+}
+.scroll[data-topic="sysadmin"] .scroll-seal,
+.scroll[data-topic="linux"]    .scroll-seal {
+  background: radial-gradient(circle at 38% 32%,
+    var(--seal-sys-hi), var(--seal-sys) 55%, #071007);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(100,220,100,0.15);
+}
+
+.scroll-seal-glyph {
   font-family: 'Cinzel', serif;
-  font-size: 0.52rem;
-  letter-spacing: 0.2em;
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: rgba(255,235,210,0.9);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* ── Vertical text ── */
+.scroll-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* split into top half (above band) and bottom half (below band) using padding */
+  padding: 12px 6px;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.scroll-topic {
+  font-family: 'Cinzel', serif;
+  font-size: 0.42rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--cx-gold-dim);
-  margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);    /* read bottom-to-top */
+  white-space: nowrap;
+  opacity: 0.75;
+  margin-bottom: auto;
+  padding-top: 8px;
 }
 
-.codex-tome-title {
+.scroll-title {
   font-family: 'Cinzel', serif;
-  font-size: 0.82rem;
+  font-size: 0.62rem;
   font-weight: 600;
   color: var(--cx-ink);
-  line-height: 1.35;
+  line-height: 1.3;
   margin: 0;
-  text-wrap: balance;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);    /* read bottom-to-top */
+  /* allow wrapping but keep centred */
+  max-height: calc(50% - 22px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-bottom: 4px;
 }
 
-.codex-tome-meta {
+.scroll-meta {
   font-family: 'Raleway', system-ui, sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.42rem;
   color: var(--cx-ink-muted);
-  margin: 0;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  margin-top: auto;
+  padding-bottom: 8px;
 }
 
+/* ── Empty state ── */
 .codex-empty {
   font-family: 'Cinzel', serif;
   color: var(--cx-ink-muted);
@@ -338,14 +427,11 @@ layout: default
   padding: 4rem 0;
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 600px) {
-  .codex-tomes {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1.25rem 0.75rem;
-  }
-  .codex-tome {
-    height: 200px;
-  }
+  .scroll { width: 72px; }
+  .scroll-body { min-height: 200px; }
+  .scroll-title { font-size: 0.56rem; }
+  .scroll-rack { gap: 1.5rem 1.25rem; }
 }
 </style>
