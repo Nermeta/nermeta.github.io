@@ -5,7 +5,7 @@ type: learning-log
 topic: scripting
 subject: "Python Scripting"
 domain: scripting
-status: not-started
+status: in-progress
 requires: [bash-scripting, powershell-fundamentals]
 tags: [python, scripting, security, automation]
 audience: [tech]

@@ -412,11 +412,11 @@ layout: default
   let current = 0;
 
   /* ── Color scheme per status ─────────────────────────────── */
-  const R = 9; // base node radius — small stars like Skyrim constellations
+  const R = 4; // base node radius — tiny stars
   const STATUS = {
     completed:    { fill: '#00e5cc', stroke: '#00e5cc', glow: 'rgba(0,229,204,0.45)',  text: '#0a090e', ring: R },
     'in-progress':{ fill: '#1a1830', stroke: '#e040fb', glow: 'rgba(224,64,251,0.45)', text: '#e040fb', ring: R },
-    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.25)',   text: '#5c5470', ring: R - 1 },
+    'not-started':{ fill: '#11101a', stroke: '#3a3456', glow: 'rgba(58,52,86,0.25)',   text: '#5c5470', ring: R },
   };
 
   /* ── Layout algorithm ────────────────────────────────────── */
@@ -569,7 +569,7 @@ layout: default
       // Outer glow
       const glow = document.createElementNS(ns, 'circle');
       glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y);
-      glow.setAttribute('r', scheme.ring + 8);
+      glow.setAttribute('r', scheme.ring + 4);
       glow.setAttribute('fill', scheme.glow);
       glow.setAttribute('filter', `url(#glow-${st.replace(/-/g,'')})`);
       g.appendChild(glow);
@@ -592,7 +592,7 @@ layout: default
         pulse.setAttribute('stroke', scheme.stroke);
         pulse.setAttribute('stroke-width', '2');
         pulse.setAttribute('opacity', '0.6');
-        pulse.innerHTML = `<animate attributeName="r" values="${scheme.ring};${scheme.ring+6};${scheme.ring}" dur="2.4s" repeatCount="indefinite"/>
+        pulse.innerHTML = `<animate attributeName="r" values="${scheme.ring};${scheme.ring+4};${scheme.ring}" dur="2.4s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values="0.6;0;0.6" dur="2.4s" repeatCount="indefinite"/>`;
         g.appendChild(pulse);
       }
