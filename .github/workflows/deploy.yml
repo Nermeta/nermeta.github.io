@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -32,25 +32,18 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Restore cover cache
+        uses: actions/cache@v4
+        with:
+          path: assets/images/covers/
+          key: book-covers-${{ hashFiles('_book-reviews/**') }}
+          restore-keys: |
+            book-covers-
+
       - name: Fetch book covers and compute spine colors
         run: |
           npm ci
           node scripts/fetch-covers.js
-        env:
-          # Allow the script to commit fetched covers back to the repo
-          GIT_AUTHOR_NAME: github-actions[bot]
-          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
-          GIT_COMMITTER_NAME: github-actions[bot]
-          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
-
-      - name: Commit new covers and spine colors (if any)
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/images/covers/ _book-reviews/
-          git diff --cached --quiet || git commit -m "chore: cache book covers and spine colors [skip ci]"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Jekyll and generate context
         run: |
