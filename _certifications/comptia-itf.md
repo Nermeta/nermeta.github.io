@@ -1,6 +1,6 @@
 ---
 title: "CompTIA ITF+"
-topic: IT Foundations
+topic: IT Support
 status: earned
 date: 2019-09-10
 shape: round
