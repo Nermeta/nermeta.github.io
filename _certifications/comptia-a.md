@@ -1,6 +1,6 @@
 ---
 title: "CompTIA A+"
-topic: IT Foundations
+topic: IT Support
 status: earned
 date: 2021-01-15
 shape: round
