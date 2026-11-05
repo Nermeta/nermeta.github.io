@@ -19,7 +19,7 @@ While my Mathematical ability is sufficient for what I needed in school and the 
 
 With the ever expanding world of technology it isn't enough to have surface level understanding of things. Facts can be found on a myriad of websites for free. With the ever increasing development of LLMs and AI, the gathering of data, rewording it, and even the application of that knowledge is right at our fingertips without having to do much more than type a couple of words. But it isn't all knowing or powerful. The deeper levels of understanding are as of right now are not possible. Even if they where it is one of my greatest happiness's in life to learn and that right is unalienable even if a machine is better at it.
 
-Soap Box aside, the main reasons I am doing this are that I want to make sure that my foundations are solid before I start learning the very complex math and science that shapes our world as we understand it. That, and I simply want to. Which in my opinion is as good a reason as anything else.
+Soap Box aside, the main reasons I am doing this is that I want to make sure that my foundations are solid before I start learning the very complex math and science that shapes our world as we understand it. That, and I simply want to. Which in my opinion is as good a reason as anything else.
 
 ## Study Plan
 My tentative plan is as follows:
@@ -30,11 +30,6 @@ My tentative plan is as follows:
 - Read Number: the Language of Science
 - Read Secrets of Mental Math
 - Read The Tranchtenberg Speed System of Basic Mathematics
-
-## Logs
-- [Let's get Down to Basics](/learning-logs/lets-get-down-to-basics/)
-
-
 
 ## What's Next
 After this we move on to our good friend Algebra.
