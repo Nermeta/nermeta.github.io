@@ -42,6 +42,42 @@ function fetchBuffer(url, redirects = 5) {
   });
 }
 
+/** Fetch a URL and parse it as JSON */
+async function fetchJson(url) {
+  return JSON.parse((await fetchBuffer(url)).toString('utf8'));
+}
+
+/** True if the buffer is a real cover (Open Library sends a 1×1 GIF when there's none) */
+const isRealCover = buf => !!buf && buf.length >= 2000;
+
+/**
+ * Get a cover for a book. Tries, in order:
+ *   1. the exact ISBN's edition cover
+ *   2. the work's cover, found by ISBN (any edition of the same book)
+ *   3. the work's cover, found by title + author
+ * The ISBN Studio picks is often an edition with no scan, so 2 and 3 matter.
+ */
+async function findCover({ isbn, title, author }) {
+  try {
+    const buf = await fetchBuffer(`${COVER_BASE}${isbn}-L.jpg`);
+    if (isRealCover(buf)) return { buf, via: 'isbn' };
+  } catch {}
+
+  const searches = [`q=${encodeURIComponent('isbn:' + isbn)}`];
+  if (title) searches.push(`title=${encodeURIComponent(title)}` + (author ? `&author=${encodeURIComponent(author)}` : ''));
+
+  for (const qs of searches) {
+    try {
+      const data = await fetchJson(`https://openlibrary.org/search.json?${qs}&fields=cover_i&limit=5`);
+      const doc = (data.docs || []).find(d => d.cover_i);
+      if (!doc) continue;
+      const buf = await fetchBuffer(`https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`);
+      if (isRealCover(buf)) return { buf, via: qs.startsWith('q=') ? 'work (isbn)' : 'work (title)' };
+    } catch {}
+  }
+  return null;
+}
+
 /**
  * Compute dominant spine color from a JPEG buffer.
  * Pure Node — zero dependencies. Walks JPEG segments to find the scan data,
@@ -159,25 +195,19 @@ async function main() {
     if (!isbn) continue;
 
     const coverPath = path.join(COVERS_DIR, `${isbn}.jpg`);
-    const coverUrl  = `${COVER_BASE}${isbn}-L.jpg`;
 
     let buf = null;
 
     // 1. Fetch cover if not cached
     if (!fs.existsSync(coverPath)) {
-      try {
-        buf = await fetchBuffer(coverUrl);
-        // Open Library returns a 1×1 GIF when no cover exists — skip those
-        if (buf.length < 2000) {
-          console.log(`  [skip] ${file} — no cover found on Open Library`);
-          buf = null;
-        } else {
-          fs.writeFileSync(coverPath, buf);
-          console.log(`  [fetch] ${file} → covers/${isbn}.jpg (${buf.length} bytes)`);
-          fetched++;
-        }
-      } catch (err) {
-        console.warn(`  [warn] ${file} — fetch failed: ${err.message}`);
+      const found = await findCover({ isbn, title: getFmKey(raw, 'title'), author: getFmKey(raw, 'author') });
+      if (!found) {
+        console.log(`  [skip] ${file} — no cover found on Open Library`);
+      } else {
+        buf = found.buf;
+        fs.writeFileSync(coverPath, buf);
+        console.log(`  [fetch] ${file} → covers/${isbn}.jpg via ${found.via} (${buf.length} bytes)`);
+        fetched++;
       }
     } else {
       buf = fs.readFileSync(coverPath);
