@@ -36,6 +36,9 @@ collections:
     output: false
     sort_by: date
     permalink: /certifications/:name/
+  coursework:
+    output: false
+    sort_by: date
   book-reviews:
     output: true
     permalink: /book-reviews/:name/

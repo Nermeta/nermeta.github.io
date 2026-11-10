@@ -115,7 +115,7 @@ layout: default
             <span class="cv-entry-dot" aria-hidden="true"></span>
           </div>
           <div class="cv-entry-body">
-            <h3 class="cv-entry-title">{{ entry.title }}</h3>
+            <h3 class="cv-entry-title">{% if site.coursework.size > 0 %}<a class="cv-entry-link" href="{{ '/coursework/' | relative_url }}" title="See the courses behind this degree">{{ entry.title }}</a>{% else %}{{ entry.title }}{% endif %}</h3>
             <p class="cv-entry-org">{{ entry.institution }}
               {% if entry.location or entry.grad_label %}
               <span class="cv-entry-location">·
@@ -125,6 +125,7 @@ layout: default
               {% endif %}
             </p>
             {% if entry.note %}<p class="cv-entry-note">{{ entry.note }}</p>{% endif %}
+            {% if site.coursework.size > 0 %}<a class="cv-coursework-link" href="{{ '/coursework/' | relative_url }}">View {{ site.coursework.size }} courses →</a>{% endif %}
           </div>
         </div>
         {% endfor %}
@@ -181,6 +182,37 @@ layout: default
         </div>
           {% endif %}
         {% endfor %}
+
+        {% assign courses = site.coursework | sort: "date" %}
+        {% assign course_skills = "" | split: "" %}
+        {% for c in courses %}{% if c.skills %}{% assign course_skills = course_skills | concat: c.skills %}{% endif %}{% endfor %}
+        {% assign course_skills = course_skills | uniq %}
+        {% if course_skills.size > 0 %}
+        <div class="cv-skill-group">
+          <h3 class="cv-skill-heading">
+            <a class="cv-skill-heading-link" href="{{ '/coursework/' | relative_url }}">Cybersecurity</a>
+          </h3>
+          <ul class="cv-skill-list">
+            {% for skill in course_skills %}
+              {% assign skill_course = nil %}
+              {% assign skill_count = 0 %}
+              {% for c in courses %}
+                {% if c.skills contains skill %}
+                  {% assign skill_count = skill_count | plus: 1 %}
+                  {% if skill_course == nil %}{% assign skill_course = c.slug %}{% endif %}
+                {% endif %}
+              {% endfor %}
+            <li>
+              {% if skill_count > 1 %}
+                <a class="cv-skill-link" href="{{ '/coursework/' | relative_url }}?skill={{ skill | url_encode }}">{{ skill }}</a>
+              {% else %}
+                <a class="cv-skill-link" href="{{ '/coursework/' | relative_url }}?course={{ skill_course }}">{{ skill }}</a>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
 
         {% if active_logs.size > 0 %}
         <div class="cv-skill-group cv-skill-group--learning">
@@ -442,6 +474,14 @@ layout: default
   font-style: italic;
   margin: 0;
 }
+.cv-entry-link { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--cv-gold-dim); }
+.cv-entry-link:hover { color: var(--cv-gold-dim); }
+.cv-coursework-link {
+  display: inline-block; margin-top: 0.4rem;
+  font-family: 'Raleway', system-ui, sans-serif; font-size: 0.74rem;
+  color: var(--cv-gold-dim); text-decoration: none;
+}
+.cv-coursework-link:hover { text-decoration: underline; }
 
 /* ── Skills grid ── */
 .cv-skills-grid {

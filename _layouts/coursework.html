@@ -1,0 +1,295 @@
+---
+layout: default
+---
+<style>
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,204,0.04) 0%, rgba(224,64,251,0.03) 40%, #05040f 70%);
+}
+:root {
+  color-scheme: dark;
+  --brass:       #b8914a;
+  --brass-dim:   #8a6a30;
+  --brass-hi:    #d4af6a;
+  --aqua:        #00e5cc;
+  --aqua-dim:    #00b8a4;
+  --fuchsia:     #e040fb;
+  --fuchsia-dim: #b030c8;
+  --font-display: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
+  --font-body:    'Raleway', system-ui, sans-serif;
+  --font-mono:    'Share Tech Mono', monospace;
+  --fg:          #ede5ff;
+  --fg-muted:    #6a5e88;
+  --ease: 0.28s ease;
+}
+
+.cw-page { max-width: 960px; margin: 0 auto; padding: calc(var(--nav-height) + 2.5rem) 1rem 5rem; }
+
+/* ── HEADER ── */
+.cw-header { text-align: center; margin-bottom: 1rem; }
+.cw-back {
+  display: inline-block; margin-bottom: 1rem;
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+  color: var(--brass-dim); text-decoration: none; transition: color var(--ease);
+}
+.cw-back:hover { color: var(--brass-hi); }
+.cw-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  color: var(--brass-hi);
+  text-shadow: 0 0 30px rgba(184,145,74,0.4), 0 2px 4px rgba(0,0,0,0.8);
+  margin: 0 0 0.4rem; letter-spacing: 0.04em;
+}
+.cw-header p {
+  color: var(--fg-muted); font-size: 0.68rem;
+  letter-spacing: 0.22em; text-transform: uppercase; margin: 0;
+}
+.brass-rule { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 2rem; }
+.brass-rule::before, .brass-rule::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brass-dim), var(--brass), var(--brass-dim), transparent);
+}
+.brass-diamond { width: 7px; height: 7px; background: var(--brass); transform: rotate(45deg); box-shadow: 0 0 6px rgba(184,145,74,0.5); }
+
+/* ── FILTERS ── */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; align-items: center; margin-bottom: 0.75rem; }
+.filter-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--brass-dim); padding: 0 0.2rem; }
+.filter-btn {
+  background: transparent; border: 1px solid rgba(184,145,74,0.25); color: var(--fg-muted);
+  font-family: var(--font-body); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.3rem 0.85rem; border-radius: 999px; cursor: pointer; transition: all var(--ease);
+}
+.filter-btn:hover { border-color: var(--brass); color: var(--brass-hi); background: rgba(184,145,74,0.06); }
+.filter-btn.active { background: rgba(0,229,204,0.08); border-color: var(--aqua-dim); color: var(--aqua); box-shadow: 0 0 12px rgba(0,229,204,0.18); }
+.skill-note {
+  text-align: center; font-size: 0.72rem; color: var(--fg-muted); margin: 0 0 1.75rem; min-height: 1.1rem;
+}
+.skill-note strong { color: var(--aqua); font-weight: 600; }
+.skill-note button {
+  background: none; border: none; color: var(--brass-dim); cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.66rem; text-decoration: underline; margin-left: 0.4rem;
+}
+.skill-note button:hover { color: var(--brass-hi); }
+
+/* ── CARDS ── */
+.cw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.cw-card {
+  position: relative; cursor: pointer;
+  background: linear-gradient(160deg, #1a1028 0%, #100c1e 60%, #0d0a18 100%);
+  border: 1px solid rgba(184,145,74,0.22); border-radius: 6px;
+  padding: 1.1rem 1.15rem 1rem;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,145,74,0.1);
+  transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+  display: flex; flex-direction: column; gap: 0.45rem;
+}
+.cw-card:hover, .cw-card:focus-visible {
+  border-color: rgba(184,145,74,0.55); transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.6), 0 0 22px rgba(0,229,204,0.07);
+  outline: none;
+}
+.cw-card[hidden] { display: none; }
+.cw-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.cw-code { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; color: var(--aqua-dim); }
+.cw-term { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; color: var(--fg-muted); white-space: nowrap; }
+.cw-waived {
+  font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fuchsia); border: 1px solid rgba(224,64,251,0.35); border-radius: 999px; padding: 0.1rem 0.5rem; white-space: nowrap;
+}
+.cw-title { font-family: var(--font-body); font-size: 0.92rem; font-weight: 600; color: var(--brass-hi); margin: 0; line-height: 1.3; }
+.cw-summary { font-size: 0.74rem; color: var(--fg); opacity: 0.8; line-height: 1.5; margin: 0; }
+.cw-skills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; padding-top: 0.35rem; }
+.skill-tag {
+  font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.18rem 0.5rem; border-radius: 999px;
+  background: rgba(0,229,204,0.07); border: 1px solid rgba(0,229,204,0.2); color: var(--aqua-dim);
+}
+.skill-tag.match { background: rgba(0,229,204,0.16); border-color: var(--aqua); color: var(--aqua); }
+.empty-state { display: none; text-align: center; color: var(--fg-muted); font-size: 0.8rem; margin-top: 2rem; }
+
+/* ── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(5,4,15,0.85); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.modal {
+  background: linear-gradient(160deg, #1a1028 0%, #100c1e 60%, #0d0a18 100%);
+  border: 1px solid rgba(184,145,74,0.3); border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.8), 0 8px 40px rgba(0,0,0,0.7), 0 0 60px rgba(0,229,204,0.06), inset 0 1px 0 rgba(184,145,74,0.15);
+  max-width: 460px; width: 100%; padding: 1.75rem; position: relative;
+  transform: translateY(12px); transition: transform 0.25s ease;
+}
+.modal-backdrop.open .modal { transform: translateY(0); }
+.modal-close {
+  position: absolute; top: 0.85rem; right: 0.9rem; background: none; border: none; cursor: pointer;
+  color: var(--fg-muted); font-size: 1.1rem; line-height: 1; padding: 0.2rem 0.4rem; border-radius: 3px; transition: color var(--ease);
+}
+.modal-close:hover { color: var(--brass-hi); }
+.modal-code { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.12em; color: var(--aqua-dim); margin-bottom: 0.3rem; }
+.modal-title { font-family: var(--font-body); font-size: 1.05rem; font-weight: 600; color: var(--brass-hi); margin: 0 0 0.3rem; line-height: 1.3; }
+.modal-meta { font-family: var(--font-mono); font-size: 0.62rem; color: var(--fg-muted); letter-spacing: 0.08em; }
+.modal-meta span:empty { display: none; }
+.modal-meta span:not(:empty) + span:not(:empty)::before { content: ' · '; }
+.modal-divider { height: 1px; margin: 1rem 0; background: linear-gradient(90deg, transparent, rgba(184,145,74,0.25), transparent); }
+.modal-description { font-size: 0.8rem; color: var(--fg); line-height: 1.65; margin: 0 0 0.9rem; }
+.modal-skills { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.1rem; }
+.modal-catalog-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: rgba(184,145,74,0.1); border: 1px solid rgba(184,145,74,0.35); color: var(--brass-hi); border-radius: 4px;
+  font-family: var(--font-body); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.5rem 1rem; text-decoration: none; transition: all var(--ease);
+}
+.modal-catalog-btn:hover { background: rgba(184,145,74,0.18); border-color: var(--brass); box-shadow: 0 0 16px rgba(184,145,74,0.2); }
+.modal-catalog-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+</style>
+
+{% assign courses = site.coursework | sort: "date" %}
+{% assign depts = "" | split: "" %}
+{% for c in courses %}{% assign d = c.code | split: " " | first %}{% assign depts = depts | push: d %}{% endfor %}
+{% assign depts = depts | uniq | sort %}
+{% assign degree = site.certifications | where: "category", "education" | first %}
+
+<main class="cw-page" id="main-content">
+  <header class="cw-header">
+    <a class="cw-back" href="{{ '/resume/' | relative_url }}">← Résumé</a>
+    <h1>Coursework</h1>
+    <p>{% if degree %}{{ degree.title }} · {{ degree.institution }}{% else %}Courses{% endif %}</p>
+  </header>
+
+  <div class="brass-rule"><div class="brass-diamond"></div></div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Department</span>
+    <button class="filter-btn active" data-dept="all">All</button>
+    {% for d in depts %}<button class="filter-btn" data-dept="{{ d }}">{{ d }}</button>{% endfor %}
+  </div>
+  <p class="skill-note" id="skillNote" aria-live="polite"></p>
+
+  <div class="cw-grid" id="cwGrid">
+    {% for c in courses %}
+    {% assign dept = c.code | split: " " | first %}
+    <article class="cw-card" tabindex="0" role="button"
+      data-id="{{ c.slug }}"
+      data-dept="{{ dept }}"
+      data-code="{{ c.code }}"
+      data-title="{{ c.title | escape }}"
+      data-term="{% if c.waived %}Tested out{% else %}{{ c.term }}{% endif %}"
+      data-current="{{ c.current_code }}"
+      data-description="{{ c.description | escape }}"
+      data-skills="{{ c.skills | join: '|' | escape }}"
+      data-catalog="{{ c.catalog_url }}"
+      aria-label="View details for {{ c.code }} {{ c.title | escape }}">
+      <div class="cw-card-top">
+        <span class="cw-code">{{ c.code }}</span>
+        {% if c.waived %}<span class="cw-waived" title="Tested out of this course">Tested out</span>{% else %}<span class="cw-term">{{ c.term }}</span>{% endif %}
+      </div>
+      <h2 class="cw-title">{{ c.title }}</h2>
+      <p class="cw-summary">{{ c.summary }}</p>
+      <div class="cw-skills">
+        {% for s in c.skills %}<span class="skill-tag">{{ s }}</span>{% endfor %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <p class="empty-state" id="emptyState">No courses match that filter.</p>
+</main>
+
+<div class="modal-backdrop" id="cwModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-code" id="modalCode"></div>
+    <h2 class="modal-title" id="modalTitle"></h2>
+    <div class="modal-meta"><span id="modalTerm"></span><span id="modalCurrent"></span></div>
+    <div class="modal-divider"></div>
+    <p class="modal-description" id="modalDescription"></p>
+    <div class="modal-skills" id="modalSkills"></div>
+    <a class="modal-catalog-btn" id="modalCatalog" href="#" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V7M8 1h3m0 0v3m0-3L5 7"/></svg>
+      View in BYU-Idaho Catalog
+    </a>
+  </div>
+</div>
+
+<script>
+(function () {
+  const cards = Array.from(document.querySelectorAll('.cw-card'));
+  const empty = document.getElementById('emptyState');
+  const note  = document.getElementById('skillNote');
+  const modal = document.getElementById('cwModal');
+  const modalClose = document.getElementById('modalClose');
+  let activeDept = 'all', activeSkill = null;
+
+  const skillsOf = el => (el.dataset.skills || '').split('|').map(s => s.trim()).filter(Boolean);
+
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach(el => {
+      const dm = activeDept === 'all' || el.dataset.dept === activeDept;
+      const km = !activeSkill || skillsOf(el).some(s => s.toLowerCase() === activeSkill);
+      el.hidden = !(dm && km);
+      el.querySelectorAll('.skill-tag').forEach(t => t.classList.toggle('match', !!activeSkill && t.textContent.trim().toLowerCase() === activeSkill));
+      if (dm && km) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+    note.innerHTML = '';
+    if (activeSkill) {
+      const label = document.createElement('span');
+      label.innerHTML = 'Courses that teach <strong></strong>';
+      label.querySelector('strong').textContent = activeSkill.replace(/\b\w/g, c => c.toUpperCase());
+      const clear = document.createElement('button');
+      clear.type = 'button'; clear.textContent = 'show all';
+      clear.addEventListener('click', () => { activeSkill = null; applyFilters(); });
+      note.append(label, clear);
+    }
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeDept = btn.dataset.dept;
+      activeSkill = null;
+      applyFilters();
+    });
+  });
+
+  function openModal(card) {
+    const d = card.dataset;
+    document.getElementById('modalCode').textContent = d.code || '';
+    document.getElementById('modalTitle').textContent = d.title || '';
+    document.getElementById('modalTerm').textContent = d.term || '';
+    document.getElementById('modalCurrent').textContent = d.current ? 'Now ' + d.current : '';
+    document.getElementById('modalDescription').textContent = d.description || '';
+    const sk = document.getElementById('modalSkills');
+    sk.innerHTML = '';
+    skillsOf(card).forEach(s => { const t = document.createElement('span'); t.className = 'skill-tag'; t.textContent = s; sk.appendChild(t); });
+    const cat = document.getElementById('modalCatalog');
+    if (/^https?:\/\//.test(d.catalog || '')) { cat.href = d.catalog; cat.style.display = 'inline-flex'; }
+    else { cat.style.display = 'none'; }
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  }
+  function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => openModal(card));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); } });
+  });
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ── URL PARAMS ── */
+  // /coursework/?skill=Linux  → only courses that teach Linux
+  // /coursework/?course=cyber450 → opens that course
+  const p = new URLSearchParams(window.location.search);
+  const skill = p.get('skill'), course = p.get('course');
+  if (skill) { activeSkill = skill.trim().toLowerCase(); applyFilters(); }
+  if (course) {
+    const card = cards.find(c => c.dataset.id === course);
+    if (card) { card.scrollIntoView({ block: 'center' }); setTimeout(() => openModal(card), 0); }
+  }
+  if (skill || course) history.replaceState(null, '', window.location.pathname);
+})();
+</script>
