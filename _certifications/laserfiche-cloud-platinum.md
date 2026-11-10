@@ -8,7 +8,7 @@ badge_image: /assets/images/badges/laserfiche-platinum.png
 issuer: LaserFiche
 cert_url: "Email: Aspire@laserfiche.com"
 description: "Laserfiche’s highest certification level, validating expert skills in designing, integrating, and optimizing advanced solutions on Laserfiche Cloud."
-skills: [Laserfiche Cloud, Solution Architecture, Solution Design, Advanced Process Automation, Workflow Automation, Laserfiche Forms, System Integration, API Integration, Enterprise Content Management, Records Management, Metadata Management, Information Governance, SaaS Administration, AI-Assisted Automation, Digital Transformation]
+skills: [Laserfiche Cloud, Solution Architecture, Business Process Automation, Workflow Automation, Laserfiche Forms, System Integration, Enterprise Content Management, Records Management, Metadata Management, Information Governance, SaaS Administration, AI-Assisted Automation, Digital Transformation]
 public: true
 ---
 

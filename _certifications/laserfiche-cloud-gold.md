@@ -8,7 +8,7 @@ badge_image: /assets/images/badges/laserfiche-gold.jpg
 issuer: LaserFiche
 cert_url: "Email: Aspire@laserfiche.com"
 description: "Validates comprehensive skills in configuring, administering, and automating Laserfiche Cloud, the SaaS platform for content management and business process automation."
-skills: [Laserfiche Cloud, SaaS Administration, Cloud Content Management, Enterprise Content Management, Document Management, Business Process Automation, Workflow Automation, Laserfiche Forms, Process Automation, Document Capture, Metadata Management, Records Management, Access Control, AI-Assisted Automation, Digital Transformation]
+skills: [Laserfiche Cloud, SaaS Administration, Enterprise Content Management, Document Management, Business Process Automation, Workflow Automation, Laserfiche Forms, Document Capture, Metadata Management, Records Management, Access Control, AI-Assisted Automation, Digital Transformation]
 public: true
 ---
 

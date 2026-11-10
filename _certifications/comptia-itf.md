@@ -8,7 +8,7 @@ badge_image: /assets/images/badges/itf-logo-certified.png
 issuer: CompTIA
 cert_url: "https://cp.certmetrics.com/comptia/en/public/verify/credential/MQSDPL5W7RPLFBC6"
 description: "CompTIA IT Fundamentals (ITF+) is an entry-level certification that validates foundational knowledge of IT concepts, including computing basics, infrastructure, software, databases, programming concepts, and security."
-skills: [Computer Hardware, Networking Basics, Internet Connectivity, Software Installation, Operating Systems, Programming Concepts, Database Fundamentals, Data Management, Cybersecurity Fundamentals, Password Management, Troubleshooting, Technology Literacy, IT Fundementals]
+skills: [Computer Hardware, Networking, Internet Connectivity, Software Installation, Operating Systems, Programming Concepts, Database Fundamentals, Data Management, Cybersecurity Fundamentals, Password Management, Troubleshooting, IT Fundamentals]
 public: true
 ---
 
