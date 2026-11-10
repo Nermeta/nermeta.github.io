@@ -743,7 +743,7 @@ body {
   const empty    = document.getElementById('emptyState');
   const modal    = document.getElementById('certModal');
   const modalClose = document.getElementById('modalClose');
-  let activeStatus = 'all', activeTopic = 'all';
+  let activeStatus = 'all', activeTopic = 'all', activeSkill = null;
 
   /* ── FILTERS ── */
   function applyFilters() {
@@ -751,7 +751,8 @@ body {
     allBoxes.forEach(el => {
       const sm = activeStatus === 'all' || el.dataset.status === activeStatus;
       const tm = activeTopic  === 'all' || el.dataset.topic  === activeTopic;
-      const show = sm && tm;
+      const km = !activeSkill || (el.dataset.skills || '').split('|').some(x => x.trim().toLowerCase() === activeSkill);
+      const show = sm && tm && km;
       el.hidden = !show;
       if (show) visible++;
     });
@@ -763,6 +764,7 @@ body {
       const g = btn.dataset.filter;
       document.querySelectorAll(`.filter-btn[data-filter="${g}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      activeSkill = null; // a resume skill link's filter ends once you pick another filter
       if (g === 'status') activeStatus = btn.dataset.value;
       if (g === 'topic')  activeTopic  = btn.dataset.value;
       applyFilters();
@@ -790,8 +792,25 @@ body {
     const p = new URLSearchParams(window.location.search);
     const status = p.get('status');
     const topic  = p.get('topic');
+    const emblem = p.get('emblem');
+    const skill  = p.get('skill');
     if (status || topic) {
       window.emblemFilter({ status: status || undefined, topic: topic || undefined });
+    }
+    // e.g. /certifications/?skill=Records+Management — shows only emblems with that skill
+    if (skill) {
+      activeSkill = skill.trim().toLowerCase();
+      applyFilters();
+    }
+    // e.g. /certifications/?emblem=comptia-a — opens that emblem (resume skill links)
+    if (emblem) {
+      const box = allBoxes.find(b => b.dataset.id === emblem);
+      if (box) {
+        box.scrollIntoView({ block: 'center' });
+        setTimeout(() => openModal(box), 0);
+      }
+    }
+    if (status || topic || emblem || skill) {
       // Clean up URL without reload
       history.replaceState(null, '', window.location.pathname);
     }
@@ -846,8 +865,14 @@ body {
     }
     // verify button
     const verifyBtn = document.getElementById('modalVerifyBtn');
-    if (d.certUrl && d.certUrl !== 'nil' && d.certUrl !== '') {
-      verifyBtn.href = d.certUrl;
+    const certUrl = (d.certUrl || '').trim();
+    const email = (certUrl.match(/[\w.+-]+@[\w-]+\.[\w.-]+/) || [])[0];
+    if (/^https?:\/\//i.test(certUrl)) {
+      verifyBtn.href = certUrl;
+      verifyBtn.style.display = 'inline-flex';
+    } else if (email) {
+      // e.g. "Email: aspire@laserfiche.com" — verification is by email
+      verifyBtn.href = 'mailto:' + email;
       verifyBtn.style.display = 'inline-flex';
     } else {
       verifyBtn.style.display = 'none';
