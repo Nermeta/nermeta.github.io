@@ -136,6 +136,10 @@ layout: default
     <!-- ── Skills ── -->
     {% assign cert_topics = site.certifications | where_exp: "item", "item.category != 'education'" | map: "topic" | compact | uniq | sort %}
     {% assign active_logs = site.learning-logs | where: "status", "in-progress" %}
+    {% assign all_certs = site.certifications | where_exp: "item", "item.category != 'education'" %}
+    {% assign courses = site.coursework | sort: "date" %}
+    {% assign all_cert_skills = "" | split: "" %}
+    {% for cert in all_certs %}{% if cert.skills %}{% assign all_cert_skills = all_cert_skills | concat: cert.skills %}{% endif %}{% endfor %}
     <section class="cv-section">
       <h2 class="cv-section-heading">
         <span class="cv-section-rule"></span>
@@ -168,8 +172,23 @@ layout: default
                   {% if skill_cert == nil %}{% assign skill_cert = cert.slug %}{% endif %}
                 {% endif %}
               {% endfor %}
+              {% assign src = "" %}
+              {% assign course_hits = 0 %}
+              {% for c in courses %}
+                {% if c.skills contains skill %}
+                  {% assign course_hits = course_hits | plus: 1 %}
+                  {% capture src %}{{ src }}c~{{ c.slug }}~{{ c.code }} · {{ c.title }}|{% endcapture %}
+                {% endif %}
+              {% endfor %}
+              {% if course_hits > 0 %}
+                {% for cert in all_certs %}
+                  {% if cert.skills contains skill %}{% capture src %}e~{{ cert.slug }}~{{ cert.title }}|{{ src }}{% endcapture %}{% endif %}
+                {% endfor %}
+              {% endif %}
             <li>
-              {% if skill_count > 1 %}
+              {% if course_hits > 0 %}
+                <a class="cv-skill-link cv-skill-link--shared" href="{{ '/certifications/' | relative_url }}?skill={{ skill | url_encode }}" data-skill="{{ skill | escape }}" data-sources="{{ src | strip | escape }}" title="Certified and studied in class">{{ skill }}<span class="cv-shared-mark" aria-hidden="true">✦</span></a>
+              {% elsif skill_count > 1 %}
                 <a class="cv-skill-link" href="{{ '/certifications/' | relative_url }}?skill={{ skill | url_encode }}">{{ skill }}</a>
               {% elsif skill_cert %}
                 <a class="cv-skill-link" href="{{ '/certifications/' | relative_url }}?emblem={{ skill_cert }}">{{ skill }}</a>
@@ -183,10 +202,11 @@ layout: default
           {% endif %}
         {% endfor %}
 
-        {% assign courses = site.coursework | sort: "date" %}
+        {% assign course_skills_all = "" | split: "" %}
+        {% for c in courses %}{% if c.skills %}{% assign course_skills_all = course_skills_all | concat: c.skills %}{% endif %}{% endfor %}
+        {% assign course_skills_all = course_skills_all | uniq %}
         {% assign course_skills = "" | split: "" %}
-        {% for c in courses %}{% if c.skills %}{% assign course_skills = course_skills | concat: c.skills %}{% endif %}{% endfor %}
-        {% assign course_skills = course_skills | uniq %}
+        {% for sk in course_skills_all %}{% unless all_cert_skills contains sk %}{% assign course_skills = course_skills | push: sk %}{% endunless %}{% endfor %}
         {% if course_skills.size > 0 %}
         <div class="cv-skill-group">
           <h3 class="cv-skill-heading">
@@ -226,6 +246,18 @@ layout: default
         {% endif %}
       </div>
     </section>
+
+    <p class="cv-shared-legend"><span class="cv-shared-mark" aria-hidden="true">✦</span> Certified and studied in class. Click to see where.</p>
+
+    <div class="cv-learn" id="cvLearn" role="dialog" aria-modal="true" aria-labelledby="cvLearnTitle" hidden>
+      <div class="cv-learn-box">
+        <button class="cv-learn-close" type="button" id="cvLearnClose" aria-label="Close">✕</button>
+        <p class="cv-learn-kicker">Where I learned this</p>
+        <h3 class="cv-learn-title" id="cvLearnTitle"></h3>
+        <div class="cv-learn-group" id="cvLearnCerts"><h4>Certifications</h4><ul></ul></div>
+        <div class="cv-learn-group" id="cvLearnCourses"><h4>Coursework</h4><ul></ul></div>
+      </div>
+    </div>
 
     <!-- ── Earlier experience ── -->
     <section class="cv-section cv-section--earlier">
@@ -594,4 +626,79 @@ layout: default
   .cv-skills-grid { grid-template-columns: 1fr; }
   .cv-entry-body { padding-left: 1rem; }
 }
+.cv-shared-mark { color: var(--cv-gold); font-size: 0.6em; margin-left: 0.3em; vertical-align: 0.35em; }
+.cv-shared-legend {
+  font-family: 'Raleway', system-ui, sans-serif; font-size: 0.72rem; color: var(--cv-ink-dim);
+  margin: -0.5rem 0 2rem; text-align: right;
+}
+.cv-learn {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(5,4,10,0.8); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.cv-learn[hidden] { display: none; }
+.cv-learn-box {
+  position: relative; width: 100%; max-width: 400px; padding: 1.6rem 1.6rem 1.3rem;
+  background: var(--cv-surface); border: 1px solid var(--cv-border); border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+}
+.cv-learn-close {
+  position: absolute; top: 0.7rem; right: 0.8rem; background: none; border: none; cursor: pointer;
+  color: var(--cv-ink-dim); font-size: 1rem;
+}
+.cv-learn-close:hover { color: var(--cv-gold); }
+.cv-learn-kicker {
+  font-family: 'Raleway', system-ui, sans-serif; font-size: 0.62rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--cv-gold-dim); margin: 0 0 0.3rem;
+}
+.cv-learn-title { color: var(--cv-gold); font-size: 1.05rem; margin: 0 0 1rem; }
+.cv-learn-group h4 {
+  font-family: 'Raleway', system-ui, sans-serif; font-size: 0.66rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--cv-ink-dim); margin: 0.9rem 0 0.4rem;
+}
+.cv-learn-group ul { list-style: none; margin: 0; padding: 0; }
+.cv-learn-group li + li { margin-top: 0.3rem; }
+.cv-learn-group a { color: var(--cv-ink); text-decoration: none; font-size: 0.85rem; border-bottom: 1px dotted var(--cv-gold-dim); }
+.cv-learn-group a:hover { color: var(--cv-gold); }
 </style>
+
+<script>
+(function () {
+  const box = document.getElementById('cvLearn');
+  if (!box) return;
+  const base = '{{ site.baseurl }}';
+  const title = document.getElementById('cvLearnTitle');
+  const certs = document.getElementById('cvLearnCerts');
+  const courses = document.getElementById('cvLearnCourses');
+  let lastLink = null;
+
+  function fill(group, items, hrefFor) {
+    const ul = group.querySelector('ul');
+    ul.innerHTML = '';
+    items.forEach(([slug, label]) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = hrefFor(slug); a.textContent = label;
+      li.appendChild(a); ul.appendChild(li);
+    });
+    group.hidden = items.length === 0;
+  }
+
+  function open(link) {
+    const parts = (link.dataset.sources || '').split('|').map(s => s.trim()).filter(Boolean).map(s => s.split('~'));
+    title.textContent = link.dataset.skill || link.textContent;
+    fill(certs, parts.filter(p => p[0] === 'e').map(p => [p[1], p[2]]), slug => base + '/certifications/?emblem=' + encodeURIComponent(slug));
+    fill(courses, parts.filter(p => p[0] === 'c').map(p => [p[1], p[2]]), slug => base + '/coursework/?course=' + encodeURIComponent(slug));
+    lastLink = link;
+    box.hidden = false;
+    document.getElementById('cvLearnClose').focus();
+  }
+  function close() { box.hidden = true; if (lastLink) lastLink.focus(); }
+
+  document.querySelectorAll('.cv-skill-link--shared').forEach(link => {
+    link.addEventListener('click', e => { e.preventDefault(); open(link); });
+  });
+  document.getElementById('cvLearnClose').addEventListener('click', close);
+  box.addEventListener('click', e => { if (e.target === box) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) close(); });
+})();
+</script>
