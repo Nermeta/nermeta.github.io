@@ -36,7 +36,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: assets/images/covers/
-          key: book-covers-${{ hashFiles('_book-reviews/**') }}
+          # run_id makes every key new, so the cache is saved after each run
+          # (a stale or empty cache can't stick); restore-keys picks the latest.
+          key: book-covers-${{ github.run_id }}
           restore-keys: |
             book-covers-
 
