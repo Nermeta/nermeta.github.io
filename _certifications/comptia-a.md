@@ -8,7 +8,7 @@ badge_image: /assets/images/badges/a-png.png
 issuer: CompTIA
 cert_url: "https://cp.certmetrics.com/comptia/en/public/verify/credential/BTXNVB4SLNRQ145Z"
 description: "The CompTIA A+ Certification is an industry-recognized, vendor-neutral certification that validates foundational IT skills in hardware, operating systems, networking, security, and troubleshooting for technical support roles."
-skills: [Hardware Troubleshooting, PC Repair, Computer Hardware, Mobile Device Management, Networking, TCP/IP, Wireless Networking, Windows Administration, macOS, Linux, Operating Systems, Cybersecurity Fundamentals, Malware Removal, Virtualization, Cloud Computing, Technical Support, Help Desk, Troubleshooting Methodology, Ticketing Systems, IT Documentation, Customer Service]
+skills: [Hardware Troubleshooting, Computer Hardware, Mobile Device Management, Networking, TCP/IP, Wireless Networking, Windows Administration, macOS, Linux, Operating Systems, Cybersecurity Fundamentals, Malware Removal, Virtualization, Cloud Computing, Help Desk, Troubleshooting, Ticketing Systems, IT Documentation, Customer Service]
 public: true
 ---
 
