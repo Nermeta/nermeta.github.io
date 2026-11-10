@@ -160,13 +160,17 @@ layout: default
           <ul class="cv-skill-list">
             {% for skill in topic_skills %}
               {% assign skill_cert = nil %}
+              {% assign skill_count = 0 %}
               {% for cert in topic_certs %}
-                {% if skill_cert == nil and cert.skills contains skill %}
-                  {% assign skill_cert = cert.slug %}
+                {% if cert.skills contains skill %}
+                  {% assign skill_count = skill_count | plus: 1 %}
+                  {% if skill_cert == nil %}{% assign skill_cert = cert.slug %}{% endif %}
                 {% endif %}
               {% endfor %}
             <li>
-              {% if skill_cert %}
+              {% if skill_count > 1 %}
+                <a class="cv-skill-link" href="{{ '/certifications/' | relative_url }}?skill={{ skill | url_encode }}">{{ skill }}</a>
+              {% elsif skill_cert %}
                 <a class="cv-skill-link" href="{{ '/certifications/' | relative_url }}?emblem={{ skill_cert }}">{{ skill }}</a>
               {% else %}
                 {{ skill }}
