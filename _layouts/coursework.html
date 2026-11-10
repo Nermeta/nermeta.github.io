@@ -144,9 +144,9 @@ body {
 </style>
 
 {% assign courses = site.coursework | sort: "date" %}
-{% assign depts = "" | split: "" %}
-{% for c in courses %}{% assign d = c.code | split: " " | first %}{% assign depts = depts | push: d %}{% endfor %}
-{% assign depts = depts | uniq | sort %}
+{% assign area_order = "Security|Networking|Systems|Cloud & DevOps|Programming & Web|Databases|Professional" | split: "|" %}
+{% assign areas = "" | split: "" %}
+{% for a in area_order %}{% assign hit = courses | where: "area", a %}{% if hit.size > 0 %}{% assign areas = areas | push: a %}{% endif %}{% endfor %}
 {% assign degree = site.certifications | where: "category", "education" | first %}
 
 <main class="cw-page" id="main-content">
@@ -159,18 +159,17 @@ body {
   <div class="brass-rule"><div class="brass-diamond"></div></div>
 
   <div class="filter-bar">
-    <span class="filter-label">Department</span>
-    <button class="filter-btn active" data-dept="all">All</button>
-    {% for d in depts %}<button class="filter-btn" data-dept="{{ d }}">{{ d }}</button>{% endfor %}
+    <span class="filter-label">Area</span>
+    <button class="filter-btn active" data-area="all">All</button>
+    {% for a in areas %}<button class="filter-btn" data-area="{{ a }}">{{ a }}</button>{% endfor %}
   </div>
   <p class="skill-note" id="skillNote" aria-live="polite"></p>
 
   <div class="cw-grid" id="cwGrid">
     {% for c in courses %}
-    {% assign dept = c.code | split: " " | first %}
     <article class="cw-card" tabindex="0" role="button"
       data-id="{{ c.slug }}"
-      data-dept="{{ dept }}"
+      data-area="{{ c.area }}"
       data-code="{{ c.code }}"
       data-title="{{ c.title | escape }}"
       data-term="{% if c.waived %}Tested out{% else %}{{ c.term }}{% endif %}"
@@ -217,14 +216,14 @@ body {
   const note  = document.getElementById('skillNote');
   const modal = document.getElementById('cwModal');
   const modalClose = document.getElementById('modalClose');
-  let activeDept = 'all', activeSkill = null;
+  let activeArea = 'all', activeSkill = null;
 
   const skillsOf = el => (el.dataset.skills || '').split('|').map(s => s.trim()).filter(Boolean);
 
   function applyFilters() {
     let visible = 0;
     cards.forEach(el => {
-      const dm = activeDept === 'all' || el.dataset.dept === activeDept;
+      const dm = activeArea === 'all' || el.dataset.area === activeArea;
       const km = !activeSkill || skillsOf(el).some(s => s.toLowerCase() === activeSkill);
       el.hidden = !(dm && km);
       el.querySelectorAll('.skill-tag').forEach(t => t.classList.toggle('match', !!activeSkill && t.textContent.trim().toLowerCase() === activeSkill));
@@ -247,7 +246,7 @@ body {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      activeDept = btn.dataset.dept;
+      activeArea = btn.dataset.area;
       activeSkill = null;
       applyFilters();
     });
@@ -284,12 +283,17 @@ body {
   // /coursework/?skill=Linux  → only courses that teach Linux
   // /coursework/?course=cyber450 → opens that course
   const p = new URLSearchParams(window.location.search);
-  const skill = p.get('skill'), course = p.get('course');
+  const skill = p.get('skill'), course = p.get('course'), area = p.get('area');
+  // /coursework/?area=Security → that area's courses (resume Skills headings)
+  if (area) {
+    const btn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.dataset.area === area);
+    if (btn) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); activeArea = area; applyFilters(); }
+  }
   if (skill) { activeSkill = skill.trim().toLowerCase(); applyFilters(); }
   if (course) {
     const card = cards.find(c => c.dataset.id === course);
     if (card) { card.scrollIntoView({ block: 'center' }); setTimeout(() => openModal(card), 0); }
   }
-  if (skill || course) history.replaceState(null, '', window.location.pathname);
+  if (skill || course || area) history.replaceState(null, '', window.location.pathname);
 })();
 </script>

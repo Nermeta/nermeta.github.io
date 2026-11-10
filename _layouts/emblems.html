@@ -658,7 +658,7 @@ body {
       <button class="filter-btn active" data-filter="topic" data-value="all">All</button>
       {% assign topics = site.certifications | map: "topic" | compact | uniq | sort %}
       {% for topic in topics %}
-      <button class="filter-btn" data-filter="topic" data-value="{{ topic }}">{{ topic | capitalize }}</button>
+      <button class="filter-btn" data-filter="topic" data-value="{{ topic }}">{{ topic }}</button>
       {% endfor %}
     </div>
   </div>

@@ -1,6 +1,7 @@
 ---
 title: "Security Analysis and Operations"
 code: "CYBER 375"
+area: "Security"
 date: 2026-01-01
 term: "Winter 2026"
 summary: "Working like a SOC analyst."

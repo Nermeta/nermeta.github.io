@@ -1,6 +1,7 @@
 ---
 title: "JavaScript Language"
 code: "CSE 121B"
+area: "Programming & Web"
 date: 2023-04-01
 term: "Spring 2023"
 summary: "Solving problems with JavaScript."

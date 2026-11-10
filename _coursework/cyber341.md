@@ -1,6 +1,7 @@
 ---
 title: "Network Design II"
 code: "CYBER 341"
+area: "Networking"
 date: 2026-01-01
 term: "Winter 2026"
 summary: "Advanced routing on Cisco gear."

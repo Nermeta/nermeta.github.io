@@ -1,6 +1,7 @@
 ---
 title: "Security Assessment"
 code: "CYBER 370"
+area: "Security"
 date: 2025-04-01
 term: "Spring 2025"
 summary: "Penetration testing and vulnerability assessment."

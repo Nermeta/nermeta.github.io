@@ -1,6 +1,7 @@
 ---
 title: "Identity and Access Management"
 code: "CYBER 450"
+area: "Security"
 date: 2025-04-01
 term: "Spring 2025"
 summary: "Managing who can access what."

@@ -1,6 +1,7 @@
 ---
 title: "Internship"
 code: "ITM 398R"
+area: "Cloud & DevOps"
 date: 2026-04-01
 term: "Spring 2026"
 summary: "Applying IT skills on the job."

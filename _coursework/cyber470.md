@@ -1,6 +1,7 @@
 ---
 title: "Systems Security II"
 code: "CYBER 470"
+area: "Security"
 date: 2025-04-01
 term: "Spring 2025"
 summary: "Defending the whole network."
