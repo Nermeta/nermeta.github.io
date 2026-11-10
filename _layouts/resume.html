@@ -155,22 +155,19 @@ layout: default
           {% if topic_skills.size > 0 %}
         <div class="cv-skill-group">
           <h3 class="cv-skill-heading">
-            <a class="cv-skill-heading-link" href="{{ '/certifications/' | relative_url }}#{{ topic }}">{{ topic | capitalize }}</a>
+            <a class="cv-skill-heading-link" href="{{ '/certifications/' | relative_url }}?topic={{ topic | url_encode }}">{{ topic | capitalize }}</a>
           </h3>
           <ul class="cv-skill-list">
             {% for skill in topic_skills %}
               {% assign skill_cert = nil %}
               {% for cert in topic_certs %}
                 {% if skill_cert == nil and cert.skills contains skill %}
-                  {% assign cert_url = cert.cert_url | default: cert.credential_url %}
-                  {% if cert_url and cert_url != "" %}
-                    {% assign skill_cert = cert_url %}
-                  {% endif %}
+                  {% assign skill_cert = cert.slug %}
                 {% endif %}
               {% endfor %}
             <li>
               {% if skill_cert %}
-                <a class="cv-skill-link" href="{{ skill_cert }}" target="_blank" rel="noopener noreferrer">{{ skill }}</a>
+                <a class="cv-skill-link" href="{{ '/certifications/' | relative_url }}?emblem={{ skill_cert }}">{{ skill }}</a>
               {% else %}
                 {{ skill }}
               {% endif %}
